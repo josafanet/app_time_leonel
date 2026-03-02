@@ -321,7 +321,6 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
     <input type="password" id="admin-pw-input" placeholder="••••" maxlength="20"
       oninput="document.getElementById('pw-error').textContent=''"
       onkeydown="if(event.key==='Enter')checkAdminPw()">
-    <div class="pw-hint">Senha padrão: <strong style="color:var(--gold)">1234</strong></div>
     <div class="pw-error" id="pw-error"></div>
     <button class="btn btn-gold btn-full" onclick="checkAdminPw()">Entrar como Admin</button>
     <br><br>
@@ -435,6 +434,7 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
         </div>
         <div id="teams-preview" style="font-size:13px;color:var(--text2)"></div>
       </div>
+      <div id="no-teams-msg" style="display:none;text-align:center;padding:48px 20px"><div style="font-size:44px;margin-bottom:14px">⚽</div><div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--text2);margin-bottom:6px">Nenhum sorteio ainda</div><div style="font-size:13px;color:var(--text3)">Aguardando o Administrador gerar as equipes</div></div>
       <div id="teams-result" style="display:none">
         <div class="balance-indicator" id="balance-indicator"></div>
         <div class="teams-container" id="teams-container"></div>
@@ -590,6 +590,7 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
 // ═══════════════════ CONSTANTS ═══════════════════
 const STORAGE_KEY = 'timeLeonel_v2_players';
 const HISTORY_KEY = 'timeLeonel_v2_history';
+const TEAMS_KEY   = 'timeLeonel_v2_teams';
 const ADMIN_PW    = '1234';
 const TEAM_NAMES  = ['Feras','Cavaleiros','Elite','Titãs','Leões','Guerreiros','Cobras','Falcões'];
 const TEAM_COLORS = ['#d97706','#22c55e','#818cf8','#22d3ee','#f87171','#fb923c','#a78bfa','#34d399'];
@@ -635,9 +636,11 @@ function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.fl
 // ═══════════════════ STORAGE ═══════════════════
 function savePlayers(){ localStorage.setItem(STORAGE_KEY,JSON.stringify(state.players)); }
 function saveHistory(){ localStorage.setItem(HISTORY_KEY,JSON.stringify(state.history.slice(0,30))); }
+function saveTeams(){ try{localStorage.setItem(TEAMS_KEY,JSON.stringify(state.teams));}catch(e){} }
 function loadAll(){
   try{ state.players=JSON.parse(localStorage.getItem(STORAGE_KEY))||[]; }catch{ state.players=[]; }
   try{ state.history=JSON.parse(localStorage.getItem(HISTORY_KEY))||[]; }catch{ state.history=[]; }
+  try{ state.teams=JSON.parse(localStorage.getItem(TEAMS_KEY))||[]; }catch{ state.teams=[]; }
 }
 
 // ═══════════════════ BOOT ═══════════════════
@@ -964,6 +967,7 @@ function doSort(players,nt){
   });
   state.teams=teams;
   state.lastPresent=players;
+  saveTeams();
   // Save history — FIX: always saves now
   const entry={
     id:Date.now(),
@@ -987,8 +991,9 @@ function doSort(players,nt){
 }
 
 function refazerSorteio(){
-  if(!state.lastPresent) return;
-  doSort(state.lastPresent,state.teams.length);
+  if(!state.lastPresent&&!state.teams.length){showToast('⚠️ Nenhum sorteio para refazer');return;}
+  const players=state.lastPresent||state.teams.flatMap(t=>t.players);
+  doSort(players, state.teams.length||2);
   renderTeams(); renderField();
   showToast('🔀 Times refeitos!');
 }
@@ -996,7 +1001,13 @@ function refazerSorteio(){
 // ═══════════════════ RENDER TEAMS ═══════════════════
 function renderTeams(){
   const result=document.getElementById('teams-result');
-  if(!state.teams.length){result.style.display='none'; return;}
+  const noMsg=document.getElementById('no-teams-msg');
+  if(!state.teams.length){
+    result.style.display='none';
+    if(noMsg) noMsg.style.display=state.role==='viewer'?'block':'none';
+    return;
+  }
+  if(noMsg) noMsg.style.display='none';
   result.style.display='block';
   document.getElementById('btn-refazer').style.display=state.role==='admin'?'':'none';
   const avgs=state.teams.map(t=>t.sum/t.players.length);
