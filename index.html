@@ -10,7 +10,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Time Leonel">
-<meta name="mobile-web-app-capable" content="yes">
 <title>Time Leonel ⚽</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
@@ -23,7 +22,7 @@
   --red:#ef4444;--blue:#3b82f6;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:radial-gradient(ellipse at 20% 0%,rgba(217,119,6,.07) 0%,transparent 50%),
              radial-gradient(ellipse at 80% 100%,rgba(22,163,74,.04) 0%,transparent 50%)}
@@ -71,6 +70,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .pw-box .pw-sub{color:var(--text2);font-size:13px;margin-bottom:20px}
 .pw-box input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-size:20px;font-family:'Barlow',sans-serif;outline:none;text-align:center;letter-spacing:6px;margin-bottom:8px}
 .pw-box input:focus{border-color:var(--gold)}
+.pw-hint{font-size:11px;color:var(--text3);margin-bottom:6px}
 .pw-error{font-size:13px;color:var(--red);min-height:18px;margin-bottom:12px}
 
 /* APP */
@@ -595,12 +595,12 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
 // Console: https://console.firebase.google.com
 // ═══════════════════════════════════════════════════════════════
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDxv-jAB0g5nV_RSaVObBWOgsc2xxF4LzA",
-  authDomain: "time-leonel.firebaseapp.com",
-  projectId: "time-leonel",
-  storageBucket: "time-leonel.firebasestorage.app",
+  apiKey:            "AIzaSyDxv-jAB0g5nV_RSaVObBWOgsc2xxF4LzA",
+  authDomain:        "time-leonel.firebaseapp.com",
+  projectId:         "time-leonel",
+  storageBucket:     "time-leonel.firebasestorage.app",
   messagingSenderId: "378705136833",
-  appId: "1:378705136833:web:057d722e5990e6e3ddd840"
+  appId:             "1:378705136833:web:057d722e5990e6e3ddd840"
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -615,7 +615,6 @@ const AV_COLORS   = [
   ['#4338ca','#c7d2fe'],['#15803d','#bbf7d0'],['#78350f','#fef3c7'],['#7f1d1d','#fecaca']
 ];
 // localStorage fallback keys (usados offline)
-const LS_ROLE    = 'tl_role';
 const LS_PLAYERS = 'tl_players';
 const LS_TEAMS   = 'tl_teams';
 const LS_HISTORY = 'tl_history';
@@ -805,20 +804,14 @@ function loadFromLocal(){
 // ═══════════════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
   loadFromLocal(); // carrega local imediatamente
-  const savedRole = (() => { try{ return localStorage.getItem(LS_ROLE); }catch(e){ return null; } })();
   setTimeout(() => {
     const ls = document.getElementById('loading-screen');
     ls.style.opacity='0'; ls.style.transition='opacity .5s';
     setTimeout(() => {
       ls.style.display='none';
-      if(savedRole === 'admin' || savedRole === 'viewer'){
-        // Restaura sessão diretamente — sem pedir senha de novo
-        enterApp(savedRole);
-      } else {
-        document.getElementById('role-screen').classList.add('show');
-      }
+      document.getElementById('role-screen').classList.add('show');
     }, 500);
-  }, 1000);
+  }, 1400);
 });
 
 // ═══════════════════════════════════════════════════════════════
@@ -857,9 +850,7 @@ function closeAdminPw(){
 
 function switchRole(){
   stopListeners();
-  stopViewerPolling();
   state.role=null; state.teams=[];
-  try{ localStorage.removeItem(LS_ROLE); }catch(e){}
   document.getElementById('app').style.display='none';
   document.getElementById('role-screen').classList.add('show');
 }
@@ -869,7 +860,6 @@ function switchRole(){
 // ═══════════════════════════════════════════════════════════════
 function enterApp(role){
   state.role = role;
-  try{ localStorage.setItem(LS_ROLE, role); }catch(e){}
   document.getElementById('app').style.display='block';
   const badge = document.getElementById('role-badge');
   badge.textContent = role==='admin' ? '🛡️ ADMIN' : '👁️ VIEWER';
@@ -884,46 +874,7 @@ function enterApp(role){
   // Inicia Firebase (se configurado)
   initFirebase().then(() => {
     switchTab(role==='admin'?'elenco':'sorteio');
-    // Viewer: polling fallback para ver atualizações do Admin em tempo real
-    if(role==='viewer' && !state.firebaseReady){
-      startViewerPolling();
-    }
   });
-}
-
-// Polling para Viewer — verifica localStorage a cada 3s
-let _pollingInterval = null;
-function startViewerPolling(){
-  if(_pollingInterval) clearInterval(_pollingInterval);
-  _pollingInterval = setInterval(() => {
-    try{
-      const newTeams   = JSON.parse(localStorage.getItem(LS_TEAMS)   || '[]');
-      const newPlayers = JSON.parse(localStorage.getItem(LS_PLAYERS) || '[]');
-      const newHistory = JSON.parse(localStorage.getItem(LS_HISTORY) || '[]');
-      // Verifica se mudou (compara pelo tamanho e último id do histórico)
-      const teamsChanged   = JSON.stringify(newTeams)   !== JSON.stringify(state.teams);
-      const playersChanged = JSON.stringify(newPlayers) !== JSON.stringify(state.players);
-      const historyChanged = newHistory.length !== state.history.length ||
-                             (newHistory[0]?.id !== state.history[0]?.id);
-      if(teamsChanged){
-        state.teams = newTeams;
-        if(state.currentTab==='sorteio') renderTeams();
-        if(state.currentTab==='campo')   renderField();
-        if(newTeams.length > 0) showToast('⚽ Times atualizados!');
-      }
-      if(playersChanged){
-        state.players = newPlayers;
-        if(state.currentTab==='elenco') renderPlayers();
-      }
-      if(historyChanged){
-        state.history = newHistory;
-        if(state.currentTab==='historico') renderHistory();
-      }
-    }catch(e){}
-  }, 3000);
-}
-function stopViewerPolling(){
-  if(_pollingInterval){ clearInterval(_pollingInterval); _pollingInterval = null; }
 }
 
 // ═══════════════════════════════════════════════════════════════
