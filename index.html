@@ -993,21 +993,8 @@ function updateSyncBadge(){
 // FIREBASE INIT
 // ═══════════════════════════════════════════════════════════════
 function loadFirebaseScripts(callback){
-  if(window.firebase_loaded){ callback(); return; }
-  let loaded = 0;
-  const done = () => { loaded++; if(loaded===3){ window.firebase_loaded=true; callback(); } };
-  const s1 = document.createElement('script');
-  s1.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js';
-  s1.onload = done; s1.onerror = () => callback(new Error('firebase-app load failed'));
-  const s2 = document.createElement('script');
-  s2.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js';
-  s2.onload = done; s2.onerror = () => callback(new Error('firebase-firestore load failed'));
-  const s3 = document.createElement('script');
-  s3.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js';
-  s3.onload = done; s3.onerror = () => callback(new Error('firebase-auth load failed'));
-  document.head.appendChild(s1);
-  document.head.appendChild(s2);
-  document.head.appendChild(s3);
+  // Delegado para _loadSDKs — mantido para compatibilidade
+  _loadSDKs().then(ok => callback(ok ? null : new Error('SDK load failed')));
 }
 
 async function initFirebase(){
@@ -1272,83 +1259,135 @@ function loadFromLocal(){
 window.addEventListener('DOMContentLoaded', () => {
   loadFromLocal();
 
+  // Fade out loading screen após 1s
   setTimeout(() => {
     const ls = document.getElementById('loading-screen');
-    ls.style.opacity='0'; ls.style.transition='opacity .5s';
-    setTimeout(async () => {
-      ls.style.display='none';
-
-      // Verifica se Firebase está configurado
-      const isConfigured = FIREBASE_CONFIG.apiKey !== 'COLE_SUA_API_KEY_AQUI';
-
-      if(isConfigured){
-        // Carrega Firebase Auth ANTES de mostrar qualquer tela
-        await new Promise(resolve => {
-          loadFirebaseScripts((err) => {
-            if(err){ console.error('[Auth] SDK error:', err); resolve(); return; }
-            try {
-              if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-              db   = firebase.firestore();
-              auth = firebase.auth();
-              state.firebaseReady = true;
-              updateSyncBadge();
-              // Listener de auth — dispara ao detectar sessão existente ou login novo
-              // Trata resultado do redirect (retorno após login Google)
-              try {
-                const redirectResult = await auth.getRedirectResult();
-                if(redirectResult && redirectResult.user){
-                  console.log('[Auth] Redirect login OK:', redirectResult.user.email);
-                }
-              } catch(e) {
-                console.error('[Auth] Redirect result error:', e);
-                if(e.code === 'auth/unauthorized-domain'){
-                  showToast('❌ Domínio não autorizado no Firebase. Verifique Authentication → Authorized domains.');
-                }
-              }
-
-              auth.onAuthStateChanged(async (user) => {
-                if(user){
-                  // Usuário logado (sessão existente ou retorno do redirect)
-                  document.getElementById('auth-loading').style.display = 'block';
-                  document.getElementById('auth-loading').textContent = '⏳ Verificando permissões...';
-                  await carregarAdmins();
-                  const papel = await resolverPapel(user.email);
-                  state.authUser = {
-                    uid: user.uid, email: user.email,
-                    name: user.displayName || user.email,
-                    photo: user.photoURL, papel
-                  };
-                  try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e){}
-                  logAuditoria('login_auto', { papel });
-                  document.getElementById('auth-screen').classList.remove('show');
-                  const role = (papel==='superadmin'||papel==='admin') ? 'admin' : 'viewer';
-                  startListeners();
-                  startMatchListener();
-                  setTimeout(drainQueue, 2000);
-                  enterApp(role);
-                } else {
-                  // Sem sessão — mostra tela de login
-                  document.getElementById('auth-screen').classList.add('show');
-                  document.getElementById('btn-google-login').style.display = 'flex';
-                  document.getElementById('auth-loading').style.display = 'none';
-                }
-              });
-            } catch(e){
-              console.error('[Auth] Init error:', e);
-              state.firebaseReady = false;
-              resolve();
-            }
-            resolve();
-          });
-        });
-      } else {
-        // Firebase não configurado — modo local, vai como visitante direto
-        console.warn('[Auth] Firebase não configurado — modo local');
-        entrarComoVisitante();
-      }
+    if(ls){ ls.style.opacity='0'; ls.style.transition='opacity .5s'; }
+    setTimeout(() => {
+      if(ls) ls.style.display='none';
+      _initApp();
     }, 500);
   }, 1000);
 });
+
+// Ponto central de inicialização — separado para clareza e testabilidade
+async function _initApp(){
+  const isConfigured = FIREBASE_CONFIG.apiKey !== 'COLE_SUA_API_KEY_AQUI';
+
+  if(!isConfigured){
+    // Sem Firebase: entra direto como visitante em modo local
+    console.warn('[App] Firebase não configurado — modo local');
+    state.authUser = { uid:'local', email:null, name:'Visitante', photo:null, papel:'viewer' };
+    enterApp('viewer');
+    return;
+  }
+
+  // Carrega os 3 SDKs do Firebase de forma segura
+  const sdkOk = await _loadSDKs();
+  if(!sdkOk){
+    showToast('⚠️ Erro ao carregar Firebase. Entrando em modo offline.');
+    state.authUser = { uid:'local', email:null, name:'Visitante', photo:null, papel:'viewer' };
+    enterApp('viewer');
+    return;
+  }
+
+  // Inicializa Firebase
+  try {
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    db   = firebase.firestore();
+    auth = firebase.auth();
+    state.firebaseReady = true;
+    updateSyncBadge();
+  } catch(e){
+    console.error('[App] Firebase init error:', e);
+    showToast('⚠️ Erro ao inicializar Firebase.');
+    document.getElementById('auth-screen').classList.add('show');
+    return;
+  }
+
+  // Processa resultado de redirect do Google (se voltou de um redirect)
+  try {
+    const rr = await auth.getRedirectResult();
+    if(rr && rr.user) console.log('[Auth] Redirect OK:', rr.user.email);
+  } catch(e){
+    console.warn('[Auth] getRedirectResult:', e.code, e.message);
+    if(e.code === 'auth/unauthorized-domain'){
+      showToast('❌ Domínio não autorizado. Verifique Firebase → Authentication → Authorized domains.');
+    }
+  }
+
+  // Aguarda o Firebase resolver o estado de autenticação (sessão existente ou não)
+  // Usa uma Promise com timeout de segurança de 5s para não travar a loading
+  await new Promise(resolveAuth => {
+    const timeout = setTimeout(() => {
+      // Firebase demorou demais — mostra tela de login
+      console.warn('[Auth] onAuthStateChanged timeout — exibindo tela de login');
+      document.getElementById('auth-screen').classList.add('show');
+      document.getElementById('btn-google-login').style.display = 'flex';
+      document.getElementById('auth-loading').style.display = 'none';
+      resolveAuth();
+    }, 5000);
+
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      clearTimeout(timeout);
+      unsubscribe(); // Remove listener após primeiro disparo
+
+      if(user){
+        // Usuário logado — resolve papel e entra no app
+        try {
+          document.getElementById('auth-loading').textContent = '⏳ Verificando permissões...';
+          document.getElementById('auth-loading').style.display = 'block';
+          document.getElementById('btn-google-login').style.display = 'none';
+          await carregarAdmins();
+          const papel = await resolverPapel(user.email);
+          state.authUser = {
+            uid: user.uid, email: user.email,
+            name: user.displayName || user.email,
+            photo: user.photoURL, papel
+          };
+          try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e2){}
+          logAuditoria('login_sessao', { papel });
+          document.getElementById('auth-screen').classList.remove('show');
+          startListeners();
+          startMatchListener();
+          setTimeout(drainQueue, 2000);
+          const role = (papel==='superadmin'||papel==='admin') ? 'admin' : 'viewer';
+          enterApp(role);
+        } catch(e){
+          console.error('[Auth] Error resolving user:', e);
+          document.getElementById('auth-screen').classList.add('show');
+          document.getElementById('btn-google-login').style.display = 'flex';
+          document.getElementById('auth-loading').style.display = 'none';
+        }
+      } else {
+        // Sem sessão — mostra tela de login
+        document.getElementById('auth-screen').classList.add('show');
+        document.getElementById('btn-google-login').style.display = 'flex';
+        document.getElementById('auth-loading').style.display = 'none';
+      }
+      resolveAuth();
+    });
+  });
+}
+
+// Carrega os SDKs do Firebase e retorna true/false
+function _loadSDKs(){
+  return new Promise(resolve => {
+    if(window.firebase_loaded){ resolve(true); return; }
+    let loaded = 0;
+    const total = 3;
+    const onLoad  = () => { loaded++; if(loaded === total){ window.firebase_loaded=true; resolve(true); } };
+    const onError = (name) => () => { console.error('[SDK] Failed:', name); resolve(false); };
+    const load = (src, name) => {
+      const s = document.createElement('script');
+      s.src = src; s.onload = onLoad; s.onerror = onError(name);
+      document.head.appendChild(s);
+    };
+    load('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',       'firebase-app');
+    load('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js', 'firebase-firestore');
+    load('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js',      'firebase-auth');
+  });
+}
 
 // ═══════════════════════════════════════════════════════════════
 // ROLE SELECTION
@@ -3160,15 +3199,28 @@ async function logout() {
   logAuditoria('logout');
   if(auth) await auth.signOut().catch(()=>{});
   state.authUser = null;
+  state.listenersStarted = false;
   try { localStorage.removeItem(LS_AUTH_CACHE); } catch(e){}
+  try { localStorage.removeItem(LS_ROLE); } catch(e){}
   stopListeners();
   stopViewerPolling();
   state.role = null; state.teams = [];
-  try { localStorage.removeItem(LS_ROLE); } catch(e){}
   document.getElementById('app').style.display = 'none';
-  document.getElementById('auth-screen').classList.add('show');
-  document.getElementById('btn-google-login').style.display = 'flex';
-  document.getElementById('auth-loading').style.display = 'none';
+  // Re-attach auth listener for next login
+  if(auth){
+    const unsub = auth.onAuthStateChanged(async (user) => {
+      unsub();
+      if(!user){
+        document.getElementById('auth-screen').classList.add('show');
+        document.getElementById('btn-google-login').style.display = 'flex';
+        document.getElementById('auth-loading').style.display = 'none';
+      }
+    });
+  } else {
+    document.getElementById('auth-screen').classList.add('show');
+    document.getElementById('btn-google-login').style.display = 'flex';
+    document.getElementById('auth-loading').style.display = 'none';
+  }
 }
 
 // Configura o listener de auth state
