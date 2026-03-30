@@ -937,6 +937,7 @@ let state = {
   matchHistory: null,
   reserva: null,
   authUser: null,   // {uid, email, name, photo, papel}
+  listenersStarted: false,
   admins: [],       // lista de emails admin do Firestore
   poteMap: {}
 };
@@ -1010,7 +1011,13 @@ function loadFirebaseScripts(callback){
 }
 
 async function initFirebase(){
-  // Se não configurado, usa só localStorage — retorna imediatamente (sem travar o .then())
+  // Firebase agora é inicializado no DOMContentLoaded antes da tela de login
+  // Esta função existe apenas como fallback para compatibilidade
+  if(!state.firebaseReady){
+    console.warn('[Firebase] initFirebase chamado mas Firebase não está pronto');
+  }
+  return Promise.resolve();
+  // CÓDIGO ORIGINAL ABAIXO (não executado):
   if(FIREBASE_CONFIG.apiKey === 'COLE_SUA_API_KEY_AQUI'){
     console.warn('[Firebase] Não configurado — usando localStorage');
     state.firebaseReady = false;
@@ -1263,18 +1270,69 @@ function loadFromLocal(){
 // BOOT
 // ═══════════════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
-  loadFromLocal(); // carrega local imediatamente
-  const savedRole = (() => { try{ return localStorage.getItem(LS_ROLE); }catch(e){ return null; } })();
+  loadFromLocal();
+
   setTimeout(() => {
     const ls = document.getElementById('loading-screen');
     ls.style.opacity='0'; ls.style.transition='opacity .5s';
-    setTimeout(() => {
+    setTimeout(async () => {
       ls.style.display='none';
-      if(savedRole === 'admin' || savedRole === 'viewer'){
-        // Restaura sessão diretamente — sem pedir senha de novo
-        enterApp(savedRole);
+
+      // Verifica se Firebase está configurado
+      const isConfigured = FIREBASE_CONFIG.apiKey !== 'COLE_SUA_API_KEY_AQUI';
+
+      if(isConfigured){
+        // Carrega Firebase Auth ANTES de mostrar qualquer tela
+        await new Promise(resolve => {
+          loadFirebaseScripts((err) => {
+            if(err){ console.error('[Auth] SDK error:', err); resolve(); return; }
+            try {
+              if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+              db   = firebase.firestore();
+              auth = firebase.auth();
+              state.firebaseReady = true;
+              updateSyncBadge();
+              // Listener de auth — dispara ao detectar sessão existente ou login novo
+              auth.onAuthStateChanged(async (user) => {
+                if(user){
+                  // Usuário já estava logado (sessão persistida pelo Firebase)
+                  document.getElementById('auth-loading').style.display = 'block';
+                  document.getElementById('auth-loading').textContent = '⏳ Restaurando sessão...';
+                  await carregarAdmins();
+                  const papel = await resolverPapel(user.email);
+                  state.authUser = {
+                    uid: user.uid, email: user.email,
+                    name: user.displayName || user.email,
+                    photo: user.photoURL, papel
+                  };
+                  try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e){}
+                  logAuditoria('login_auto', { papel });
+                  document.getElementById('auth-screen').classList.remove('show');
+                  const role = (papel==='superadmin'||papel==='admin') ? 'admin' : 'viewer';
+                  // Só inicia listeners após autenticação
+                  startListeners();
+                  startMatchListener();
+                  setTimeout(drainQueue, 2000);
+                  enterApp(role);
+                } else {
+                  // Sem sessão — mostra tela de login
+                  document.getElementById('auth-screen').classList.add('show');
+                  document.getElementById('btn-google-login').style.display = 'flex';
+                  document.getElementById('auth-loading').style.display = 'none';
+                }
+              });
+            } catch(e){
+              console.error('[Auth] Init error:', e);
+              state.firebaseReady = false;
+              resolve();
+            }
+            resolve();
+          });
+        });
       } else {
-        document.getElementById('auth-screen').classList.add('show');
+        // Firebase não configurado — modo local, vai como visitante direto
+        console.warn('[Auth] Firebase não configurado — modo local');
+        entrarComoVisitante();
       }
     }, 500);
   }, 1000);
@@ -1336,15 +1394,20 @@ function enterApp(role){
   buildTabs();
   setupPWA();
   updateSyncBadge();
-  // Inicia Firebase (se configurado) e entra no app
-  initFirebase().then(() => {
-    switchTab(role==='admin'?'elenco':'sorteio');
-    if(role==='viewer' && !state.firebaseReady) startViewerPolling();
-  }).catch(() => {
-    // Garante que o app abre mesmo se initFirebase falhar
-    switchTab(role==='admin'?'elenco':'sorteio');
-    if(role==='viewer') startViewerPolling();
-  });
+  // Firebase já inicializado no startup — só navega para a aba inicial
+  if(state.firebaseReady && !state.listenersStarted){
+    // Listeners já iniciados no onAuthStateChanged para usuários logados
+    // Para visitantes, inicia aqui
+    if(!state.authUser || !state.authUser.email){
+      startListeners();
+      startMatchListener();
+      setTimeout(drainQueue, 2000);
+    }
+  } else if(!state.firebaseReady) {
+    startViewerPolling();
+  }
+  state.listenersStarted = true;
+  switchTab(role==='admin'?'elenco':'sorteio');
 }
 
 // Polling para Viewer — verifica localStorage a cada 3s
