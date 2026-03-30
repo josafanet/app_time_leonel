@@ -275,8 +275,159 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-</style>
-</head>
+
+/* PELADA TAB */
+.pelada-hero{background:linear-gradient(135deg,rgba(217,119,6,.12),rgba(22,163,74,.08));border:1px solid rgba(217,119,6,.25);border-radius:20px;padding:24px 20px;text-align:center;margin-bottom:14px}
+.pelada-status-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.5px;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
+.pelada-status-badge.agendada{background:rgba(217,119,6,.15);color:var(--gold);border:1px solid var(--gold-dim)}
+.pelada-status-badge.sem{background:rgba(82,82,91,.15);color:var(--text3);border:1px solid var(--border)}
+.pelada-status-badge.hoje{background:rgba(22,163,74,.2);color:var(--green-light);border:1px solid #166534;animation:pulseGold 1.5s infinite}
+.countdown{display:flex;gap:10px;justify-content:center;margin:18px 0 10px}
+.cd-block{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:10px 14px;min-width:64px;text-align:center}
+.cd-num{font-family:'Bebas Neue',cursive;font-size:36px;color:var(--gold);line-height:1}
+.cd-lbl{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.pelada-info-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.pelada-info-row:last-child{border-bottom:none}
+.pelada-info-icon{font-size:20px;width:32px;text-align:center;flex-shrink:0}
+.pelada-info-val{font-size:15px;font-weight:600;color:var(--text)}
+.pelada-info-sub{font-size:12px;color:var(--text2);margin-top:1px}
+.rsvp-strip{display:flex;gap:10px;margin-top:16px}
+.rsvp-btn{flex:1;padding:12px 8px;border-radius:14px;border:2px solid transparent;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;background:var(--bg3)}
+.rsvp-btn.vou{border-color:var(--green-light);color:var(--green-light)}
+.rsvp-btn.vou.active{background:rgba(22,163,74,.2);border-color:var(--green-light)}
+.rsvp-btn.nao{border-color:var(--red);color:var(--red)}
+.rsvp-btn.nao.active{background:rgba(239,68,68,.15);border-color:var(--red)}
+.rsvp-btn.talvez{border-color:var(--gold);color:var(--gold)}
+.rsvp-btn.talvez.active{background:rgba(217,119,6,.15);border-color:var(--gold)}
+.rsvp-list{margin-top:14px}
+.rsvp-section-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:12px 0 6px}
+.rsvp-pill{display:inline-flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:12px;margin:3px}
+.rsvp-pill.vou{border-color:rgba(22,163,74,.4);color:var(--green-light)}
+.rsvp-pill.nao{border-color:rgba(239,68,68,.4);color:var(--red)}
+.rsvp-pill.talvez{border-color:rgba(217,119,6,.4);color:var(--gold)}
+.pelada-form input,.pelada-form textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Barlow',sans-serif;outline:none;margin-bottom:10px}
+.pelada-form input:focus,.pelada-form textarea:focus{border-color:var(--gold)}
+.pelada-form label{display:block;font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:600;letter-spacing:.5px}
+.pelada-form textarea{resize:none;height:70px}
+
+
+
+/* ═══ COLLAPSIBLE ADD PLAYER ═══ */
+.add-player-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:4px 0}
+.add-player-toggle .toggle-icon{font-size:18px;transition:transform .3s;color:var(--gold)}
+.add-player-toggle.open .toggle-icon{transform:rotate(45deg)}
+.add-player-body{overflow:hidden;max-height:0;opacity:0;transition:max-height .45s ease,opacity .3s ease}
+.add-player-body.open{max-height:2000px;opacity:1}
+
+/* ═══ MATCH / JOGO ═══ */
+.match-section{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:14px}
+.match-scoreboard{display:flex;align-items:center;justify-content:space-around;padding:14px 0;gap:8px}
+.match-team-score{flex:1;text-align:center}
+.match-team-name{font-family:'Bebas Neue',cursive;font-size:17px;margin-bottom:4px}
+.match-score-num{font-family:'Bebas Neue',cursive;font-size:52px;line-height:1;color:var(--gold)}
+.match-vs{font-family:'Bebas Neue',cursive;font-size:22px;color:var(--text3)}
+.match-timer{text-align:center;font-family:'Bebas Neue',cursive;font-size:28px;color:var(--green-light);letter-spacing:3px;margin:4px 0 12px}
+.match-status-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1.5px;padding:3px 10px;border-radius:20px;text-transform:uppercase;margin-bottom:10px}
+.match-status-badge.idle{background:rgba(82,82,91,.2);color:var(--text3);border:1px solid var(--border)}
+.match-status-badge.live{background:rgba(22,163,74,.2);color:var(--green-light);border:1px solid #166534;animation:pulseGold 1s infinite}
+.match-status-badge.finished{background:rgba(217,119,6,.15);color:var(--gold);border:1px solid var(--gold-dim)}
+.match-team-list{margin-top:10px}
+.match-player-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
+.match-player-row:last-child{border-bottom:none}
+.match-player-name{flex:1;font-size:13px}
+.match-player-stats{display:flex;gap:6px;align-items:center}
+.match-stat-btn{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:3px 7px;font-size:11px;cursor:pointer;color:var(--text2);transition:all .15s}
+.match-stat-btn:active{transform:scale(.93)}
+.match-stat-btn.goal{border-color:rgba(217,119,6,.5);color:var(--gold)}
+.match-stat-btn.assist{border-color:rgba(59,130,246,.5);color:var(--blue)}
+.match-stat-btn.drible{border-color:rgba(22,163,74,.5);color:var(--green-light)}
+.match-stat-btn.taken{border-color:rgba(239,68,68,.4);color:var(--red)}
+.match-stat-count{font-size:11px;font-weight:700;min-width:14px;text-align:center}
+.swap-btn{background:rgba(217,119,6,.1);border:1px solid var(--gold-dim);border-radius:8px;padding:3px 7px;font-size:11px;cursor:pointer;color:var(--gold)}
+.match-ctrl-btns{display:flex;gap:8px;margin-top:12px}
+.match-live-dot{width:8px;height:8px;border-radius:50%;background:var(--green-light);display:inline-block;margin-right:5px;animation:pulseGold .8s infinite}
+
+/* ═══ AVALIAÇÃO PÓS-JOGO ═══ */
+.eval-section{margin-top:14px}
+.eval-player-card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.eval-player-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.eval-stars{display:flex;gap:4px;margin-bottom:8px}
+.eval-star{font-size:22px;cursor:pointer;opacity:.3;transition:opacity .15s,transform .15s}
+.eval-star.active{opacity:1}
+.eval-star:active{transform:scale(1.2)}
+.eval-actions{display:flex;gap:6px;flex-wrap:wrap}
+.eval-action-btn{flex:1;min-width:120px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:7px 10px;font-size:12px;cursor:pointer;color:var(--text2);text-align:center;transition:all .2s}
+.eval-action-btn.active-drible{background:rgba(22,163,74,.15);border-color:var(--green-light);color:var(--green-light)}
+.eval-action-btn.active-taken{background:rgba(239,68,68,.1);border-color:var(--red);color:var(--red)}
+.eval-submitted{text-align:center;padding:6px;font-size:12px;color:var(--text3);font-style:italic}
+
+/* ═══ HISTÓRICO INTERNO ═══ */
+.inner-tabs{display:flex;gap:0;background:var(--bg3);border-radius:12px;padding:3px;margin-bottom:14px}
+.inner-tab{flex:1;padding:8px 12px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;text-align:center;color:var(--text3);transition:all .2s}
+.inner-tab.active{background:var(--bg);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.match-history-card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer}
+.match-history-score{font-family:'Bebas Neue',cursive;font-size:22px;color:var(--gold);margin:4px 0}
+.match-history-meta{font-size:11px;color:var(--text3);margin-top:4px}
+
+/* ═══ STATS RANKINGS ═══ */
+.stats-section-title{font-family:'Bebas Neue',cursive;font-size:18px;margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.stats-empty{font-size:13px;color:var(--text3);padding:8px 0;font-style:italic}
+
+/* ═══ LIVE BADGE on sorteio tab ═══ */
+.live-score-bar{background:linear-gradient(90deg,rgba(22,163,74,.12),rgba(217,119,6,.12));border:1px solid rgba(22,163,74,.3);border-radius:12px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.live-score-text{font-family:'Bebas Neue',cursive;font-size:20px;color:var(--gold)}
+
+
+/* ATTR GROUPS */
+.attr-group-header{font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--gold);margin:14px 0 6px;display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)}
+.attr-group-weight{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:0}
+/* POS TAG badges */
+.pos-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase}
+.pos-tag-ataque{background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3)}
+.pos-tag-meio{background:rgba(217,119,6,.15);color:var(--gold);border:1px solid var(--gold-dim)}
+.pos-tag-defesa{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
+.pos-tag-goleiro{background:rgba(22,163,74,.15);color:var(--green-light);border:1px solid #166534}
+/* Attr detail in player card */
+.attr-mini{font-size:10px;color:var(--text3);display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.attr-mini span{white-space:nowrap}
+/* Pote badges in sorteio */
+.pote-badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;letter-spacing:.5px}
+.pote-ouro{background:rgba(217,119,6,.2);color:var(--gold)}
+.pote-prata{background:rgba(161,161,170,.15);color:var(--text2)}
+.pote-bronze{background:rgba(120,85,50,.2);color:#a16207}
+/* Reserva curinga */
+.reserva-card{background:rgba(217,119,6,.06);border:1px dashed var(--gold-dim);border-radius:14px;padding:12px 16px;margin-top:12px;display:flex;align-items:center;gap:12px}
+
+
+/* ═══ AUTH / LOGIN ═══ */
+#auth-screen{position:fixed;inset:0;background:var(--bg);z-index:9998;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px}
+#auth-screen.show{display:flex}
+.auth-top{text-align:center;margin-bottom:32px}
+.auth-top .ball-icon{font-size:52px;display:block;margin-bottom:10px}
+.auth-top h1{font-family:'Bebas Neue',cursive;font-size:54px;color:var(--gold);letter-spacing:3px;line-height:1}
+.auth-top p{color:var(--text2);font-size:15px;margin-top:10px}
+.auth-cards{display:flex;flex-direction:column;gap:14px;width:100%;max-width:380px}
+.btn-google{display:flex;align-items:center;justify-content:center;gap:12px;background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:16px 20px;cursor:pointer;transition:all .25s;font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;color:var(--text);width:100%}
+.btn-google:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.btn-google svg{flex-shrink:0}
+.btn-visitor{background:transparent;border:1px solid var(--border);border-radius:16px;padding:12px 20px;cursor:pointer;font-family:'Barlow',sans-serif;font-size:14px;color:var(--text3);width:100%;transition:all .2s}
+.btn-visitor:hover{color:var(--text2);border-color:var(--text3)}
+.auth-user-info{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:10px 14px;margin-bottom:16px;width:100%;max-width:380px}
+.auth-user-photo{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.auth-user-photo-placeholder{width:36px;height:36px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#000;flex-shrink:0}
+.auth-user-name{font-size:13px;font-weight:600;color:var(--text)}
+.auth-user-role{font-size:11px;color:var(--text3);margin-top:1px}
+.auth-loading{font-size:13px;color:var(--text2);text-align:center;margin-top:12px}
+/* Badge de papel */
+.badge-jogador{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
+.badge-temp{background:rgba(120,85,50,.15);color:#a16207;border:1px solid rgba(120,85,50,.3)}
+/* Temp player flag */
+.temp-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px;background:rgba(217,119,6,.2);color:var(--gold);border:1px solid var(--gold-dim);margin-left:4px}
+/* Admin manager */
+.admin-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.admin-row:last-child{border-bottom:none}
+
+</style></head>
 <body>
 
 
@@ -286,30 +437,23 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
   <div class="load-ball">⚽</div>
 </div>
 
-<!-- ROLE SCREEN -->
-<div id="role-screen">
-  <div class="role-top">
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-top">
     <span class="ball-icon">⚽</span>
     <h1>TIME LEONEL</h1>
-    <p>Como você quer acessar?</p>
+    <p>Faça login para acessar</p>
   </div>
-  <div class="role-cards">
-    <div class="role-card admin" onclick="selectRole('admin')">
-      <div class="rc-icon">🛡️</div>
-      <div class="rc-info">
-        <h3>Administrador</h3>
-        <p>Cadastrar jogadores, sortear times e gerenciar o elenco completo.</p>
-      </div>
-      <div class="rc-arrow">›</div>
-    </div>
-    <div class="role-card viewer" onclick="selectRole('viewer')">
-      <div class="rc-icon">👁️</div>
-      <div class="rc-info">
-        <h3>Jogador / Visualização</h3>
-        <p>Acompanhar times sorteados, elenco e histórico. Compartilhar resultados.</p>
-      </div>
-      <div class="rc-arrow">›</div>
-    </div>
+  <div id="auth-user-bar" class="auth-user-info" style="display:none"></div>
+  <div class="auth-cards">
+    <button class="btn-google" onclick="loginGoogle()" id="btn-google-login">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.34-8.16 2.34-6.26 0-11.57-3.59-13.43-8.83l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Entrar com Google
+    </button>
+    <div id="auth-loading" class="auth-loading" style="display:none">⏳ Verificando...</div>
+    <button class="btn-visitor" onclick="entrarComoVisitante()">
+      👁️ Entrar como Visitante (somente visualização)
+    </button>
   </div>
 </div>
 
@@ -348,55 +492,74 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
     <!-- ELENCO -->
     <div class="section" id="sec-elenco">
       <div class="card" id="add-player-card">
-        <div class="card-title">➕ Cadastrar Atleta</div>
+        <div class="add-player-toggle" onclick="toggleAddPlayer()" id="add-player-toggle">
+          <div class="card-title" style="margin:0">➕ Cadastrar Atleta</div>
+          <span class="toggle-icon">＋</span>
+        </div>
+        <div class="add-player-body" id="add-player-body">
         <div class="form-group">
           <label>Nome do Jogador</label>
           <input type="text" id="inp-name" placeholder="Ex: Cristiano Ronaldo" maxlength="30">
         </div>
         <div class="form-group">
-          <label>Posição</label>
+          <label>E-mail Google do Jogador</label>
+          <input type="email" id="inp-email" placeholder="jogador@gmail.com">
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+            <input type="checkbox" id="inp-temp" onchange="toggleTempPlayer(this)" style="width:16px;height:16px;cursor:pointer">
+            <label for="inp-temp" style="font-size:12px;color:var(--text2);cursor:pointer">🔄 Jogador Temporário (sem email, não vota, não aparece nos rankings)</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Tipo de Jogador</label>
           <div class="pos-sub" id="pos-selector">
-            <button class="pos-chip active" data-pos="Linha" onclick="selectAddPos(this)">⚽ Linha</button>
+            <button class="pos-chip active" data-pos="Linha" onclick="selectAddPos(this)">⚽ Jogador de Linha</button>
             <button class="pos-chip" data-pos="Goleiro" onclick="selectAddPos(this)">🧤 Goleiro</button>
-            <button class="pos-chip" data-pos="Ala" onclick="selectAddPos(this)">🏃 Ala</button>
-            <button class="pos-chip" data-pos="Fixo" onclick="selectAddPos(this)">🏋️ Fixo</button>
           </div>
         </div>
         <div id="add-skills">
-          <div class="stars-group" id="add-grp-def">
-            <div class="stars-label">Defesa <span class="sv" id="add-v-def">0</span>⭐</div>
-            <div class="stars" id="add-s-def">
-              <span class="star" onclick="setAddStar('def',1)">⭐</span><span class="star" onclick="setAddStar('def',2)">⭐</span>
-              <span class="star" onclick="setAddStar('def',3)">⭐</span><span class="star" onclick="setAddStar('def',4)">⭐</span>
-              <span class="star" onclick="setAddStar('def',5)">⭐</span>
-            </div>
+          <!-- Grupo Técnico -->
+          <div class="attr-group-header" id="add-hdr-tecnico">🎯 Grupo Técnico <span class="attr-group-weight">Peso 40%</span></div>
+                    <div class="stars-group" id="add-grp-fin">
+            <div class="stars-label">Finalização <span class="sv" id="add-v-fin">0</span>⭐</div>
+            <div class="stars" id="add-s-fin"><span class="star" onclick="setAddStar('fin',1)">⭐</span><span class="star" onclick="setAddStar('fin',2)">⭐</span><span class="star" onclick="setAddStar('fin',3)">⭐</span><span class="star" onclick="setAddStar('fin',4)">⭐</span><span class="star" onclick="setAddStar('fin',5)">⭐</span></div>
           </div>
-          <div class="stars-group" id="add-grp-mid">
-            <div class="stars-label">Meio-Campo <span class="sv" id="add-v-mid">0</span>⭐</div>
-            <div class="stars" id="add-s-mid">
-              <span class="star" onclick="setAddStar('mid',1)">⭐</span><span class="star" onclick="setAddStar('mid',2)">⭐</span>
-              <span class="star" onclick="setAddStar('mid',3)">⭐</span><span class="star" onclick="setAddStar('mid',4)">⭐</span>
-              <span class="star" onclick="setAddStar('mid',5)">⭐</span>
-            </div>
+                    <div class="stars-group" id="add-grp-passe">
+            <div class="stars-label">Passe / Visão <span class="sv" id="add-v-passe">0</span>⭐</div>
+            <div class="stars" id="add-s-passe"><span class="star" onclick="setAddStar('passe',1)">⭐</span><span class="star" onclick="setAddStar('passe',2)">⭐</span><span class="star" onclick="setAddStar('passe',3)">⭐</span><span class="star" onclick="setAddStar('passe',4)">⭐</span><span class="star" onclick="setAddStar('passe',5)">⭐</span></div>
           </div>
-          <div class="stars-group" id="add-grp-atk">
-            <div class="stars-label">Ataque <span class="sv" id="add-v-atk">0</span>⭐</div>
-            <div class="stars" id="add-s-atk">
-              <span class="star" onclick="setAddStar('atk',1)">⭐</span><span class="star" onclick="setAddStar('atk',2)">⭐</span>
-              <span class="star" onclick="setAddStar('atk',3)">⭐</span><span class="star" onclick="setAddStar('atk',4)">⭐</span>
-              <span class="star" onclick="setAddStar('atk',5)">⭐</span>
-            </div>
+                    <div class="stars-group" id="add-grp-drible">
+            <div class="stars-label">Drible / Controle <span class="sv" id="add-v-drible">0</span>⭐</div>
+            <div class="stars" id="add-s-drible"><span class="star" onclick="setAddStar('drible',1)">⭐</span><span class="star" onclick="setAddStar('drible',2)">⭐</span><span class="star" onclick="setAddStar('drible',3)">⭐</span><span class="star" onclick="setAddStar('drible',4)">⭐</span><span class="star" onclick="setAddStar('drible',5)">⭐</span></div>
           </div>
+          <!-- Grupo Físico -->
+          <div class="attr-group-header" id="add-hdr-fisico">💪 Grupo Físico <span class="attr-group-weight">Peso 40%</span></div>
+                    <div class="stars-group" id="add-grp-stamina">
+            <div class="stars-label">Fôlego (Stamina) <span class="sv" id="add-v-stamina">0</span>⭐</div>
+            <div class="stars" id="add-s-stamina"><span class="star" onclick="setAddStar('stamina',1)">⭐</span><span class="star" onclick="setAddStar('stamina',2)">⭐</span><span class="star" onclick="setAddStar('stamina',3)">⭐</span><span class="star" onclick="setAddStar('stamina',4)">⭐</span><span class="star" onclick="setAddStar('stamina',5)">⭐</span></div>
+          </div>
+                    <div class="stars-group" id="add-grp-vel">
+            <div class="stars-label">Velocidade <span class="sv" id="add-v-vel">0</span>⭐</div>
+            <div class="stars" id="add-s-vel"><span class="star" onclick="setAddStar('vel',1)">⭐</span><span class="star" onclick="setAddStar('vel',2)">⭐</span><span class="star" onclick="setAddStar('vel',3)">⭐</span><span class="star" onclick="setAddStar('vel',4)">⭐</span><span class="star" onclick="setAddStar('vel',5)">⭐</span></div>
+          </div>
+          <!-- Grupo Tático/Mental -->
+          <div class="attr-group-header" id="add-hdr-tatico">🧠 Grupo Tático/Mental <span class="attr-group-weight">Peso 20%</span></div>
+                    <div class="stars-group" id="add-grp-marcacao">
+            <div class="stars-label">Marcação <span class="sv" id="add-v-marcacao">0</span>⭐</div>
+            <div class="stars" id="add-s-marcacao"><span class="star" onclick="setAddStar('marcacao',1)">⭐</span><span class="star" onclick="setAddStar('marcacao',2)">⭐</span><span class="star" onclick="setAddStar('marcacao',3)">⭐</span><span class="star" onclick="setAddStar('marcacao',4)">⭐</span><span class="star" onclick="setAddStar('marcacao',5)">⭐</span></div>
+          </div>
+                    <div class="stars-group" id="add-grp-psico">
+            <div class="stars-label">Psicológico <span class="sv" id="add-v-psico">0</span>⭐</div>
+            <div class="stars" id="add-s-psico"><span class="star" onclick="setAddStar('psico',1)">⭐</span><span class="star" onclick="setAddStar('psico',2)">⭐</span><span class="star" onclick="setAddStar('psico',3)">⭐</span><span class="star" onclick="setAddStar('psico',4)">⭐</span><span class="star" onclick="setAddStar('psico',5)">⭐</span></div>
+          </div>
+          <!-- Goleiro -->
+          <div class="attr-group-header" id="add-hdr-gk" style="display:none">🧤 Habilidade no Gol <span class="attr-group-weight">Única nota</span></div>
           <div class="stars-group" id="add-grp-gk" style="display:none">
             <div class="stars-label">Habilidade no Gol <span class="sv" id="add-v-gk">0</span>⭐</div>
-            <div class="stars" id="add-s-gk">
-              <span class="star" onclick="setAddStar('gk',1)">⭐</span><span class="star" onclick="setAddStar('gk',2)">⭐</span>
-              <span class="star" onclick="setAddStar('gk',3)">⭐</span><span class="star" onclick="setAddStar('gk',4)">⭐</span>
-              <span class="star" onclick="setAddStar('gk',5)">⭐</span>
-            </div>
+            <div class="stars" id="add-s-gk"><span class="star" onclick="setAddStar('gk',1)">⭐</span><span class="star" onclick="setAddStar('gk',2)">⭐</span><span class="star" onclick="setAddStar('gk',3)">⭐</span><span class="star" onclick="setAddStar('gk',4)">⭐</span><span class="star" onclick="setAddStar('gk',5)">⭐</span></div>
           </div>
         </div>
         <button class="btn btn-green btn-full" onclick="addPlayer()">✅ Salvar Atleta</button>
+        </div><!-- end add-player-body -->
       </div>
 
       <div class="card">
@@ -436,10 +599,16 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
         </div>
         <div id="teams-preview" style="font-size:13px;color:var(--text2)"></div>
       </div>
+      <div id="live-score-bar" style="display:none" class="live-score-bar">
+        <div><span class="match-live-dot"></span><span style="font-size:12px;color:var(--green-light);font-weight:700">AO VIVO</span></div>
+        <div class="live-score-text" id="live-score-text">0 × 0</div>
+        <div id="live-timer-mini" style="font-size:12px;color:var(--text2)">00:00</div>
+      </div>
       <div id="no-teams-msg" style="display:none;text-align:center;padding:48px 20px"><div style="font-size:44px;margin-bottom:14px">⚽</div><div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--text2);margin-bottom:6px">Nenhum sorteio ainda</div><div style="font-size:13px;color:var(--text3)">Aguardando o Administrador gerar as equipes</div></div>
       <div id="teams-result" style="display:none">
         <div class="balance-indicator" id="balance-indicator"></div>
         <div class="teams-container" id="teams-container"></div>
+        <div id="reserva-display" class="reserva-card" style="display:none"></div>
         <div style="display:flex;flex-direction:column;gap:8px;margin-top:13px">
           <button class="btn btn-green btn-full" onclick="shareNative()">📤 Compartilhar Times</button>
           <button class="btn btn-outline btn-full" onclick="copyToClipboard()">📋 Copiar para WhatsApp</button>
@@ -450,6 +619,34 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
 
     <!-- CAMPO -->
     <div class="section" id="sec-campo">
+
+      <!-- LIVE SCORE banner shown in sorteio tab too -->
+      <!-- Match Control Section -->
+      <div id="match-section">
+        <div class="match-section" id="match-card" style="display:none">
+          <div style="text-align:center;margin-bottom:6px">
+            <span class="match-status-badge idle" id="match-status-badge">PRÉ-JOGO</span>
+          </div>
+          <div class="match-timer" id="match-timer" style="display:none">00:00</div>
+          <div class="match-scoreboard" id="match-scoreboard"></div>
+          <div class="match-ctrl-btns" id="match-ctrl-btns"></div>
+          <div id="match-teams-detail"></div>
+        </div>
+        <div id="match-no-teams" style="text-align:center;padding:24px 16px;color:var(--text3);font-size:13px">
+          ⚽ Faça o sorteio primeiro para iniciar uma partida
+        </div>
+
+        <!-- Avaliação pós-jogo -->
+        <div id="eval-section" style="display:none">
+          <div class="card">
+            <div class="card-title">⭐ Avaliação da Partida</div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:14px" id="eval-subtitle">Avalie os jogadores que participaram</div>
+            <div id="eval-players-list"></div>
+            <button class="btn btn-gold btn-full" id="eval-submit-btn" onclick="submitEvaluations()" style="margin-top:10px">✅ Enviar Avaliações</button>
+          </div>
+        </div>
+      </div>
+
       <div class="field-container">
         <div class="field-lines"></div>
         <div class="field-circle"></div>
@@ -466,10 +663,81 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
 
     <!-- HISTÓRICO -->
     <div class="section" id="sec-historico">
-      <div class="card">
-        <div class="card-title">📋 Histórico</div>
-        <div id="history-list"></div>
+      <div class="inner-tabs">
+        <div class="inner-tab active" id="htab-sorteios" onclick="switchHistTab('sorteios')">🎲 Sorteios</div>
+        <div class="inner-tab" id="htab-partidas" onclick="switchHistTab('partidas')">⚽ Partidas</div>
       </div>
+      <div id="hist-sorteios">
+        <div class="card">
+          <div class="card-title">🎲 Histórico de Sorteios</div>
+          <div id="history-list"></div>
+        </div>
+      </div>
+      <div id="hist-partidas" style="display:none">
+        <div class="card">
+          <div class="card-title">⚽ Histórico de Partidas</div>
+          <div id="match-history-list"></div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- PELADA -->
+    <div class="section" id="sec-pelada">
+
+      <!-- Hero: countdown ou sem pelada -->
+      <div class="pelada-hero" id="pelada-hero">
+        <div id="pelada-status-badge" class="pelada-status-badge sem">SEM PELADA</div>
+        <div id="pelada-hero-content">
+          <div style="font-size:44px;margin-bottom:8px">⚽</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--text2)">Nenhuma pelada agendada</div>
+          <div style="font-size:13px;color:var(--text3);margin-top:6px">Aguardando o Admin agendar</div>
+        </div>
+      </div>
+
+      <!-- Info da pelada -->
+      <div class="card" id="pelada-info-card" style="display:none">
+        <div id="pelada-info-rows"></div>
+
+        <!-- RSVP — visível para todos -->
+        <div style="margin-top:16px">
+          <div style="font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.5px;margin-bottom:8px">SUA CONFIRMAÇÃO</div>
+          <div class="rsvp-strip">
+            <button class="rsvp-btn vou" id="rsvp-vou" onclick="setRSVP('vou')">✅ Vou</button>
+            <button class="rsvp-btn talvez" id="rsvp-talvez" onclick="setRSVP('talvez')">🤔 Talvez</button>
+            <button class="rsvp-btn nao" id="rsvp-nao" onclick="setRSVP('nao')">❌ Não vou</button>
+          </div>
+          <div id="rsvp-name-wrap" style="display:none;margin-top:10px">
+            <input type="text" id="rsvp-name-input" placeholder="Seu nome (para confirmar)" maxlength="25"
+              style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Barlow',sans-serif;outline:none"
+              onkeydown="if(event.key==='Enter')confirmRSVP()">
+            <button class="btn btn-green btn-full" style="margin-top:8px" onclick="confirmRSVP()">Confirmar</button>
+          </div>
+        </div>
+
+        <!-- Lista de confirmados -->
+        <div class="rsvp-list" id="rsvp-list"></div>
+      </div>
+
+      <!-- Admin: formulário de agendamento -->
+      <div class="card" id="pelada-admin-card" style="display:none">
+        <div class="card-title" id="pelada-form-title">📅 Agendar Pelada</div>
+        <div class="pelada-form">
+          <label>Data</label>
+          <input type="date" id="pelada-date">
+          <label>Hora</label>
+          <input type="time" id="pelada-time" value="19:00">
+          <label>Local</label>
+          <input type="text" id="pelada-local" placeholder="Ex: Arena Leonel, Campo do Bairro..." maxlength="60">
+          <label>Observações (opcional)</label>
+          <textarea id="pelada-obs" placeholder="Ex: Levar colete, R$10 por pessoa..."></textarea>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-green" style="flex:2" onclick="savePelada()">📅 Salvar Pelada</button>
+          <button class="btn btn-red" style="flex:1" id="pelada-cancel-btn" onclick="cancelPelada()" style="display:none">🗑️ Cancelar</button>
+        </div>
+      </div>
+
     </div>
 
     <!-- STATS -->
@@ -479,6 +747,20 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
         <div id="stats-content"></div>
       </div>
     </div>
+
+    <!-- ADMINS (super admin only) -->
+    <div class="section" id="sec-admins">
+      <div class="card">
+        <div class="card-title">⚙️ Gerenciar Administradores</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:14px">Apenas o Super Admin pode gerenciar esta lista</div>
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <input type="email" id="inp-admin-email" placeholder="email@google.com" style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:10px 14px;color:var(--text);font-size:14px;font-family:'Barlow',sans-serif;outline:none">
+          <button class="btn btn-gold" onclick="addAdmin()">➕ Adicionar</button>
+        </div>
+        <div id="admin-list"></div>
+      </div>
+    </div>
+
   </main>
 
   <div class="footer-cta">
@@ -528,45 +810,59 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
       <input type="text" id="edit-name" maxlength="30">
     </div>
     <div class="form-group">
-      <label>Posição</label>
+      <label>E-mail Google do Jogador</label>
+      <input type="email" id="edit-email" placeholder="jogador@gmail.com">
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+        <input type="checkbox" id="edit-temp" style="width:16px;height:16px;cursor:pointer">
+        <label for="edit-temp" style="font-size:12px;color:var(--text2);cursor:pointer">🔄 Jogador Temporário</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Tipo de Jogador</label>
       <div class="pos-sub" id="edit-pos-sel">
-        <button class="pos-chip" data-pos="Linha" onclick="selectEditPos(this)">⚽ Linha</button>
+        <button class="pos-chip" data-pos="Linha" onclick="selectEditPos(this)">⚽ Jogador de Linha</button>
         <button class="pos-chip" data-pos="Goleiro" onclick="selectEditPos(this)">🧤 Goleiro</button>
-        <button class="pos-chip" data-pos="Ala" onclick="selectEditPos(this)">🏃 Ala</button>
-        <button class="pos-chip" data-pos="Fixo" onclick="selectEditPos(this)">🏋️ Fixo</button>
       </div>
     </div>
-    <div id="edit-grp-def" class="stars-group">
-      <div class="stars-label">Defesa <span class="sv" id="edit-v-def">0</span>⭐</div>
-      <div class="stars" id="edit-s-def">
-        <span class="star" onclick="setEditStar('def',1)">⭐</span><span class="star" onclick="setEditStar('def',2)">⭐</span>
-        <span class="star" onclick="setEditStar('def',3)">⭐</span><span class="star" onclick="setEditStar('def',4)">⭐</span>
-        <span class="star" onclick="setEditStar('def',5)">⭐</span>
-      </div>
+    <div id="edit-linha-attrs">
+      <div class="attr-group-header">🎯 Grupo Técnico <span class="attr-group-weight">Peso 40%</span></div>
+          <div class="stars-group" id="edit-grp-fin">
+      <div class="stars-label">Finalização <span class="sv" id="edit-v-fin">0</span>⭐</div>
+      <div class="stars" id="edit-s-fin"><span class="star" onclick="setEditStar('fin',1)">⭐</span><span class="star" onclick="setEditStar('fin',2)">⭐</span><span class="star" onclick="setEditStar('fin',3)">⭐</span><span class="star" onclick="setEditStar('fin',4)">⭐</span><span class="star" onclick="setEditStar('fin',5)">⭐</span></div>
     </div>
-    <div id="edit-grp-mid" class="stars-group">
-      <div class="stars-label">Meio-Campo <span class="sv" id="edit-v-mid">0</span>⭐</div>
-      <div class="stars" id="edit-s-mid">
-        <span class="star" onclick="setEditStar('mid',1)">⭐</span><span class="star" onclick="setEditStar('mid',2)">⭐</span>
-        <span class="star" onclick="setEditStar('mid',3)">⭐</span><span class="star" onclick="setEditStar('mid',4)">⭐</span>
-        <span class="star" onclick="setEditStar('mid',5)">⭐</span>
-      </div>
+          <div class="stars-group" id="edit-grp-passe">
+      <div class="stars-label">Passe / Visão <span class="sv" id="edit-v-passe">0</span>⭐</div>
+      <div class="stars" id="edit-s-passe"><span class="star" onclick="setEditStar('passe',1)">⭐</span><span class="star" onclick="setEditStar('passe',2)">⭐</span><span class="star" onclick="setEditStar('passe',3)">⭐</span><span class="star" onclick="setEditStar('passe',4)">⭐</span><span class="star" onclick="setEditStar('passe',5)">⭐</span></div>
     </div>
-    <div id="edit-grp-atk" class="stars-group">
-      <div class="stars-label">Ataque <span class="sv" id="edit-v-atk">0</span>⭐</div>
-      <div class="stars" id="edit-s-atk">
-        <span class="star" onclick="setEditStar('atk',1)">⭐</span><span class="star" onclick="setEditStar('atk',2)">⭐</span>
-        <span class="star" onclick="setEditStar('atk',3)">⭐</span><span class="star" onclick="setEditStar('atk',4)">⭐</span>
-        <span class="star" onclick="setEditStar('atk',5)">⭐</span>
-      </div>
+          <div class="stars-group" id="edit-grp-drible">
+      <div class="stars-label">Drible / Controle <span class="sv" id="edit-v-drible">0</span>⭐</div>
+      <div class="stars" id="edit-s-drible"><span class="star" onclick="setEditStar('drible',1)">⭐</span><span class="star" onclick="setEditStar('drible',2)">⭐</span><span class="star" onclick="setEditStar('drible',3)">⭐</span><span class="star" onclick="setEditStar('drible',4)">⭐</span><span class="star" onclick="setEditStar('drible',5)">⭐</span></div>
     </div>
-    <div id="edit-grp-gk" class="stars-group" style="display:none">
+      <div class="attr-group-header">💪 Grupo Físico <span class="attr-group-weight">Peso 40%</span></div>
+          <div class="stars-group" id="edit-grp-stamina">
+      <div class="stars-label">Fôlego (Stamina) <span class="sv" id="edit-v-stamina">0</span>⭐</div>
+      <div class="stars" id="edit-s-stamina"><span class="star" onclick="setEditStar('stamina',1)">⭐</span><span class="star" onclick="setEditStar('stamina',2)">⭐</span><span class="star" onclick="setEditStar('stamina',3)">⭐</span><span class="star" onclick="setEditStar('stamina',4)">⭐</span><span class="star" onclick="setEditStar('stamina',5)">⭐</span></div>
+    </div>
+          <div class="stars-group" id="edit-grp-vel">
+      <div class="stars-label">Velocidade <span class="sv" id="edit-v-vel">0</span>⭐</div>
+      <div class="stars" id="edit-s-vel"><span class="star" onclick="setEditStar('vel',1)">⭐</span><span class="star" onclick="setEditStar('vel',2)">⭐</span><span class="star" onclick="setEditStar('vel',3)">⭐</span><span class="star" onclick="setEditStar('vel',4)">⭐</span><span class="star" onclick="setEditStar('vel',5)">⭐</span></div>
+    </div>
+      <div class="attr-group-header">🧠 Grupo Tático/Mental <span class="attr-group-weight">Peso 20%</span></div>
+          <div class="stars-group" id="edit-grp-marcacao">
+      <div class="stars-label">Marcação <span class="sv" id="edit-v-marcacao">0</span>⭐</div>
+      <div class="stars" id="edit-s-marcacao"><span class="star" onclick="setEditStar('marcacao',1)">⭐</span><span class="star" onclick="setEditStar('marcacao',2)">⭐</span><span class="star" onclick="setEditStar('marcacao',3)">⭐</span><span class="star" onclick="setEditStar('marcacao',4)">⭐</span><span class="star" onclick="setEditStar('marcacao',5)">⭐</span></div>
+    </div>
+          <div class="stars-group" id="edit-grp-psico">
+      <div class="stars-label">Psicológico <span class="sv" id="edit-v-psico">0</span>⭐</div>
+      <div class="stars" id="edit-s-psico"><span class="star" onclick="setEditStar('psico',1)">⭐</span><span class="star" onclick="setEditStar('psico',2)">⭐</span><span class="star" onclick="setEditStar('psico',3)">⭐</span><span class="star" onclick="setEditStar('psico',4)">⭐</span><span class="star" onclick="setEditStar('psico',5)">⭐</span></div>
+    </div>
+    </div>
+    <div id="edit-gk-attrs" style="display:none">
+      <div class="attr-group-header">🧤 Habilidade no Gol <span class="attr-group-weight">Única nota</span></div>
+          <div class="stars-group" id="edit-grp-gk">
       <div class="stars-label">Habilidade no Gol <span class="sv" id="edit-v-gk">0</span>⭐</div>
-      <div class="stars" id="edit-s-gk">
-        <span class="star" onclick="setEditStar('gk',1)">⭐</span><span class="star" onclick="setEditStar('gk',2)">⭐</span>
-        <span class="star" onclick="setEditStar('gk',3)">⭐</span><span class="star" onclick="setEditStar('gk',4)">⭐</span>
-        <span class="star" onclick="setEditStar('gk',5)">⭐</span>
-      </div>
+      <div class="stars" id="edit-s-gk"><span class="star" onclick="setEditStar('gk',1)">⭐</span><span class="star" onclick="setEditStar('gk',2)">⭐</span><span class="star" onclick="setEditStar('gk',3)">⭐</span><span class="star" onclick="setEditStar('gk',4)">⭐</span><span class="star" onclick="setEditStar('gk',5)">⭐</span></div>
+    </div>
     </div>
     <div style="display:flex;gap:10px;margin-top:14px">
       <button class="btn btn-outline" style="flex:1" onclick="closeModal('edit-modal')">Cancelar</button>
@@ -595,18 +891,20 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
 // Console: https://console.firebase.google.com
 // ═══════════════════════════════════════════════════════════════
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDxv-jAB0g5nV_RSaVObBWOgsc2xxF4LzA",
-  authDomain: "time-leonel.firebaseapp.com",
-  projectId: "time-leonel",
-  storageBucket: "time-leonel.firebasestorage.app",
-  messagingSenderId: "378705136833",
-  appId: "1:378705136833:web:057d722e5990e6e3ddd840"
+  apiKey:            "COLE_SUA_API_KEY_AQUI",
+  authDomain:        "COLE_SEU_AUTH_DOMAIN_AQUI",
+  projectId:         "COLE_SEU_PROJECT_ID_AQUI",
+  storageBucket:     "COLE_SEU_STORAGE_BUCKET_AQUI",
+  messagingSenderId: "COLE_SEU_SENDER_ID_AQUI",
+  appId:             "COLE_SEU_APP_ID_AQUI"
 };
 
 // ═══════════════════════════════════════════════════════════════
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════
-const ADMIN_PW    = '1234';
+const ADMIN_PW      = '1234'; // mantido como fallback
+const SUPER_ADMIN   = 'josafart.net@gmail.com';
+const LS_AUTH_CACHE = 'tl_auth_cache';
 const TEAM_NAMES  = ['Feras','Cavaleiros','Elite','Titãs','Leões','Guerreiros','Cobras','Falcões'];
 const TEAM_COLORS = ['#d97706','#22c55e','#818cf8','#22d3ee','#f87171','#fb923c','#a78bfa','#34d399'];
 const AV_COLORS   = [
@@ -620,6 +918,7 @@ const LS_PLAYERS = 'tl_players';
 const LS_TEAMS   = 'tl_teams';
 const LS_HISTORY = 'tl_history';
 const LS_QUEUE   = 'tl_offlineQueue'; // fila de operações pendentes
+const LS_PELADA  = 'tl_pelada';
 
 // ═══════════════════════════════════════════════════════════════
 // STATE
@@ -627,11 +926,19 @@ const LS_QUEUE   = 'tl_offlineQueue'; // fila de operações pendentes
 let state = {
   role: null, players: [], teams: [], history: [],
   currentTab: null, ppw: 5,
-  addStars: {def:0,mid:0,atk:0,gk:0}, addPos: 'Linha',
-  editId: null, editStars: {def:0,mid:0,atk:0,gk:0}, editPos: 'Linha',
+  addStars: {fin:0,passe:0,drible:0,stamina:0,vel:0,marcacao:0,psico:0,gk:0}, addPos: 'Linha',
+  editId: null, editStars: {fin:0,passe:0,drible:0,stamina:0,vel:0,marcacao:0,psico:0,gk:0}, editPos: 'Linha',
   lastPresent: null,
   firebaseReady: false, isOnline: navigator.onLine,
-  _adminWriting: false
+  _adminWriting: false,
+  pelada: null,
+  myRsvpName: null,
+  match: null,
+  matchHistory: null,
+  reserva: null,
+  authUser: null,   // {uid, email, name, photo, papel}
+  admins: [],       // lista de emails admin do Firestore
+  poteMap: {}
 };
 let deferredInstall = null;
 let db = null;
@@ -643,7 +950,28 @@ let unsubPlayers = null, unsubTeams = null, unsubHistory = null;
 // ═══════════════════════════════════════════════════════════════
 function avColor(name){let h=0;for(const c of name)h=(h*31+c.charCodeAt(0))&0xffff;return AV_COLORS[h%AV_COLORS.length];}
 function initials(name){const w=name.trim().split(' ');return(w.length>1?w[0][0]+w[w.length-1][0]:name.slice(0,2)).toUpperCase();}
-function calcOvr(p){if(p.pos==='Goleiro')return p.gk||0;return parseFloat(((p.def+p.mid+p.atk)/3).toFixed(1));}
+// ── Novo cálculo de overall: 7 critérios em 3 grupos ponderados ──
+function calcOvr(p){
+  if(p.pos==='Goleiro') return parseFloat((p.gk||0).toFixed(1));
+  const tecnico = ((p.fin||0)+(p.passe||0)+(p.drible||0))/3;
+  const fisico  = ((p.stamina||0)+(p.vel||0))/2;
+  const tatico  = ((p.marcacao||0)+(p.psico||0))/2;
+  return parseFloat((tecnico*0.4 + fisico*0.4 + tatico*0.2).toFixed(1));
+}
+// Determina tag de posição tática automaticamente
+function calcPosTag(p){
+  if(p.pos==='Goleiro') return 'Goleiro';
+  const tecnico = ((p.fin||0)+(p.passe||0)+(p.drible||0))/3;
+  const fisico  = ((p.stamina||0)+(p.vel||0))/2;
+  const tatico  = ((p.marcacao||0)+(p.psico||0))/2;
+  if(tecnico>=fisico && tecnico>=tatico) return 'Ataque';
+  if(fisico>=tecnico && fisico>=tatico)  return 'Meio';
+  return 'Defesa';
+}
+function posTagHtml(tag){
+  const map={Ataque:'pos-tag-ataque',Meio:'pos-tag-meio',Defesa:'pos-tag-defesa',Goleiro:'pos-tag-goleiro'};
+  return `<span class="pos-tag ${map[tag]||''}">${tag}</span>`;
+}
 function pIcon(pos){return{Goleiro:'🧤',Linha:'⚽',Ala:'🏃',Fixo:'🏋️'}[pos]||'⚽';}
 function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
 
@@ -666,15 +994,19 @@ function updateSyncBadge(){
 function loadFirebaseScripts(callback){
   if(window.firebase_loaded){ callback(); return; }
   let loaded = 0;
-  const done = () => { loaded++; if(loaded===2){ window.firebase_loaded=true; callback(); } };
+  const done = () => { loaded++; if(loaded===3){ window.firebase_loaded=true; callback(); } };
   const s1 = document.createElement('script');
   s1.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js';
   s1.onload = done; s1.onerror = () => callback(new Error('firebase-app load failed'));
   const s2 = document.createElement('script');
   s2.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js';
   s2.onload = done; s2.onerror = () => callback(new Error('firebase-firestore load failed'));
+  const s3 = document.createElement('script');
+  s3.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js';
+  s3.onload = done; s3.onerror = () => callback(new Error('firebase-auth load failed'));
   document.head.appendChild(s1);
   document.head.appendChild(s2);
+  document.head.appendChild(s3);
 }
 
 async function initFirebase(){
@@ -713,7 +1045,11 @@ async function initFirebase(){
         state.firebaseReady = true;
         console.log('[Firebase] Conectado ✅');
         updateSyncBadge();
+        // Inicia Auth
+        auth = firebase.auth();
+        setupAuthListener();
         startListeners();
+        startMatchListener();
         setTimeout(drainQueue, 2000); // drena ops pendentes do offline
         resolve();
       } catch(e){
@@ -735,6 +1071,8 @@ function startListeners(){
   // ── Players ──────────────────────────────────────────────────
   unsubPlayers = db.collection('players').onSnapshot(snap => {
     const incoming = snap.docs.map(d => d.data());
+    // Garante posTag e overall atualizados ao receber do Firebase
+    incoming.forEach(p=>{ p.overall=calcOvr(p); p.posTag=calcPosTag(p); });
     // Não sobrescreve se Admin está no meio de uma escrita local
     if(!state._adminWriting){
       state.players = incoming;
@@ -760,7 +1098,19 @@ function startListeners(){
     }
   });
 
-  // ── History ───────────────────────────────────────────────────
+  // ── Pelada ───────────────────────────────────────────────────────
+  db.collection('state').doc('pelada').onSnapshot(snap => {
+    state.pelada = snap.exists ? snap.data() : null;
+    try{ localStorage.setItem(LS_PELADA, JSON.stringify(state.pelada)); }catch(e){}
+    if(state.currentTab==='pelada') renderPelada();
+    // Notifica viewers quando pelada for agendada/cancelada
+    if(state.role==='viewer'){
+      if(state.pelada && state.pelada.updatedAt && Date.now()-state.pelada.updatedAt < 10000)
+        showToast('📅 Pelada atualizada pelo Admin!');
+    }
+  });
+
+  // ── History ───────────────────────────────────────────────────────
   unsubHistory = db.collection('history').orderBy('id','desc').limit(30).onSnapshot(snap => {
     state.history = snap.docs.map(d => d.data());
     try{ localStorage.setItem(LS_HISTORY, JSON.stringify(state.history)); }catch(e){}
@@ -900,8 +1250,13 @@ async function saveFavDB(entry){
 // ═══════════════════════════════════════════════════════════════
 function loadFromLocal(){
   try{ state.players = JSON.parse(localStorage.getItem(LS_PLAYERS))||[]; }catch{ state.players=[]; }
+  state.players.forEach(p=>{ p.overall=calcOvr(p); p.posTag=calcPosTag(p); });
   try{ state.teams   = JSON.parse(localStorage.getItem(LS_TEAMS))||[];   }catch{ state.teams=[];   }
   try{ state.history = JSON.parse(localStorage.getItem(LS_HISTORY))||[]; }catch{ state.history=[]; }
+  try{ state.pelada  = JSON.parse(localStorage.getItem(LS_PELADA))||null;  }catch{ state.pelada=null;  }
+  try{ state.myRsvpName = localStorage.getItem('tl_rsvp_name')||null; }catch{}
+  loadMatch();
+  try{ state.matchHistory=JSON.parse(localStorage.getItem('tl_matchHistory'))||[]; }catch{ state.matchHistory=[]; }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -919,7 +1274,7 @@ window.addEventListener('DOMContentLoaded', () => {
         // Restaura sessão diretamente — sem pedir senha de novo
         enterApp(savedRole);
       } else {
-        document.getElementById('role-screen').classList.add('show');
+        document.getElementById('auth-screen').classList.add('show');
       }
     }, 500);
   }, 1000);
@@ -960,12 +1315,7 @@ function closeAdminPw(){
 }
 
 function switchRole(){
-  stopListeners();
-  stopViewerPolling();
-  state.role=null; state.teams=[];
-  try{ localStorage.removeItem(LS_ROLE); }catch(e){}
-  document.getElementById('app').style.display='none';
-  document.getElementById('role-screen').classList.add('show');
+  logout(); // usa logout completo com auth
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -978,6 +1328,7 @@ function enterApp(role){
   const badge = document.getElementById('role-badge');
   badge.textContent = role==='admin' ? '🛡️ ADMIN' : '👁️ VIEWER';
   badge.className   = 'header-badge '+(role==='admin'?'badge-admin':'badge-viewer');
+  renderAuthBadge(); // override com papel real se logado
   ['add-player-card','bulk-actions','sorteio-config-card'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.style.display=role==='admin'?'':'none';
@@ -1039,14 +1390,18 @@ const TABS=[
   {id:'sorteio',   label:'⚽ Times',     adminOnly:false},
   {id:'campo',     label:'🏟️ Campo',     adminOnly:false},
   {id:'historico', label:'📋 Histórico', adminOnly:false},
-  {id:'stats',     label:'📊 Stats',     adminOnly:true},
+  {id:'pelada',    label:'📅 Pelada',    adminOnly:false},
+  {id:'stats',     label:'📊 Stats',     adminOnly:false},
+  {id:'admins',    label:'⚙️ Admins',    adminOnly:true, superOnly:true},
 ];
 
 function buildTabs(){
   const c=document.getElementById('tabs-container');
   c.innerHTML='';
+  const isSuperAdmin = state.authUser && state.authUser.papel === 'superadmin';
   TABS.forEach(t=>{
-    if(t.adminOnly&&state.role!=='admin') return;
+    if(t.adminOnly && state.role!=='admin') return;
+    if(t.superOnly && !isSuperAdmin) return;
     const el=document.createElement('div');
     el.className='tab'; el.dataset.tab=t.id; el.textContent=t.label;
     el.onclick=()=>switchTab(t.id);
@@ -1070,7 +1425,10 @@ function switchTab(tab){
   }
   if(tab==='elenco')    renderPlayers();
   if(tab==='historico') renderHistory();
+  if(tab==='pelada')    renderPelada();
+  if(tab!=='pelada' && _countdownTimer){ clearInterval(_countdownTimer); _countdownTimer=null; }
   if(tab==='stats')     renderStats();
+  if(tab==='admins')    renderAdminsTab();
   if(tab==='campo')     renderField();
   if(tab==='sorteio')   renderTeams();
 }
@@ -1092,13 +1450,18 @@ function selectAddPos(el){
   el.classList.add('active');
   state.addPos=el.dataset.pos;
   const gk=state.addPos==='Goleiro';
-  ['def','mid','atk'].forEach(a=>document.getElementById('add-grp-'+a).style.display=gk?'none':'');
+  const linhaGroups=['fin','passe','drible','stamina','vel','marcacao','psico'];
+  const linhaHeaders=['add-hdr-tecnico','add-hdr-fisico','add-hdr-tatico'];
+  linhaGroups.forEach(a=>document.getElementById('add-grp-'+a).style.display=gk?'none':'');
+  linhaHeaders.forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display=gk?'none':''; });
   document.getElementById('add-grp-gk').style.display=gk?'':'none';
+  const hdrGk=document.getElementById('add-hdr-gk'); if(hdrGk) hdrGk.style.display=gk?'':'none';
 }
 
 function setAddStar(attr,val){
   state.addStars[attr]=val;
-  document.getElementById('add-v-'+attr).textContent=val;
+  const vEl=document.getElementById('add-v-'+attr);
+  if(vEl) vEl.textContent=val;
   document.querySelectorAll('#add-s-'+attr+' .star').forEach((s,i)=>s.classList.toggle('active',i<val));
 }
 
@@ -1106,23 +1469,33 @@ async function addPlayer(){
   const name=document.getElementById('inp-name').value.trim();
   if(!name){showToast('⚠️ Digite o nome'); return;}
   const s=state.addStars;
-  const p={id:Date.now(),name,pos:state.addPos,def:s.def,mid:s.mid,atk:s.atk,gk:s.gk,present:true,sortCount:0};
+  const isTemp = document.getElementById('inp-temp')?.checked || false;
+  const email = isTemp ? '' : (document.getElementById('inp-email')?.value.trim().toLowerCase() || '');
+  if(!isTemp && !email){ showToast('⚠️ Email obrigatório (ou marque como Temporário)'); return; }
+  const p={id:Date.now(),name,pos:state.addPos,
+    fin:s.fin,passe:s.passe,drible:s.drible,
+    stamina:s.stamina,vel:s.vel,
+    marcacao:s.marcacao,psico:s.psico,gk:s.gk,
+    email, temp:isTemp,
+    present:true,sortCount:0};
   p.overall=calcOvr(p);
+  p.posTag=calcPosTag(p);
   state.players.push(p);
   await savePlayersDB();
   // reset form
   document.getElementById('inp-name').value='';
-  state.addStars={def:0,mid:0,atk:0,gk:0};
-  ['def','mid','atk','gk'].forEach(a=>{
-    document.getElementById('add-v-'+a).textContent='0';
+  state.addStars={fin:0,passe:0,drible:0,stamina:0,vel:0,marcacao:0,psico:0,gk:0};
+  const inpEmail=document.getElementById('inp-email'); if(inpEmail){inpEmail.value='';inpEmail.disabled=false;inpEmail.style.opacity='1';}
+  const inpTemp=document.getElementById('inp-temp'); if(inpTemp){inpTemp.checked=false;}
+  ['fin','passe','drible','stamina','vel','marcacao','psico','gk'].forEach(a=>{
+    const vEl=document.getElementById('add-v-'+a); if(vEl) vEl.textContent='0';
     document.querySelectorAll('#add-s-'+a+' .star').forEach(s=>s.classList.remove('active'));
   });
   document.querySelectorAll('#pos-selector .pos-chip').forEach(c=>c.classList.toggle('active',c.dataset.pos==='Linha'));
-  state.addPos='Linha';
-  ['def','mid','atk'].forEach(a=>document.getElementById('add-grp-'+a).style.display='');
-  document.getElementById('add-grp-gk').style.display='none';
-  showToast('✅ '+name+' adicionado!');
-  renderPlayers(); updateCTA(); // sempre renderiza — listener Firebase atualiza depois se configurado
+  state.addPos='Linha'; selectAddPos(document.querySelector('#pos-selector .pos-chip.active'));
+  logAuditoria('addPlayer', {name, email:p.email, temp:p.temp, posTag:p.posTag});
+  showToast('✅ '+name+' adicionado! Tag: '+p.posTag);
+  renderPlayers(); updateCTA();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1161,12 +1534,14 @@ function openEdit(id){
   const p=state.players.find(x=>x.id===id);
   if(!p) return;
   state.editId=id; state.editPos=p.pos;
-  state.editStars={def:p.def||0,mid:p.mid||0,atk:p.atk||0,gk:p.gk||0};
+  state.editStars={fin:p.fin||0,passe:p.passe||0,drible:p.drible||0,stamina:p.stamina||0,vel:p.vel||0,marcacao:p.marcacao||0,psico:p.psico||0,gk:p.gk||0};
   document.getElementById('edit-name').value=p.name;
+  const editEmailEl=document.getElementById('edit-email'); if(editEmailEl){ editEmailEl.value=p.email||''; editEmailEl.disabled=!!p.temp; editEmailEl.style.opacity=p.temp?'0.4':'1'; }
+  const editTempEl=document.getElementById('edit-temp'); if(editTempEl) editTempEl.checked=!!p.temp;
   document.querySelectorAll('#edit-pos-sel .pos-chip').forEach(c=>c.classList.toggle('active',c.dataset.pos===p.pos));
   updateEditSkills();
-  ['def','mid','atk','gk'].forEach(a=>{
-    document.getElementById('edit-v-'+a).textContent=p[a]||0;
+  ['fin','passe','drible','stamina','vel','marcacao','psico','gk'].forEach(a=>{
+    const vEl=document.getElementById('edit-v-'+a); if(vEl) vEl.textContent=p[a]||0;
     document.querySelectorAll('#edit-s-'+a+' .star').forEach((s,i)=>s.classList.toggle('active',i<(p[a]||0)));
   });
   openModal('edit-modal');
@@ -1181,13 +1556,15 @@ function selectEditPos(el){
 
 function updateEditSkills(){
   const gk=state.editPos==='Goleiro';
-  ['def','mid','atk'].forEach(a=>document.getElementById('edit-grp-'+a).style.display=gk?'none':'');
-  document.getElementById('edit-grp-gk').style.display=gk?'':'none';
+  const linhaEl=document.getElementById('edit-linha-attrs');
+  const gkEl=document.getElementById('edit-gk-attrs');
+  if(linhaEl) linhaEl.style.display=gk?'none':'';
+  if(gkEl) gkEl.style.display=gk?'':'none';
 }
 
 function setEditStar(attr,val){
   state.editStars[attr]=val;
-  document.getElementById('edit-v-'+attr).textContent=val;
+  const vEl=document.getElementById('edit-v-'+attr); if(vEl) vEl.textContent=val;
   document.querySelectorAll('#edit-s-'+attr+' .star').forEach((s,i)=>s.classList.toggle('active',i<val));
 }
 
@@ -1197,12 +1574,21 @@ async function saveEdit(){
   const p=state.players.find(x=>x.id===state.editId);
   if(!p) return;
   const s=state.editStars;
-  Object.assign(p,{name,pos:state.editPos,def:s.def,mid:s.mid,atk:s.atk,gk:s.gk});
+  const isEditTemp = document.getElementById('edit-temp')?.checked || false;
+  const editEmail = isEditTemp ? '' : (document.getElementById('edit-email')?.value.trim().toLowerCase() || p.email || '');
+  if(!isEditTemp && !editEmail){ showToast('⚠️ Email obrigatório (ou marque como Temporário)'); return; }
+  Object.assign(p,{name,pos:state.editPos,
+    fin:s.fin,passe:s.passe,drible:s.drible,
+    stamina:s.stamina,vel:s.vel,
+    marcacao:s.marcacao,psico:s.psico,gk:s.gk,
+    email:editEmail, temp:isEditTemp});
   p.overall=calcOvr(p);
+  p.posTag=calcPosTag(p);
   await savePlayersDB();
   closeModal('edit-modal');
   renderPlayers();
-  showToast('✅ '+name+' atualizado!');
+  logAuditoria('editPlayer', {name, email:p.email, temp:p.temp});
+  showToast('✅ '+name+' atualizado! Tag: '+p.posTag);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1246,11 +1632,11 @@ function renderPlayers(){
       ${presenceEl}
       <div class="player-avatar" style="background:${bg};color:${fg}">${initials(p.name)}</div>
       <div class="player-info">
-        <div class="player-name">${p.name}</div>
-        <div class="player-pos">${pIcon(p.pos)} ${p.pos}${presenceLbl}</div>
-        <div class="player-stars">${stars||'—'}</div>
+        <div class="player-name">${p.name}${p.temp?'<span class="temp-badge">TEMP</span>':''}</div>
+        <div class="player-pos">${posTagHtml(p.posTag||calcPosTag(p))}${presenceLbl}</div>
+        <div class="player-stars" style="font-size:11px;color:var(--text3);margin-top:2px">${p.pos==='Goleiro'?'🧤 Goleiro':'★'.repeat(Math.round(p.overall)||0)||'—'}</div>
       </div>
-      <div class="player-overall">${p.overall}</div>
+      <div class="player-overall">${typeof p.overall==='number'?p.overall.toFixed(1):'—'}</div>
       <div class="player-actions">${adminBtns}</div>
     </div>`;
   }).join('');
@@ -1284,50 +1670,176 @@ function generateTeams(){
   requestAnimationFrame(()=>requestAnimationFrame(()=>{bar.style.transition='width 2s ease';bar.style.width='100%';}));
   setTimeout(async ()=>{
     overlay.classList.remove('show');
+    logAuditoria('generateTeams', {players:present.length, nt});
     await doSort(present,nt);
     switchTab('sorteio');
     trySendNotif();
   },2200);
 }
 
-async function doSort(players,nt){
-  const gks=shuffle(players.filter(p=>p.pos==='Goleiro'));
-  const field=shuffle(players.filter(p=>p.pos!=='Goleiro'));
-  const teams=Array.from({length:nt},(_,i)=>({name:TEAM_NAMES[i]||'Time '+(i+1),players:[],sum:0}));
-  gks.forEach((g,i)=>{if(i<nt){teams[i].players.push(g);teams[i].sum+=g.overall;}});
-  field.sort((a,b)=>b.overall-a.overall).forEach(p=>{
-    const t=teams.reduce((a,b)=>a.sum<b.sum?a:b);
-    t.players.push(p); t.sum+=p.overall;
+// ═══════════════════════════════════════════════════════════════
+// SORTEIO POR POTES — Ouro / Prata / Bronze
+// Margem aceitável de diferença de força entre times
+// ═══════════════════════════════════════════════════════════════
+const MARGEM_FORCA  = 0.5;   // pontos de diferença máxima (escala 1-5)
+const MAX_MESMA_TAG = 3;      // máximo da mesma posTag num time de linha
+
+function somaTime(t){ return t.players.filter(p=>p.pos!=='Goleiro').reduce((s,p)=>s+p.overall,0); }
+
+// ── Swap DETERMINÍSTICO: busca o par que mais reduz a diferença ──
+function tentarSwapForca(teams){
+  for(let iter=0; iter<50; iter++){
+    const s0=somaTime(teams[0]), s1=somaTime(teams[1]);
+    const diff=Math.abs(s0-s1);
+    if(diff<=MARGEM_FORCA) return true;
+
+    const lineA=teams[0].players.filter(p=>p.pos!=='Goleiro');
+    const lineB=teams[1].players.filter(p=>p.pos!=='Goleiro');
+    if(!lineA.length||!lineB.length) break;
+
+    // Encontra o par (pa, pb) que minimiza |newDiff|
+    let bestDiff=diff, bestPa=null, bestPb=null;
+    for(const pa of lineA){
+      for(const pb of lineB){
+        const newDiff=Math.abs((s0-pa.overall+pb.overall)-(s1-pb.overall+pa.overall));
+        if(newDiff<bestDiff){ bestDiff=newDiff; bestPa=pa; bestPb=pb; }
+      }
+    }
+    if(!bestPa) break; // nenhuma troca melhora
+
+    // Executa o melhor swap encontrado
+    const ia=teams[0].players.indexOf(bestPa);
+    const ib=teams[1].players.indexOf(bestPb);
+    teams[0].players[ia]=bestPb;
+    teams[1].players[ib]=bestPa;
+    teams[0].sum=teams[0].sum-bestPa.overall+bestPb.overall;
+    teams[1].sum=teams[1].sum-bestPb.overall+bestPa.overall;
+  }
+  return Math.abs(somaTime(teams[0])-somaTime(teams[1]))<=MARGEM_FORCA;
+}
+
+function validarTagsOk(teams, ppw){
+  for(const t of teams){
+    const linePlayers=t.players.filter(p=>p.pos!=='Goleiro');
+    const counts={Ataque:0,Meio:0,Defesa:0};
+    linePlayers.forEach(p=>{ const tag=p.posTag||calcPosTag(p); if(counts[tag]!==undefined) counts[tag]++; });
+    const maxAllowed=Math.min(MAX_MESMA_TAG, Math.ceil(ppw*0.6));
+    if(Object.values(counts).some(c=>c>maxAllowed)) return false;
+  }
+  return true;
+}
+
+// ── Distribui campo de forma que cada time receba exatamente ppw jogadores ──
+function distribuirCampo(field, teams, ppw){
+  // Divide em potes
+  const sorted=[...field].sort((a,b)=>b.overall-a.overall);
+  const n=sorted.length;
+  const nOuro  = Math.ceil(n*0.30);
+  const nPrata = Math.ceil(n*0.40);
+  const ouro   = shuffle(sorted.slice(0, nOuro));
+  const prata  = shuffle(sorted.slice(nOuro, nOuro+nPrata));
+  const bronze = shuffle(sorted.slice(nOuro+nPrata));
+
+  // Distribui alternando por pote: A→B→A→B dentro de cada pote
+  [...ouro, ...prata, ...bronze].forEach((p,i)=>{
+    // Sempre manda para o time com menos jogadores de linha (garante equilíbrio numérico)
+    const target = teams.reduce((best, t) => {
+      const lineCount = t.players.filter(x=>x.pos!=='Goleiro').length;
+      const bestCount = best.players.filter(x=>x.pos!=='Goleiro').length;
+      return lineCount < bestCount ? t : best;
+    });
+    target.players.push(p);
+    target.sum += p.overall;
   });
+
+  // Retorna mapa de potes para exibição visual
+  const poteMap={};
+  sorted.forEach((p,i)=>{ poteMap[p.id]=i<nOuro?'ouro':i<nOuro+nPrata?'prata':'bronze'; });
+  return poteMap;
+}
+
+async function doSort(players, nt){
+  const gks   = shuffle(players.filter(p=>p.pos==='Goleiro'));
+  let   field = players.filter(p=>p.pos!=='Goleiro');
+
+  // ── Tratamento de número ímpar: reserva o de menor nota ──
+  let reserva = null;
+  if(field.length % nt !== 0){
+    const sorted=[...field].sort((a,b)=>a.overall-b.overall);
+    // Remove jogadores até ser divisível por nt
+    const excesso = field.length % nt;
+    for(let i=0;i<excesso;i++){
+      reserva=sorted[i]; // O de menor nota vai para reserva (pode ser mais de 1 em edge cases)
+      field=field.filter(p=>p.id!==sorted[i].id);
+    }
+  }
+
+  // Garante overall e posTag atualizados
+  field.forEach(p=>{ p.overall=calcOvr(p); p.posTag=calcPosTag(p); });
+
+  let teams, forcaOk=false, tagOk=false;
+  let tentativas=0;
+  let poteMap={};
+
+  do {
+    // Reinicia times
+    teams=Array.from({length:nt},(_,i)=>({
+      name:  TEAM_NAMES[i]||'Time '+(i+1),
+      color: TEAM_COLORS[i%TEAM_COLORS.length],
+      players:[], sum:0
+    }));
+
+    // Distribui goleiros (1 por time)
+    gks.forEach((g,i)=>{ if(i<nt){ teams[i].players.push(g); teams[i].sum+=g.overall; } });
+
+    // Distribui campo garantindo igual nº por time + guarda mapa de potes
+    poteMap = distribuirCampo(field, teams, state.ppw);
+
+    // Validação 1: Swap determinístico para equilibrar força
+    forcaOk = tentarSwapForca(teams);
+
+    // Validação 2: Equilíbrio de posições
+    tagOk = validarTagsOk(teams, state.ppw);
+
+    tentativas++;
+  } while((!forcaOk || !tagOk) && tentativas<8);
+
+  // Guarda poteMap no state para o renderTeams usar
+  state.poteMap = poteMap;
+
+  // Marca captain (maior overall de linha de cada time)
   teams.forEach(t=>{
     const cap=[...t.players].filter(p=>p.pos!=='Goleiro').sort((a,b)=>b.overall-a.overall)[0];
-    t.players.forEach(p=>p.isCaptain=p===cap);
+    t.players.forEach(p=>p.isCaptain=(cap&&p===cap));
   });
-  state.teams=teams;
-  state.lastPresent=players;
-  // Salva times no Firebase (todos veem em tempo real)
+
+  state.teams   = teams;
+  state.reserva = reserva;
+  state.lastPresent = players;
+
   await saveTeamsDB();
-  // Salva histórico
+
   const entry={
     id:Date.now(),
     date:new Date().toLocaleDateString('pt-BR'),
     time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
     teams:teams.map(t=>({
       name:t.name,
-      players:t.players.map(p=>({name:p.name,pos:p.pos,overall:p.overall,isCaptain:!!p.isCaptain})),
+      players:t.players.map(p=>({name:p.name,pos:p.pos,posTag:p.posTag,overall:p.overall,isCaptain:!!p.isCaptain})),
       sum:t.sum
     })),
+    reserva: reserva ? {name:reserva.name,overall:reserva.overall} : null,
+    validacoes: {forcaOk, tagOk, tentativas},
     favorited:false
   };
   await saveHistoryEntryDB(entry);
-  // Atualiza sortCount
-  const updates=[];
+
   teams.forEach(t=>t.players.forEach(p=>{
     const o=state.players.find(x=>x.id===p.id);
     if(o) o.sortCount=(o.sortCount||0)+1;
   }));
   await savePlayersDB();
-  // Se não tem Firebase, renderiza manualmente
+
   renderTeams(); renderField(); renderHistory();
 }
 
@@ -1353,16 +1865,27 @@ function renderTeams(){
   if(noMsg) noMsg.style.display='none';
   result.style.display='block';
   document.getElementById('btn-refazer').style.display=state.role==='admin'?'':'none';
-  const avgs=state.teams.map(t=>t.sum/t.players.length);
-  const diff=Math.abs(Math.max(...avgs)-Math.min(...avgs)).toFixed(2);
-  const ok=parseFloat(diff)<0.7;
+
+  // Calcula somas de linha (sem goleiros) para comparar força real
+  const lineSums=state.teams.map(t=>t.players.filter(p=>p.pos!=='Goleiro').reduce((s,p)=>s+p.overall,0));
+  const diff=state.teams.length>=2?Math.abs(lineSums[0]-lineSums[1]).toFixed(2):0;
+  const forcaOk=parseFloat(diff)<=MARGEM_FORCA;
+
   document.getElementById('balance-indicator').innerHTML=
-    `<div class="balance-dot" style="background:${ok?'#22c55e':'#f59e0b'}"></div>
-     <span class="balance-text">${ok?'✅ Times equilibrados':'⚠️ Pequeno desequilíbrio técnico'}</span>
-     <span class="balance-val" style="color:${ok?'#22c55e':'#f59e0b'}">Δ ${diff}⭐</span>`;
+    `<div class="balance-dot" style="background:${forcaOk?'#22c55e':'#f59e0b'}"></div>
+     <span class="balance-text">${forcaOk?'✅ Força equilibrada':'⚠️ Diferença de força'}</span>
+     <span class="balance-val" style="color:${forcaOk?'#22c55e':'#f59e0b'}">Δ ${diff} pts</span>`;
+
+  // Usa mapa de potes calculado no doSort
+  const poteMap = state.poteMap || {};
+  const poteLabel={ouro:'🥇',prata:'🥈',bronze:'🥉'};
+  const poteClass={ouro:'pote-ouro',prata:'pote-prata',bronze:'pote-bronze'};
+
   document.getElementById('teams-container').innerHTML=state.teams.map((team,ti)=>{
     const color=TEAM_COLORS[ti%TEAM_COLORS.length];
-    const avg=(team.sum/team.players.length).toFixed(1);
+    const lineSum=team.players.filter(p=>p.pos!=='Goleiro').reduce((s,p)=>s+p.overall,0);
+    const lineCount=team.players.filter(p=>p.pos!=='Goleiro').length;
+    const avg=lineCount?( lineSum/lineCount).toFixed(1):'—';
     return `<div class="team-card" style="border-color:${color}33">
       <div class="team-header" style="background:linear-gradient(135deg,${color}12,transparent)">
         <div class="team-name" style="color:${color}">⚽ ${team.name}</div>
@@ -1371,45 +1894,41 @@ function renderTeams(){
       <div class="team-players">
         ${team.players.map((p,pi)=>{
           const[bg,fg]=avColor(p.name);
+          const pote=poteMap[p.id];
+          const poteHtml=pote?`<span class="pote-badge ${poteClass[pote]}">${poteLabel[pote]}</span>`:'';
           return `<div class="team-player-row" style="animation-delay:${pi*.06}s">
             <div class="team-player-avatar" style="background:${bg};color:${fg}">${initials(p.name)}</div>
-            <div class="team-player-name">${p.name}${p.isCaptain?'<span class="captain-badge">⭐CAP</span>':''}</div>
+            <div class="team-player-name">${p.name}${p.isCaptain?'<span class="captain-badge">⭐CAP</span>':''}${poteHtml}</div>
             <div class="team-player-meta">
-              <div class="team-player-pos">${pIcon(p.pos)} ${p.pos}</div>
-              <div class="team-player-stars">★ ${p.overall}</div>
+              <div class="team-player-pos">${posTagHtml(p.posTag||calcPosTag(p))}</div>
+              <div class="team-player-stars">★ ${typeof p.overall==='number'?p.overall.toFixed(1):p.overall}</div>
             </div>
           </div>`;
         }).join('')}
       </div>
     </div>`;
   }).join('');
+
+  // Reserva/Curinga
+  const resEl = document.getElementById('reserva-display');
+  if(resEl){
+    if(state.reserva){
+      const[bg,fg]=avColor(state.reserva.name);
+      resEl.style.display='flex';
+      resEl.innerHTML=`
+        <div class="player-avatar" style="background:${bg};color:${fg};width:36px;height:36px;font-size:12px;flex-shrink:0">${initials(state.reserva.name)}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:var(--gold)">🔄 Reserva / Curinga</div>
+          <div style="font-size:12px;color:var(--text2)">${state.reserva.name} · ★ ${state.reserva.overall.toFixed(1)}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">Número ímpar de jogadores — entra quando alguém sair</div>
+        </div>`;
+    } else {
+      resEl.style.display='none';
+    }
+  }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// FIELD
-// ═══════════════════════════════════════════════════════════════
-function renderField(){
-  const d=document.getElementById('field-teams-display');
-  if(!state.teams.length){
-    d.innerHTML='<div class="empty-state" style="padding:60px 20px"><div class="es-icon">🏟️</div><h3>Sem Times</h3><p>Faça o sorteio primeiro</p></div>';
-    return;
-  }
-  d.innerHTML=state.teams.map((team,ti)=>{
-    const color=TEAM_COLORS[ti%TEAM_COLORS.length];
-    return `<div class="field-team-label" style="color:${color}">${team.name}</div>
-    <div class="field-team">
-      ${team.players.map(p=>{
-        const[bg,fg]=avColor(p.name);
-        return `<div class="field-player-chip">
-          <div class="chip-avatar" style="background:${bg};color:${fg}">${initials(p.name)}</div>
-          <span style="color:${color}">${pIcon(p.pos)}</span>
-          <span>${p.name.split(' ')[0]}</span>
-        </div>`;
-      }).join('')}
-    </div>
-    ${ti<state.teams.length-1?'<div class="field-divider">— VS —</div>':''}`;
-  }).join('');
-}
+// renderField() moved to new match section
 
 // ═══════════════════════════════════════════════════════════════
 // HISTORY
@@ -1467,41 +1986,28 @@ function copyHistory(i){
   showToast('📋 Copiado!');
 }
 
-// ═══════════════════════════════════════════════════════════════
-// STATS
-// ═══════════════════════════════════════════════════════════════
-function renderStats(){
-  const c=document.getElementById('stats-content');
-  if(!state.players.length){c.innerHTML='<div class="empty-state"><div class="es-icon">📊</div><h3>Sem dados</h3><p>Cadastre jogadores primeiro</p></div>';return;}
-  const row=(p,i,val,col)=>{
-    const[bg,fg]=avColor(p.name);
-    return `<div class="stats-player-row">
-      <div class="stats-rank">${i+1}</div>
-      <div class="stats-avatar" style="background:${bg};color:${fg}">${initials(p.name)}</div>
-      <div class="stats-info"><div class="stats-name">${p.name}</div><div class="stats-sub">${pIcon(p.pos)} ${p.pos}</div></div>
-      <div class="stats-val" style="color:${col}">${val}</div>
-    </div>`;
-  };
-  const top=[...state.players].sort((a,b)=>b.overall-a.overall).slice(0,5);
-  const most=[...state.players].sort((a,b)=>(b.sortCount||0)-(a.sortCount||0)).slice(0,5).filter(p=>p.sortCount>0);
-  c.innerHTML=`
-    <div style="margin-bottom:22px">
-      <div style="font-family:'Bebas Neue',cursive;font-size:18px;color:var(--gold);margin-bottom:9px">🏆 TOP 5 OVERALL</div>
-      ${top.map((p,i)=>row(p,i,'★'+p.overall,'var(--gold)')).join('')}
-    </div>
-    <div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:18px;color:var(--green-light);margin-bottom:9px">⚽ MAIS SORTEADOS</div>
-      ${most.length?most.map((p,i)=>row(p,i,p.sortCount+'x','var(--green-light)')).join(''):'<div style="color:var(--text3);font-size:13px;padding:8px 0">Realize sorteios para ver estatísticas</div>'}
-    </div>`;
-}
+// renderStats() moved to new stats section
+
 
 // ═══════════════════════════════════════════════════════════════
 // SHARE
 // ═══════════════════════════════════════════════════════════════
 function buildShareText(){
   if(!state.teams.length) return null;
+  const tagIcon={Ataque:'🔴',Meio:'🟡',Defesa:'🔵',Goleiro:'🟢'};
   let txt=`⚽ TIME LEONEL — ${new Date().toLocaleDateString('pt-BR')}\n\n`;
-  state.teams.forEach(t=>{txt+=`🏆 Equipe ${t.name}\n`;t.players.forEach(p=>txt+=`${pIcon(p.pos)} ${p.name} ★${p.overall}\n`);txt+='\n';});
+  state.teams.forEach(t=>{
+    const lineCount=t.players.filter(p=>p.pos!=='Goleiro').length;
+    const lineSum=t.players.filter(p=>p.pos!=='Goleiro').reduce((s,p)=>s+p.overall,0);
+    const avg=lineCount?(lineSum/lineCount).toFixed(1):'—';
+    txt+=`🏆 ${t.name} (★${avg})\n`;
+    t.players.forEach(p=>{
+      const tag=p.posTag||calcPosTag(p);
+      txt+=`${tagIcon[tag]||'⚽'} ${p.name} ★${typeof p.overall==='number'?p.overall.toFixed(1):p.overall}\n`;
+    });
+    txt+='\n';
+  });
+  if(state.reserva) txt+=`🔄 Reserva: ${state.reserva.name} ★${state.reserva.overall.toFixed(1)}\n`;
   return txt;
 }
 function shareNative(){
@@ -1610,6 +2116,1081 @@ function showConfirm(title,msg,onOk){
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape') ['history-modal','edit-modal','confirm-modal'].forEach(id=>closeModal(id));
 });
+
+
+// ═══════════════════════════════════════════════════════════════
+// PELADA — agendamento, countdown, RSVP
+// ═══════════════════════════════════════════════════════════════
+let _countdownTimer = null;
+
+async function savePelada(){
+  const date  = document.getElementById('pelada-date').value;
+  const time  = document.getElementById('pelada-time').value;
+  const local = document.getElementById('pelada-local').value.trim();
+  const obs   = document.getElementById('pelada-obs').value.trim();
+  if(!date||!time){ showToast('⚠️ Informe data e hora'); return; }
+  const dt = new Date(date + 'T' + time);
+  if(dt < new Date()){ showToast('⚠️ Data deve ser no futuro'); return; }
+  const pelada = {
+    date, time, local, obs,
+    timestamp: dt.getTime(),
+    updatedAt: Date.now(),
+    rsvp: state.pelada?.rsvp || {}  // mantém confirmações existentes
+  };
+  state.pelada = pelada;
+  try{ localStorage.setItem(LS_PELADA, JSON.stringify(pelada)); }catch(e){}
+  // Firebase
+  if(state.firebaseReady && db){
+    await db.collection('state').doc('pelada').set(pelada)
+      .catch(()=>enqueueOp({type:'set',collection:'state',id:'pelada',data:pelada}));
+  } else {
+    enqueueOp({type:'set',collection:'state',id:'pelada',data:pelada});
+  }
+  logAuditoria('savePelada', {date:pelada.date, time:pelada.time, local:pelada.local});
+  showToast('📅 Pelada agendada!');
+  renderPelada();
+}
+
+async function cancelPelada(){
+  showConfirm('🗑️ Cancelar Pelada','Remover o agendamento da pelada?', async ()=>{
+    state.pelada = null;
+    try{ localStorage.removeItem(LS_PELADA); }catch(e){}
+    if(state.firebaseReady && db){
+      await db.collection('state').doc('pelada').delete()
+        .catch(()=>enqueueOp({type:'delete',collection:'state',id:'pelada'}));
+    } else {
+      enqueueOp({type:'delete',collection:'state',id:'pelada'});
+    }
+    showToast('🗑️ Pelada cancelada');
+    renderPelada();
+  });
+}
+
+// RSVP — viewer seleciona resposta
+let _pendingRsvp = null;
+function setRSVP(resp){
+  _pendingRsvp = resp;
+  // Highlight botão selecionado
+  ['vou','talvez','nao'].forEach(r=>{
+    document.getElementById('rsvp-'+r).classList.toggle('active', r===resp);
+  });
+  // Se já tem nome salvo, confirma direto
+  if(state.myRsvpName){
+    confirmRSVP();
+  } else {
+    // Pede nome apenas na primeira vez
+    document.getElementById('rsvp-name-wrap').style.display='block';
+    setTimeout(()=>document.getElementById('rsvp-name-input').focus(),100);
+  }
+}
+
+async function confirmRSVP(){
+  if(!_pendingRsvp) return;
+  let name = state.myRsvpName || document.getElementById('rsvp-name-input').value.trim();
+  if(!name){ showToast('⚠️ Digite seu nome'); return; }
+  // Salva nome localmente para próximas vezes
+  state.myRsvpName = name;
+  try{ localStorage.setItem('tl_rsvp_name', name); }catch(e){}
+  document.getElementById('rsvp-name-wrap').style.display='none';
+  if(!state.pelada){ showToast('⚠️ Nenhuma pelada agendada'); return; }
+  // Atualiza RSVP no objeto pelada
+  if(!state.pelada.rsvp) state.pelada.rsvp = {};
+  state.pelada.rsvp[name] = _pendingRsvp;
+  try{ localStorage.setItem(LS_PELADA, JSON.stringify(state.pelada)); }catch(e){}
+  // Firebase — atualiza só o campo rsvp
+  if(state.firebaseReady && db){
+    await db.collection('state').doc('pelada').update({
+      ['rsvp.' + name]: _pendingRsvp
+    }).catch(async ()=>{
+      // se update falha (doc não existe), usa set
+      await db.collection('state').doc('pelada').set(state.pelada);
+    });
+  } else {
+    enqueueOp({type:'set',collection:'state',id:'pelada',data:state.pelada});
+  }
+  const emoji = {vou:'✅',talvez:'🤔',nao:'❌'}[_pendingRsvp];
+  showToast(emoji + ' Confirmado como ' + name + '!');
+  _pendingRsvp = null;
+  renderPelada();
+}
+
+// Admin remove RSVP de alguém
+async function removeRsvp(name){
+  if(!state.pelada?.rsvp) return;
+  delete state.pelada.rsvp[name];
+  try{ localStorage.setItem(LS_PELADA, JSON.stringify(state.pelada)); }catch(e){}
+  if(state.firebaseReady && db){
+    // Firestore não tem "delete field" via compat facilmente, faz set completo
+    await db.collection('state').doc('pelada').set(state.pelada).catch(console.error);
+  }
+  renderPelada();
+}
+
+function renderPelada(){
+  if(_countdownTimer){ clearInterval(_countdownTimer); _countdownTimer=null; }
+  const isAdmin = state.role==='admin';
+
+  // Mostra form admin
+  const adminCard = document.getElementById('pelada-admin-card');
+  if(adminCard) adminCard.style.display = isAdmin ? 'block' : 'none';
+
+  const hero       = document.getElementById('pelada-hero');
+  const infoCard   = document.getElementById('pelada-info-card');
+  const badge      = document.getElementById('pelada-status-badge');
+  const heroContent= document.getElementById('pelada-hero-content');
+  const cancelBtn  = document.getElementById('pelada-cancel-btn');
+
+  if(!state.pelada){
+    // Sem pelada agendada
+    badge.className='pelada-status-badge sem';
+    badge.textContent='SEM PELADA';
+    heroContent.innerHTML=`<div style="font-size:44px;margin-bottom:8px">⚽</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--text2)">Nenhuma pelada agendada</div>
+      <div style="font-size:13px;color:var(--text3);margin-top:6px">${isAdmin?'Preencha o formulário abaixo':'Aguardando o Admin agendar'}</div>`;
+    if(infoCard) infoCard.style.display='none';
+    if(cancelBtn) cancelBtn.style.display='none';
+    if(isAdmin){
+      // Limpa form
+      document.getElementById('pelada-date').value='';
+      document.getElementById('pelada-time').value='19:00';
+      document.getElementById('pelada-local').value='';
+      document.getElementById('pelada-obs').value='';
+      document.getElementById('pelada-form-title').textContent='📅 Agendar Pelada';
+    }
+    return;
+  }
+
+  // Tem pelada agendada
+  const dt = new Date(state.pelada.timestamp);
+  const now = new Date();
+  const diff = dt - now;
+  const isHoje = dt.toDateString()===now.toDateString();
+  const isPast = diff < 0;
+
+  badge.className='pelada-status-badge '+(isPast?'sem':isHoje?'hoje':'agendada');
+  badge.textContent = isPast?'ENCERRADA':isHoje?'🔥 HOJE!':'AGENDADA';
+
+  // Countdown
+  function updateCountdown(){
+    const d2 = new Date(state.pelada.timestamp) - new Date();
+    if(d2<=0){
+      heroContent.querySelector('.countdown')?.remove();
+      return;
+    }
+    const days  = Math.floor(d2/86400000);
+    const hours = Math.floor((d2%86400000)/3600000);
+    const mins  = Math.floor((d2%3600000)/60000);
+    const secs  = Math.floor((d2%60000)/1000);
+    const cdEl = heroContent.querySelector('.countdown');
+    if(cdEl) cdEl.innerHTML=cdBlock(days,'dias')+cdBlock(hours,'horas')+cdBlock(mins,'min')+cdBlock(secs,'seg');
+  }
+  function cdBlock(n,l){ return `<div class="cd-block"><div class="cd-num">${String(n).padStart(2,'0')}</div><div class="cd-lbl">${l}</div></div>`; }
+
+  const dateStr = dt.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  const timeStr = dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+
+  heroContent.innerHTML=`
+    <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold);margin-bottom:4px">${isHoje?'🔥 HOJE':'⚽ PRÓXIMA PELADA'}</div>
+    <div style="font-size:15px;color:var(--text);font-weight:600;margin-bottom:2px">${dateStr}</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">🕐 ${timeStr}${state.pelada.local?' · 📍 '+state.pelada.local:''}</div>
+    ${!isPast?`<div class="countdown">${cdBlock(0,'dias')+cdBlock(0,'horas')+cdBlock(0,'min')+cdBlock(0,'seg')}</div>`:''}
+    ${state.pelada.obs?`<div style="font-size:12px;color:var(--text2);margin-top:8px;font-style:italic">📝 ${state.pelada.obs}</div>`:''}
+  `;
+  if(!isPast){ updateCountdown(); _countdownTimer=setInterval(updateCountdown,1000); }
+
+  if(infoCard) infoCard.style.display='block';
+
+  // Preenche form admin para edição
+  if(isAdmin){
+    document.getElementById('pelada-date').value=state.pelada.date||'';
+    document.getElementById('pelada-time').value=state.pelada.time||'19:00';
+    document.getElementById('pelada-local').value=state.pelada.local||'';
+    document.getElementById('pelada-obs').value=state.pelada.obs||'';
+    document.getElementById('pelada-form-title').textContent='✏️ Editar Pelada';
+    if(cancelBtn) cancelBtn.style.display='block';
+  }
+
+  // RSVP atual do viewer
+  const myName = state.myRsvpName;
+  const myResp = myName && state.pelada.rsvp ? state.pelada.rsvp[myName] : null;
+  ['vou','talvez','nao'].forEach(r=>{
+    const btn=document.getElementById('rsvp-'+r);
+    if(btn) btn.classList.toggle('active', r===myResp);
+  });
+  if(myName) document.getElementById('rsvp-name-wrap').style.display='none';
+
+  // Lista de confirmados
+  const rsvp = state.pelada.rsvp || {};
+  const grupos = {vou:[], talvez:[], nao:[]};
+  Object.entries(rsvp).forEach(([n,r])=>{ if(grupos[r]) grupos[r].push(n); });
+  const total = grupos.vou.length + grupos.talvez.length + grupos.nao.length;
+  const rsvpList = document.getElementById('rsvp-list');
+  if(total===0){
+    rsvpList.innerHTML='<div style="font-size:13px;color:var(--text3);margin-top:12px;text-align:center">Ninguém confirmou ainda</div>';
+  } else {
+    const pill=(n,cls)=>`<span class="rsvp-pill ${cls}">${n}${isAdmin?` <span onclick="removeRsvp('${n}')" style="cursor:pointer;opacity:.6;margin-left:2px">✕</span>`:''}</span>`;
+    rsvpList.innerHTML=`
+      ${grupos.vou.length?`<div class="rsvp-section-title">✅ VOU (${grupos.vou.length})</div><div>${grupos.vou.map(n=>pill(n,'vou')).join('')}</div>`:''}
+      ${grupos.talvez.length?`<div class="rsvp-section-title">🤔 TALVEZ (${grupos.talvez.length})</div><div>${grupos.talvez.map(n=>pill(n,'talvez')).join('')}</div>`:''}
+      ${grupos.nao.length?`<div class="rsvp-section-title">❌ NÃO VOU (${grupos.nao.length})</div><div>${grupos.nao.map(n=>pill(n,'nao')).join('')}</div>`:''}
+    `;
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// ADD PLAYER COLLAPSE
+// ═══════════════════════════════════════════════════════════════
+function toggleAddPlayer(){
+  const body = document.getElementById('add-player-body');
+  const toggle = document.getElementById('add-player-toggle');
+  const open = body.classList.toggle('open');
+  toggle.classList.toggle('open', open);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HISTÓRIA INTERNAL TABS
+// ═══════════════════════════════════════════════════════════════
+function switchHistTab(tab){
+  document.getElementById('hist-sorteios').style.display = tab==='sorteios'?'':'none';
+  document.getElementById('hist-partidas').style.display  = tab==='partidas'?'':'none';
+  document.getElementById('htab-sorteios').classList.toggle('active', tab==='sorteios');
+  document.getElementById('htab-partidas').classList.toggle('active',  tab==='partidas');
+  if(tab==='partidas') renderMatchHistory();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MATCH STATE
+// ═══════════════════════════════════════════════════════════════
+const LS_MATCH = 'tl_match';
+
+function emptyMatch(){
+  return {
+    status: 'idle',    // idle | live | finished
+    teams: [],         // [{name, color, players:[{id,name,pos,overall,goals,assists,dribles,takenDribles}]}]
+    scores: [],        // [0,0,...] per team index
+    startedAt: null,
+    elapsed: 0,        // seconds at pause
+    events: [],        // [{min,type,playerName,teamIdx}]
+    evaluations: {},   // {playerId: {stars,drible,taken}}
+    evalOpen: false,
+    finishedAt: null,
+    id: null
+  };
+}
+
+let _matchTimerInterval = null;
+let _liveTimerInterval  = null;
+
+function loadMatch(){
+  try{ state.match = JSON.parse(localStorage.getItem(LS_MATCH)) || emptyMatch(); }
+  catch{ state.match = emptyMatch(); }
+  if(!state.match.teams) state.match = emptyMatch();
+}
+
+async function saveMatchState(){
+  try{ localStorage.setItem(LS_MATCH, JSON.stringify(state.match)); }catch(e){}
+  if(!state.firebaseReady || !db) return;
+  await db.collection('state').doc('currentMatch').set(state.match)
+    .catch(()=>enqueueOp({type:'set',collection:'state',id:'currentMatch',data:state.match}));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER CAMPO (replaces old renderField)
+// ═══════════════════════════════════════════════════════════════
+function renderField(){
+  renderMatchSection();
+  // old field visual
+  const d=document.getElementById('field-teams-display');
+  if(!state.teams.length){
+    d.innerHTML='<div class="empty-state" style="padding:40px 20px"><div class="es-icon">🏟️</div><h3>Sem Times</h3><p>Faça o sorteio primeiro</p></div>';
+    return;
+  }
+  d.innerHTML=state.teams.map((team,ti)=>{
+    const color=TEAM_COLORS[ti%TEAM_COLORS.length];
+    return `<div class="field-team-label" style="color:${color}">${team.name}</div>
+    <div class="field-team">
+      ${team.players.map(p=>{
+        const[bg,fg]=avColor(p.name);
+        return `<div class="field-player-chip">
+          <div class="chip-avatar" style="background:${bg};color:${fg}">${initials(p.name)}</div>
+          <span style="color:${color}">${pIcon(p.pos)}</span>
+          <span>${p.name.split(' ')[0]}</span>
+        </div>`;
+      }).join('')}
+    </div>
+    ${ti<state.teams.length-1?'<div class="field-divider">— VS —</div>':''}`;
+  }).join('');
+}
+
+function renderMatchSection(){
+  const isAdmin = state.role==='admin';
+  const noTeams = document.getElementById('match-no-teams');
+  const matchCard = document.getElementById('match-card');
+  const evalSection = document.getElementById('eval-section');
+
+  if(!state.teams.length){
+    noTeams.style.display='block';
+    matchCard.style.display='none';
+    evalSection.style.display='none';
+    return;
+  }
+  noTeams.style.display='none';
+  matchCard.style.display='block';
+
+  // Sync match teams from current sort if idle
+  if(state.match.status==='idle' && (!state.match.teams || !state.match.teams.length)){
+    state.match.teams = state.teams.map((t,ti)=>({
+      name: t.name,
+      color: TEAM_COLORS[ti%TEAM_COLORS.length],
+      players: t.players.map(p=>({
+        id:p.id, name:p.name, pos:p.pos, overall:p.overall,
+        goals:0, assists:0, dribles:0, takenDribles:0
+      }))
+    }));
+    state.match.scores = state.match.teams.map(()=>0);
+  }
+
+  // Status badge
+  const badge = document.getElementById('match-status-badge');
+  const statusLabels = {idle:'PRÉ-JOGO', live:'🔴 AO VIVO', finished:'ENCERRADO'};
+  badge.textContent = statusLabels[state.match.status] || 'PRÉ-JOGO';
+  badge.className = 'match-status-badge ' + (state.match.status||'idle');
+
+  // Timer
+  const timerEl = document.getElementById('match-timer');
+  timerEl.style.display = state.match.status==='live' ? 'block' : 'none';
+  if(state.match.status==='live') startMatchTimer();
+
+  // Scoreboard
+  const sb = document.getElementById('match-scoreboard');
+  sb.innerHTML = state.match.teams.map((t,i)=>`
+    <div class="match-team-score">
+      <div class="match-team-name" style="color:${t.color}">${t.name}</div>
+      <div class="match-score-num" style="color:${t.color}">${state.match.scores[i]||0}</div>
+    </div>
+    ${i < state.match.teams.length-1 ? '<div class="match-vs">×</div>' : ''}
+  `).join('');
+
+  // Control buttons (admin only)
+  const ctrlBtns = document.getElementById('match-ctrl-btns');
+  if(isAdmin){
+    if(state.match.status==='idle'){
+      ctrlBtns.innerHTML=`<button class="btn btn-green btn-full" onclick="startMatch()">▶ Iniciar Jogo</button>`;
+    } else if(state.match.status==='live'){
+      ctrlBtns.innerHTML=`<button class="btn btn-red btn-full" onclick="finishMatch()">⏹ Finalizar Jogo</button>`;
+    } else {
+      ctrlBtns.innerHTML=`<button class="btn btn-outline btn-full" onclick="resetMatch()">🔄 Nova Partida</button>`;
+    }
+  } else { ctrlBtns.innerHTML=''; }
+
+  // Teams detail with players
+  renderMatchTeamsDetail(isAdmin);
+
+  // Eval section
+  if(state.match.evalOpen || state.match.status==='finished'){
+    evalSection.style.display='block';
+    renderEvalSection();
+  } else {
+    evalSection.style.display='none';
+  }
+
+  // Live score bar in sorteio tab
+  const lsb = document.getElementById('live-score-bar');
+  if(lsb){
+    if(state.match.status==='live'){
+      lsb.style.display='flex';
+      document.getElementById('live-score-text').textContent =
+        state.match.teams.map((t,i)=>state.match.scores[i]||0).join(' × ');
+    } else { lsb.style.display='none'; }
+  }
+}
+
+function renderMatchTeamsDetail(isAdmin){
+  const container = document.getElementById('match-teams-detail');
+  const isLiveOrFinished = state.match.status==='live' || state.match.status==='finished';
+  container.innerHTML = state.match.teams.map((team,ti)=>`
+    <div style="margin-top:14px">
+      <div style="font-family:'Bebas Neue',cursive;font-size:17px;color:${team.color};margin-bottom:6px;display:flex;align-items:center;justify-content:space-between">
+        <span>⚽ ${team.name}</span>
+        <span style="font-size:13px;color:var(--text3)">${team.players.length} jog.</span>
+      </div>
+      <div class="match-team-list">
+        ${team.players.map((p,pi)=>{
+          const[bg,fg]=avColor(p.name);
+          const statsHtml = isLiveOrFinished && isAdmin ? `
+            <div class="match-player-stats">
+              <button class="match-stat-btn goal" onclick="addMatchEvent('goal',${ti},${pi})">⚽ ${p.goals||0}</button>
+              <button class="match-stat-btn assist" onclick="addMatchEvent('assist',${ti},${pi})">🎯 ${p.assists||0}</button>
+              <button class="match-stat-btn drible" onclick="addMatchEvent('drible',${ti},${pi})">🕹️ ${p.dribles||0}</button>
+              <button class="match-stat-btn taken" onclick="addMatchEvent('taken',${ti},${pi})">😵 ${p.takenDribles||0}</button>
+            </div>` :
+            (isLiveOrFinished ? `<div style="font-size:11px;color:var(--text3)">⚽${p.goals||0} 🎯${p.assists||0}</div>` : '');
+          const swapBtn = isAdmin && state.match.status!=='finished' && state.match.teams.length>1 ?
+            `<button class="swap-btn" onclick="openSwap(${ti},${pi})">⇄</button>` : '';
+          return `<div class="match-player-row">
+            <div class="player-avatar" style="width:28px;height:28px;font-size:10px;background:${bg};color:${fg};border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">${initials(p.name)}</div>
+            <div class="match-player-name">${p.name} <span style="color:var(--text3);font-size:10px">${pIcon(p.pos)}</span></div>
+            ${statsHtml}
+            ${swapBtn}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `).join('<div style="border-top:1px dashed var(--border);margin:10px 0"></div>');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MATCH TIMER
+// ═══════════════════════════════════════════════════════════════
+function startMatchTimer(){
+  if(_matchTimerInterval) return;
+  _matchTimerInterval = setInterval(()=>{
+    if(state.match.status!=='live'){ clearInterval(_matchTimerInterval); _matchTimerInterval=null; return; }
+    const elapsed = state.match.elapsed + Math.floor((Date.now()-state.match.startedAt)/1000);
+    const m = String(Math.floor(elapsed/60)).padStart(2,'0');
+    const s = String(elapsed%60).padStart(2,'0');
+    const timerEl = document.getElementById('match-timer');
+    if(timerEl) timerEl.textContent = m+':'+s;
+    const mini = document.getElementById('live-timer-mini');
+    if(mini) mini.textContent = m+':'+s;
+  }, 1000);
+}
+
+function getElapsed(){
+  if(state.match.status!=='live') return state.match.elapsed||0;
+  return (state.match.elapsed||0) + Math.floor((Date.now()-state.match.startedAt)/1000);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MATCH CONTROLS
+// ═══════════════════════════════════════════════════════════════
+async function startMatch(){
+  state.match.status = 'live';
+  state.match.startedAt = Date.now();
+  state.match.id = state.match.id || Date.now();
+  await saveMatchState();
+  renderMatchSection();
+  showToast('▶ Jogo iniciado!');
+}
+
+async function finishMatch(){
+  showConfirm('⏹ Finalizar Jogo','Encerrar a partida e liberar avaliações?', async ()=>{
+    if(_matchTimerInterval){ clearInterval(_matchTimerInterval); _matchTimerInterval=null; }
+    state.match.elapsed = getElapsed();
+    state.match.status = 'finished';
+    state.match.finishedAt = Date.now();
+    state.match.evalOpen = true;
+    // Save to match history
+    await saveMatchToHistory();
+    await saveMatchState();
+    renderMatchSection();
+    logAuditoria('finishMatch', {scores:state.match.scores});
+    showToast('⏹ Jogo finalizado! Avaliações liberadas.');
+    trySendNotif();
+  });
+}
+
+async function resetMatch(){
+  showConfirm('🔄 Nova Partida','Resetar a partida atual?', async ()=>{
+    if(_matchTimerInterval){ clearInterval(_matchTimerInterval); _matchTimerInterval=null; }
+    state.match = emptyMatch();
+    await saveMatchState();
+    renderMatchSection();
+    showToast('🔄 Pronto para novo jogo!');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MATCH EVENTS (gol, assistência, drible, tomou)
+// ═══════════════════════════════════════════════════════════════
+async function addMatchEvent(type, teamIdx, playerIdx){
+  const p = state.match.teams[teamIdx].players[playerIdx];
+  const min = Math.floor(getElapsed()/60);
+  if(type==='goal'){
+    p.goals = (p.goals||0)+1;
+    state.match.scores[teamIdx] = (state.match.scores[teamIdx]||0)+1;
+    state.match.events.push({min, type:'goal', playerName:p.name, teamIdx});
+    showToast(`⚽ Gol de ${p.name}! (${min}')`);
+  } else if(type==='assist'){
+    p.assists = (p.assists||0)+1;
+    state.match.events.push({min, type:'assist', playerName:p.name, teamIdx});
+    showToast(`🎯 Assistência de ${p.name}!`);
+  } else if(type==='drible'){
+    p.dribles = (p.dribles||0)+1;
+    showToast(`🕹️ Belo drible de ${p.name}!`);
+  } else if(type==='taken'){
+    p.takenDribles = (p.takenDribles||0)+1;
+    showToast(`😵 ${p.name} tomou um drible!`);
+  }
+  await saveMatchState();
+  renderMatchSection();
+  // Update live score bar
+  const lsb = document.getElementById('live-score-bar');
+  if(lsb && state.match.status==='live'){
+    document.getElementById('live-score-text').textContent =
+      state.match.teams.map((t,i)=>state.match.scores[i]||0).join(' × ');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PLAYER SWAP
+// ═══════════════════════════════════════════════════════════════
+let _swapSource = null;
+function openSwap(teamIdx, playerIdx){
+  const p = state.match.teams[teamIdx].players[playerIdx];
+  if(_swapSource && _swapSource.teamIdx===teamIdx && _swapSource.playerIdx===playerIdx){
+    _swapSource = null;
+    showToast('Seleção cancelada');
+    renderMatchSection();
+    return;
+  }
+  if(_swapSource){
+    // Execute swap
+    const src = state.match.teams[_swapSource.teamIdx].players;
+    const dst = state.match.teams[teamIdx].players;
+    const srcP = src.splice(_swapSource.playerIdx,1)[0];
+    const dstP = dst.splice(playerIdx,1)[0];
+    src.splice(_swapSource.playerIdx,0,dstP);
+    dst.splice(playerIdx,0,srcP);
+    _swapSource = null;
+    saveMatchState();
+    renderMatchSection();
+    showToast(`🔄 Troca realizada!`);
+  } else {
+    _swapSource = {teamIdx, playerIdx};
+    showToast(`⇄ Selecione o destino de ${p.name}`);
+    renderMatchSection();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AVALIAÇÃO PÓS-JOGO
+// ═══════════════════════════════════════════════════════════════
+function renderEvalSection(){
+  const isAdmin = state.role==='admin';
+  const allPlayers = state.match.teams.flatMap(t=>t.players);
+  const myName = state.myRsvpName || (isAdmin ? 'Admin' : null);
+  const alreadyVoted = myName && state.match.evaluations?.[myName+'_voted'];
+
+  document.getElementById('eval-subtitle').textContent =
+    alreadyVoted ? '✅ Você já avaliou esta partida' :
+    isAdmin ? 'Avalie os jogadores (todos podem avaliar)' :
+    'Avalie os jogadores da partida';
+
+  const submitBtn = document.getElementById('eval-submit-btn');
+  if(submitBtn) submitBtn.style.display = alreadyVoted ? 'none' : 'block';
+
+  document.getElementById('eval-players-list').innerHTML = allPlayers.map(p=>{
+    const ev = (state.match.evaluations||{})[p.id] || {stars:0, drible:0, taken:0};
+    const myEv = (state.match.evaluations||{})[p.id+'_my_'+myName] || {stars:0};
+    return `<div class="eval-player-card" id="eval-${p.id}">
+      <div class="eval-player-header">
+        <div class="player-avatar" style="width:32px;height:32px;font-size:11px;background:${avColor(p.name)[0]};color:${avColor(p.name)[1]};border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">${initials(p.name)}</div>
+        <div>
+          <div style="font-weight:600;font-size:14px">${p.name}</div>
+          <div style="font-size:11px;color:var(--text3)">${pIcon(p.pos)} ${p.pos} · ⚽${p.goals||0} 🎯${p.assists||0}</div>
+        </div>
+      </div>
+      ${!alreadyVoted ? `
+      <div class="eval-stars" id="estars-${p.id}">
+        ${[1,2,3,4,5].map(i=>`<span class="eval-star${myEv.stars>=i?' active':''}" onclick="setEvalStar('${p.id}',${i})">⭐</span>`).join('')}
+      </div>` : `<div class="eval-submitted">Sua nota: ${'⭐'.repeat(myEv.stars||0)||'—'}</div>`}
+      ${isAdmin ? `
+      <div class="eval-actions">
+        <button class="eval-action-btn${(ev.drible||0)>0?' active-drible':''}" onclick="toggleAdminEval('${p.id}','drible')">
+          🕹️ Belo Drible (${ev.drible||0})
+        </button>
+        <button class="eval-action-btn${(ev.taken||0)>0?' active-taken':''}" onclick="toggleAdminEval('${p.id}','taken')">
+          😵 Tomou Drible (${ev.taken||0})
+        </button>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function setEvalStar(playerId, stars){
+  const myName = state.myRsvpName || (state.role==='admin' ? 'Admin' : null);
+  if(!myName){ showToast('⚠️ Confirme sua presença primeiro'); return; }
+  if(!state.match.evaluations) state.match.evaluations = {};
+  state.match.evaluations[playerId+'_my_'+myName] = {stars};
+  // Update stars UI
+  const starsEl = document.getElementById('estars-'+playerId);
+  if(starsEl) starsEl.querySelectorAll('.eval-star').forEach((s,i)=>s.classList.toggle('active',i<stars));
+}
+
+async function toggleAdminEval(playerId, type){
+  if(!state.match.evaluations) state.match.evaluations = {};
+  if(!state.match.evaluations[playerId]) state.match.evaluations[playerId] = {stars:0,drible:0,taken:0};
+  const ev = state.match.evaluations[playerId];
+  ev[type] = (ev[type]||0) + 1;
+  await saveMatchState();
+  renderEvalSection();
+}
+
+async function submitEvaluations(){
+  // Verifica se tem permissão para avaliar (admin, superadmin ou jogador logado)
+  const papel = state.authUser?.papel;
+  const podeAvaliar = papel === 'admin' || papel === 'superadmin' || papel === 'jogador';
+  if(!podeAvaliar){ showToast('⚠️ Apenas jogadores cadastrados e admins podem avaliar'); return; }
+  const myName = state.authUser?.name || state.myRsvpName || (state.role==='admin' ? 'Admin' : null);
+  if(!myName){ showToast('⚠️ Confirme sua presença na aba Pelada primeiro'); return; }
+  const allPlayers = state.match.teams.flatMap(t=>t.players);
+  let hasAny = false;
+  allPlayers.forEach(p=>{
+    const myEv = (state.match.evaluations||{})[p.id+'_my_'+myName];
+    if(myEv?.stars > 0) hasAny = true;
+  });
+  if(!hasAny){ showToast('⚠️ Avalie pelo menos um jogador'); return; }
+  state.match.evaluations[myName+'_voted'] = true;
+  await saveMatchState();
+  // Apply evaluations to player stats
+  await applyEvaluationsToPlayers();
+  showToast('✅ Avaliações enviadas! Obrigado.');
+  renderEvalSection();
+}
+
+async function applyEvaluationsToPlayers(){
+  const allMatchPlayers = state.match.teams.flatMap(t=>t.players);
+  // Aggregate all voter stars for each player
+  const evals = state.match.evaluations || {};
+  const voterKeys = Object.keys(evals).filter(k=>k.endsWith('_voted'));
+  if(voterKeys.length === 0) return;
+
+  allMatchPlayers.forEach(mp=>{
+    const stars = [];
+    voterKeys.forEach(vk=>{
+      const voterName = vk.replace('_voted','');
+      const myEv = evals[mp.id+'_my_'+voterName];
+      if(myEv?.stars > 0) stars.push(myEv.stars);
+    });
+    if(!stars.length) return;
+    const avgStars = stars.reduce((a,b)=>a+b,0)/stars.length;
+    // Find player in state.players and update recentEvals
+    const sp = state.players.find(p=>p.id===mp.id);
+    if(!sp) return;
+    if(!sp.recentEvals) sp.recentEvals = [];
+    sp.recentEvals.push({ matchId: state.match.id, stars: avgStars, date: Date.now() });
+    sp.recentEvals = sp.recentEvals.slice(-10); // keep last 10
+    sp.totalGoals    = (sp.totalGoals||0)    + (mp.goals||0);
+    sp.totalAssists  = (sp.totalAssists||0)  + (mp.assists||0);
+    sp.totalDribles  = (sp.totalDribles||0)  + (mp.dribles||0);
+    sp.totalTaken    = (sp.totalTaken||0)    + (mp.takenDribles||0);
+    sp.matchCount    = (sp.matchCount||0) + 1;
+    // Recalc overall a cada 8 partidas: 70% média das últimas 8 avaliações + 30% overall original
+    if(sp.matchCount % 8 === 0 && sp.recentEvals.length >= 8){
+      const last8evals = sp.recentEvals.slice(-8);
+      const evalAvg    = last8evals.reduce((a,b)=>a+b.stars,0) / 8;
+      if(!sp.originalOverall) sp.originalOverall = sp.overall; // preserva nota original do admin
+      sp.overall = parseFloat((evalAvg * 0.7 + sp.originalOverall * 0.3).toFixed(1));
+    }
+  });
+  await savePlayersDB();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SAVE MATCH TO HISTORY
+// ═══════════════════════════════════════════════════════════════
+async function saveMatchToHistory(){
+  const elapsed = getElapsed();
+  const m = String(Math.floor(elapsed/60)).padStart(2,'0');
+  const s = String(elapsed%60).padStart(2,'0');
+  const entry = {
+    id: state.match.id || Date.now(),
+    date: new Date().toLocaleDateString('pt-BR'),
+    time: new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+    duration: m+':'+s,
+    teams: state.match.teams.map((t,i)=>({
+      name:t.name, color:t.color,
+      score: state.match.scores[i]||0,
+      players: t.players.map(p=>({
+        name:p.name, pos:p.pos, overall:p.overall,
+        goals:p.goals||0, assists:p.assists||0,
+        dribles:p.dribles||0, takenDribles:p.takenDribles||0
+      }))
+    })),
+    events: state.match.events || [],
+    mvp: calcMVP()
+  };
+  // Save to match history collection
+  state.matchHistory = state.matchHistory || [];
+  state.matchHistory.unshift(entry);
+  state.matchHistory = state.matchHistory.slice(0,30);
+  try{ localStorage.setItem('tl_matchHistory', JSON.stringify(state.matchHistory)); }catch(e){}
+  if(state.firebaseReady && db){
+    await db.collection('matchHistory').doc(String(entry.id)).set(entry)
+      .catch(()=>enqueueOp({type:'set',collection:'matchHistory',id:String(entry.id),data:entry}));
+  } else {
+    enqueueOp({type:'set',collection:'matchHistory',id:String(entry.id),data:entry});
+  }
+}
+
+function calcMVP(){
+  const allP = (state.match.teams||[]).flatMap(t=>t.players);
+  if(!allP.length) return null;
+  const evals = state.match.evaluations||{};
+  let best = null, bestScore = -1;
+  allP.forEach(p=>{
+    const stars = Object.keys(evals)
+      .filter(k=>k.startsWith(p.id+'_my_'))
+      .map(k=>evals[k]?.stars||0);
+    const avgStar = stars.length ? stars.reduce((a,b)=>a+b,0)/stars.length : 0;
+    const score = (p.goals||0)*3 + (p.assists||0)*2 + avgStar + (p.dribles||0)*0.5;
+    if(score > bestScore){ bestScore=score; best=p; }
+  });
+  return best ? {name:best.name, score:bestScore.toFixed(1)} : null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MATCH HISTORY RENDER
+// ═══════════════════════════════════════════════════════════════
+function renderMatchHistory(){
+  if(!state.matchHistory){
+    try{ state.matchHistory=JSON.parse(localStorage.getItem('tl_matchHistory'))||[]; }catch{ state.matchHistory=[]; }
+  }
+  const list = document.getElementById('match-history-list');
+  if(!list) return;
+  if(!state.matchHistory.length){
+    list.innerHTML='<div class="empty-state"><div class="es-icon">⚽</div><h3>Sem Partidas</h3><p>Finalize uma partida para ver aqui</p></div>';
+    return;
+  }
+  list.innerHTML = state.matchHistory.map((m,i)=>{
+    const scoreStr = m.teams.map(t=>t.score).join(' × ');
+    const teamNames = m.teams.map(t=>t.name).join(' vs ');
+    return `<div class="match-history-card" onclick="showMatchDetail(${i})">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:11px;color:var(--text3)">📅 ${m.date} às ${m.time} · ⏱ ${m.duration}</div>
+          <div style="font-size:13px;font-weight:600;margin:4px 0">${teamNames}</div>
+          <div class="match-history-score">${scoreStr}</div>
+        </div>
+        ${m.mvp?`<div style="text-align:center;background:rgba(217,119,6,.1);border:1px solid var(--gold-dim);border-radius:10px;padding:6px 10px">
+          <div style="font-size:10px;color:var(--text3)">MVP</div>
+          <div style="font-size:12px;font-weight:700;color:var(--gold)">${m.mvp.name.split(' ')[0]}</div>
+          <div style="font-size:10px;color:var(--text3)">⭐ ${m.mvp.score}</div>
+        </div>`:''}
+      </div>
+      <div class="match-history-meta">${m.teams.reduce((a,t)=>a+t.players.length,0)} jogadores · ${m.events?.filter(e=>e.type==='goal').length||0} gols</div>
+    </div>`;
+  }).join('');
+}
+
+function showMatchDetail(i){
+  if(!state.matchHistory?.[i]) return;
+  const m = state.matchHistory[i];
+  document.getElementById('history-modal-content').innerHTML=`
+    <div class="modal-title">⚽ ${m.date} às ${m.time}</div>
+    <div style="color:var(--text2);font-size:12px;margin-bottom:14px">⏱ Duração: ${m.duration}</div>
+    ${m.mvp?`<div style="background:rgba(217,119,6,.1);border:1px solid var(--gold-dim);border-radius:12px;padding:10px 14px;margin-bottom:14px;text-align:center">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:3px">🏆 MVP DA PARTIDA</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--gold)">${m.mvp.name}</div>
+      <div style="font-size:11px;color:var(--text3)">Score: ${m.mvp.score}</div>
+    </div>`:''}
+    ${m.teams.map((t,ti)=>`
+      <div style="margin-bottom:14px">
+        <div style="font-family:'Bebas Neue',cursive;font-size:19px;color:${t.color||TEAM_COLORS[ti%8]};margin-bottom:7px">
+          ⚽ ${t.name} <span style="font-size:22px">${t.score}</span>
+        </div>
+        ${t.players.map(p=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+          <span>${pIcon(p.pos)}</span>
+          <span style="flex:1;font-size:13px">${p.name}</span>
+          <span style="font-size:11px;color:var(--text3)">⚽${p.goals||0} 🎯${p.assists||0} 🕹️${p.dribles||0} ${p.posTag?posTagHtml(p.posTag):''}</span>
+        </div>`).join('')}
+      </div>
+      ${ti<m.teams.length-1?'<div style="text-align:center;color:var(--text3);font-weight:700;padding:5px 0">— VS —</div>':''}
+    `).join('')}
+    <button class="btn btn-outline btn-full" onclick="closeModal('history-modal')" style="margin-top:10px">Fechar</button>`;
+  openModal('history-modal');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STATS — rewritten with new rankings
+// ═══════════════════════════════════════════════════════════════
+function renderStats(){
+  const c = document.getElementById('stats-content');
+  if(!state.players.length){
+    c.innerHTML='<div class="empty-state"><div class="es-icon">📊</div><h3>Sem dados</h3><p>Cadastre jogadores primeiro</p></div>';
+    return;
+  }
+
+  function row(p,i,val,col,icon){
+    const[bg,fg]=avColor(p.name);
+    return `<div class="stats-player-row">
+      <div class="stats-rank">${i+1}</div>
+      <div class="stats-avatar" style="background:${bg};color:${fg}">${initials(p.name)}</div>
+      <div class="stats-info"><div class="stats-name">${p.name}</div><div class="stats-sub">${pIcon(p.pos)} ${p.pos}</div></div>
+      <div class="stats-val" style="color:${col}">${icon} ${val}</div>
+    </div>`;
+  }
+
+  function section(title, color, players, valFn, icon, emptyMsg){
+    const filtered = players.filter(p=>valFn(p)>0).sort((a,b)=>valFn(b)-valFn(a)).slice(0,5);
+    return `<div style="margin-bottom:22px">
+      <div class="stats-section-title" style="color:${color}">${title}</div>
+      ${filtered.length ? filtered.map((p,i)=>row(p,i,valFn(p),color,icon)).join('') :
+        `<div class="stats-empty">${emptyMsg}</div>`}
+    </div>`;
+  }
+
+  // Last 8 evals avg
+  function evalAvg8(p){
+    if(!p.recentEvals?.length) return 0;
+    const last8 = p.recentEvals.slice(-8);
+    return parseFloat((last8.reduce((a,b)=>a+b.stars,0)/last8.length).toFixed(1));
+  }
+  // Worst eval avg (bola murcha = lowest)
+  function evalWorst8(p){
+    if(!p.recentEvals?.length) return 99;
+    const last8 = p.recentEvals.slice(-8);
+    return parseFloat((last8.reduce((a,b)=>a+b.stars,0)/last8.length).toFixed(1));
+  }
+
+  const withMatches = state.players.filter(p=>(p.matchCount||0)>0);
+  const withEvals   = state.players.filter(p=>p.recentEvals?.length>0);
+
+  // Bola murcha = lowest avg among players with evals (sort ascending)
+  const bolaMurcha = [...withEvals].sort((a,b)=>evalWorst8(a)-evalWorst8(b)).slice(0,5);
+  const perdeuCaminho = [...state.players].filter(p=>(p.totalTaken||0)>0).sort((a,b)=>(b.totalTaken||0)-(a.totalTaken||0)).slice(0,5);
+
+  c.innerHTML = `
+    ${section('🥅 Top 5 Artilheiros','var(--gold)',       state.players, p=>p.totalGoals||0,   '⚽', 'Nenhum gol registrado ainda')}
+    ${section('⭐ Top 5 Avaliação','var(--gold-light)',   withEvals,     evalAvg8,             '★',  'Nenhuma avaliação ainda')}
+    ${section('🎯 Top 5 Garçom','var(--blue)',            state.players, p=>p.totalAssists||0, '🎯', 'Nenhuma assistência ainda')}
+    ${section('🕹️ Jogada de Mestre','var(--green-light)', state.players, p=>p.totalDribles||0, '🕹️', 'Nenhum drible registrado ainda')}
+    <div style="margin-bottom:22px">
+      <div class="stats-section-title" style="color:var(--red)">💩 Top 5 Bola Murcha</div>
+      ${bolaMurcha.length ? bolaMurcha.map((p,i)=>{
+        const[bg,fg]=avColor(p.name);
+        return `<div class="stats-player-row">
+          <div class="stats-rank">${i+1}</div>
+          <div class="stats-avatar" style="background:${bg};color:${fg}">${initials(p.name)}</div>
+          <div class="stats-info"><div class="stats-name">${p.name}</div><div class="stats-sub">${pIcon(p.pos)} ${p.pos}</div></div>
+          <div class="stats-val" style="color:var(--red)">★ ${evalWorst8(p)}</div>
+        </div>`;
+      }).join('') : '<div class="stats-empty">Nenhuma avaliação ainda</div>'}
+    </div>
+    ${section('😵 Perdeu até o Caminho de Casa','var(--red)', state.players, p=>p.totalTaken||0, '😵', 'Nenhum drible tomado ainda')}
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FIREBASE LISTENER FOR MATCH (viewers see live updates)
+// ═══════════════════════════════════════════════════════════════
+function startMatchListener(){
+  if(!state.firebaseReady || !db) return;
+  db.collection('state').doc('currentMatch').onSnapshot(snap=>{
+    if(!snap.exists) return;
+    const incoming = snap.data();
+    state.match = incoming;
+    try{ localStorage.setItem(LS_MATCH, JSON.stringify(state.match)); }catch(e){}
+    if(state.currentTab==='campo') renderMatchSection();
+    // Live score bar update
+    const lsb = document.getElementById('live-score-bar');
+    if(lsb){
+      if(state.match.status==='live'){
+        lsb.style.display='flex';
+        document.getElementById('live-score-text').textContent =
+          state.match.teams.map((t,i)=>state.match.scores[i]||0).join(' × ');
+      } else { lsb.style.display='none'; }
+    }
+    // Notify viewer of eval open
+    if(state.role==='viewer' && state.match.evalOpen && state.match.status==='finished'){
+      showToast('⭐ Avaliações liberadas! Vá para a aba Campo.');
+    }
+  });
+  // Match history listener
+  db.collection('matchHistory').orderBy('id','desc').limit(30).onSnapshot(snap=>{
+    state.matchHistory = snap.docs.map(d=>d.data());
+    try{ localStorage.setItem('tl_matchHistory', JSON.stringify(state.matchHistory)); }catch(e){}
+    if(state.currentTab==='historico') renderMatchHistory();
+  });
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// AUTH — Firebase Google Login
+// ═══════════════════════════════════════════════════════════════
+let auth = null;
+
+// Determina papel do usuário baseado no email
+async function resolverPapel(email) {
+  if(email === SUPER_ADMIN) return 'superadmin';
+  if(state.admins.includes(email)) return 'admin';
+  // Verifica se é jogador cadastrado
+  const jogador = state.players.find(p => p.email && p.email.toLowerCase() === email.toLowerCase() && !p.temp);
+  if(jogador) return 'jogador';
+  return 'viewer';
+}
+
+// Carrega lista de admins do Firestore
+async function carregarAdmins() {
+  if(!db) return;
+  try {
+    const snap = await db.collection('config').doc('admins').get();
+    state.admins = snap.exists ? (snap.data().emails || []) : [];
+  } catch(e) { state.admins = []; }
+}
+
+// Grava log de auditoria no Firestore
+function logAuditoria(acao, dados={}) {
+  if(!db || !state.authUser) return;
+  try {
+    const entry = {
+      ts: Date.now(),
+      data: new Date().toLocaleString('pt-BR'),
+      uid: state.authUser.uid || 'visitor',
+      email: state.authUser.email || 'visitor',
+      nome: state.authUser.name || 'Visitante',
+      papel: state.authUser.papel || 'viewer',
+      acao,
+      dados
+    };
+    db.collection('logs').add(entry).catch(()=>{});
+  } catch(e){}
+}
+
+// Inicia o login com Google
+async function loginGoogle() {
+  if(!firebase || !auth) {
+    showToast('⚠️ Firebase não configurado');
+    return;
+  }
+  document.getElementById('btn-google-login').style.display = 'none';
+  document.getElementById('auth-loading').style.display = 'block';
+  document.getElementById('auth-loading').textContent = '⏳ Abrindo login Google...';
+  try {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const result = await auth.signInWithPopup(provider);
+    // onAuthStateChanged vai cuidar do resto
+  } catch(e) {
+    document.getElementById('btn-google-login').style.display = 'flex';
+    document.getElementById('auth-loading').style.display = 'none';
+    if(e.code !== 'auth/popup-closed-by-user') {
+      showToast('❌ Erro no login: ' + e.message);
+    }
+  }
+}
+
+// Entra sem login
+function entrarComoVisitante() {
+  state.authUser = { uid: 'visitor', email: null, name: 'Visitante', photo: null, papel: 'viewer' };
+  try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e){}
+  document.getElementById('auth-screen').classList.remove('show');
+  enterApp('viewer');
+}
+
+// Sai da conta
+async function logout() {
+  logAuditoria('logout');
+  if(auth) await auth.signOut().catch(()=>{});
+  state.authUser = null;
+  try { localStorage.removeItem(LS_AUTH_CACHE); } catch(e){}
+  stopListeners();
+  stopViewerPolling();
+  state.role = null; state.teams = [];
+  try { localStorage.removeItem(LS_ROLE); } catch(e){}
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('auth-screen').classList.add('show');
+  document.getElementById('btn-google-login').style.display = 'flex';
+  document.getElementById('auth-loading').style.display = 'none';
+}
+
+// Configura o listener de auth state
+function setupAuthListener() {
+  if(!auth) return;
+  auth.onAuthStateChanged(async (user) => {
+    if(user) {
+      document.getElementById('auth-loading').textContent = '⏳ Verificando permissões...';
+      // Carrega admins antes de resolver papel
+      await carregarAdmins();
+      const papel = await resolverPapel(user.email);
+      state.authUser = {
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName || user.email,
+        photo: user.photoURL,
+        papel
+      };
+      try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e){}
+      logAuditoria('login', { papel });
+      document.getElementById('auth-screen').classList.remove('show');
+      // Mapeia papel para role do app
+      const role = (papel === 'superadmin' || papel === 'admin') ? 'admin' : 'viewer';
+      enterApp(role);
+    }
+  });
+}
+
+// Mostra barra do usuário logado no header
+function renderAuthBadge() {
+  const u = state.authUser;
+  if(!u || !u.email) return;
+  // Atualiza o badge de papel no header
+  const badge = document.getElementById('role-badge');
+  if(badge) {
+    const labels = { superadmin:'👑 SUPER ADMIN', admin:'🛡️ ADMIN', jogador:'⚽ JOGADOR', viewer:'👁️ VIEWER' };
+    const classes = { superadmin:'badge-admin', admin:'badge-admin', jogador:'badge-jogador', viewer:'badge-viewer' };
+    badge.textContent = labels[u.papel] || '👁️ VIEWER';
+    badge.className = 'header-badge ' + (classes[u.papel] || 'badge-viewer');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ADMIN MANAGER (Super Admin)
+// ═══════════════════════════════════════════════════════════════
+async function addAdmin() {
+  const email = document.getElementById('inp-admin-email').value.trim().toLowerCase();
+  if(!email || !email.includes('@')) { showToast('⚠️ Email inválido'); return; }
+  if(email === SUPER_ADMIN) { showToast('⚠️ Este é o Super Admin'); return; }
+  if(state.admins.includes(email)) { showToast('⚠️ Já é admin'); return; }
+  state.admins.push(email);
+  await db.collection('config').doc('admins').set({ emails: state.admins });
+  logAuditoria('addAdmin', { email });
+  document.getElementById('inp-admin-email').value = '';
+  renderAdminList();
+  showToast('✅ Admin adicionado: ' + email);
+}
+
+async function removeAdmin(email) {
+  state.admins = state.admins.filter(e => e !== email);
+  await db.collection('config').doc('admins').set({ emails: state.admins });
+  logAuditoria('removeAdmin', { email });
+  renderAdminList();
+  showToast('🗑️ Admin removido: ' + email);
+}
+
+function renderAdminList() {
+  const list = document.getElementById('admin-list');
+  if(!list) return;
+  if(!state.admins.length) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:8px 0">Nenhum admin adicional cadastrado</div>';
+    return;
+  }
+  list.innerHTML = state.admins.map(email => `
+    <div class="admin-row">
+      <div style="flex:1;font-size:13px;color:var(--text)">${email}</div>
+      <span style="font-size:10px;background:rgba(217,119,6,.15);color:var(--gold);border:1px solid var(--gold-dim);border-radius:8px;padding:2px 8px;margin-right:8px">ADMIN</span>
+      <button class="btn btn-red btn-sm" onclick="removeAdmin('${email}')">🗑️</button>
+    </div>`).join('');
+}
+
+function renderAdminsTab() {
+  renderAdminList();
+  // Mostra log resumido
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TOGGLE TEMP PLAYER
+// ═══════════════════════════════════════════════════════════════
+function toggleTempPlayer(cb) {
+  const emailField = document.getElementById('inp-email');
+  if(emailField) {
+    emailField.disabled = cb.checked;
+    emailField.style.opacity = cb.checked ? '0.4' : '1';
+    if(cb.checked) emailField.value = '';
+  }
+}
+
 
 </script>
 </body>
