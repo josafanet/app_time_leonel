@@ -891,12 +891,12 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
 // Console: https://console.firebase.google.com
 // ═══════════════════════════════════════════════════════════════
 const FIREBASE_CONFIG = {
-  apiKey:            "AIzaSyDxv-jAB0g5nV_RSaVObBWOgsc2xxF4LzA",
-  authDomain:        "time-leonel.firebaseapp.com",
-  projectId:         "time-leonel",
-  storageBucket:     "time-leonel.firebasestorage.app",
+  apiKey: "AIzaSyDxv-jAB0g5nV_RSaVObBWOgsc2xxF4LzA",
+  authDomain: "time-leonel.firebaseapp.com",
+  projectId: "time-leonel",
+  storageBucket: "time-leonel.firebasestorage.app",
   messagingSenderId: "378705136833",
-  appId:             "1:378705136833:web:057d722e5990e6e3ddd840"
+  appId: "1:378705136833:web:057d722e5990e6e3ddd840"
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -1293,11 +1293,24 @@ window.addEventListener('DOMContentLoaded', () => {
               state.firebaseReady = true;
               updateSyncBadge();
               // Listener de auth — dispara ao detectar sessão existente ou login novo
+              // Trata resultado do redirect (retorno após login Google)
+              try {
+                const redirectResult = await auth.getRedirectResult();
+                if(redirectResult && redirectResult.user){
+                  console.log('[Auth] Redirect login OK:', redirectResult.user.email);
+                }
+              } catch(e) {
+                console.error('[Auth] Redirect result error:', e);
+                if(e.code === 'auth/unauthorized-domain'){
+                  showToast('❌ Domínio não autorizado no Firebase. Verifique Authentication → Authorized domains.');
+                }
+              }
+
               auth.onAuthStateChanged(async (user) => {
                 if(user){
-                  // Usuário já estava logado (sessão persistida pelo Firebase)
+                  // Usuário logado (sessão existente ou retorno do redirect)
                   document.getElementById('auth-loading').style.display = 'block';
-                  document.getElementById('auth-loading').textContent = '⏳ Restaurando sessão...';
+                  document.getElementById('auth-loading').textContent = '⏳ Verificando permissões...';
                   await carregarAdmins();
                   const papel = await resolverPapel(user.email);
                   state.authUser = {
@@ -1309,7 +1322,6 @@ window.addEventListener('DOMContentLoaded', () => {
                   logAuditoria('login_auto', { papel });
                   document.getElementById('auth-screen').classList.remove('show');
                   const role = (papel==='superadmin'||papel==='admin') ? 'admin' : 'viewer';
-                  // Só inicia listeners após autenticação
                   startListeners();
                   startMatchListener();
                   setTimeout(drainQueue, 2000);
@@ -3120,17 +3132,18 @@ async function loginGoogle() {
   }
   document.getElementById('btn-google-login').style.display = 'none';
   document.getElementById('auth-loading').style.display = 'block';
-  document.getElementById('auth-loading').textContent = '⏳ Abrindo login Google...';
+  document.getElementById('auth-loading').textContent = '⏳ Redirecionando para o Google...';
   try {
     const provider = new firebase.auth.GoogleAuthProvider();
-    const result = await auth.signInWithPopup(provider);
-    // onAuthStateChanged vai cuidar do resto
+    provider.setCustomParameters({ prompt: 'select_account' });
+    // Redirect funciona em PWA/mobile sem ser bloqueado por popup blockers
+    await auth.signInWithRedirect(provider);
+    // A página vai recarregar — o resultado é tratado no onAuthStateChanged
   } catch(e) {
     document.getElementById('btn-google-login').style.display = 'flex';
     document.getElementById('auth-loading').style.display = 'none';
-    if(e.code !== 'auth/popup-closed-by-user') {
-      showToast('❌ Erro no login: ' + e.message);
-    }
+    showToast('❌ Erro no login: ' + e.message);
+    console.error('[Auth] loginGoogle error:', e);
   }
 }
 
