@@ -899,12 +899,12 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
 // Console: https://console.firebase.google.com
 // ═══════════════════════════════════════════════════════════════
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDxv-jAB0g5nV_RSaVObBWOgsc2xxF4LzA",
-  authDomain: "time-leonel.firebaseapp.com",
-  projectId: "time-leonel",
-  storageBucket: "time-leonel.firebasestorage.app",
+  apiKey:            "AIzaSyDxv-jAB0g5nV_RSaVObBW0gsc2xxF4LzA",
+  authDomain:        "time-leonel.firebaseapp.com",
+  projectId:         "time-leonel",
+  storageBucket:     "time-leonel.firebasestorage.app",
   messagingSenderId: "378705136833",
-  appId: "1:378705136833:web:057d722e5990e6e3ddd840"
+  appId:             "1:378705136833:web:057d722e5990e6e3ddd840"
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -1317,17 +1317,6 @@ async function _initApp(){
     return;
   }
 
-  // Processa resultado de redirect do Google (se voltou de um redirect)
-  try {
-    const rr = await auth.getRedirectResult();
-    if(rr && rr.user) console.log('[Auth] Redirect OK:', rr.user.email);
-  } catch(e){
-    console.warn('[Auth] getRedirectResult:', e.code, e.message);
-    if(e.code === 'auth/unauthorized-domain'){
-      showToast('❌ Domínio não autorizado. Verifique Firebase → Authentication → Authorized domains.');
-    }
-  }
-
   // Aguarda o Firebase resolver o estado de autenticação (sessão existente ou não)
   // Usa uma Promise com timeout de segurança de 5s para não travar a loading
   await new Promise(resolveAuth => {
@@ -1371,6 +1360,7 @@ async function _initApp(){
           console.log('[Auth] Entrando como:', role);
           enterApp(role);
           logAuditoria('login', { papel }).catch(()=>{});
+          resolveAuth();
         } catch(err){
           console.error('[Auth] Erro ao processar login:', err);
           // Fallback: entra como viewer para não travar o app
@@ -1382,14 +1372,29 @@ async function _initApp(){
           document.getElementById('auth-screen').classList.remove('show');
           enterApp('viewer');
           showToast('⚠️ Entrou como visitante (erro: ' + err.message + ')');
+          resolveAuth();
         }
       } else {
+        // Verifica se há resultado de redirect pendente antes de mostrar login
+        try {
+          const rr = await auth.getRedirectResult();
+          if(rr && rr.user) {
+            console.log('[Auth] Redirect result encontrado:', rr.user.email);
+            // onAuthStateChanged vai disparar novamente com o usuário
+            return; // não chama resolveAuth — deixa o próximo disparo cuidar
+          }
+        } catch(e) {
+          console.warn('[Auth] getRedirectResult no else:', e.code);
+          if(e.code === 'auth/unauthorized-domain') {
+            showToast('❌ Domínio não autorizado. Acesse Firebase → Authentication → Authorized domains e adicione: ' + window.location.hostname);
+          }
+        }
         console.log('[Auth] Sem sessão — exibindo tela de login');
         document.getElementById('auth-screen').classList.add('show');
         document.getElementById('btn-google-login').style.display = 'flex';
         document.getElementById('auth-loading').style.display = 'none';
+        resolveAuth();
       }
-      resolveAuth();
     });
   });
 }
@@ -3152,11 +3157,16 @@ let auth = null;
 
 // Determina papel do usuário baseado no email
 async function resolverPapel(email) {
-  if(email === SUPER_ADMIN) return 'superadmin';
-  if(state.admins.includes(email)) return 'admin';
-  // Verifica se é jogador cadastrado
-  const jogador = state.players.find(p => p.email && p.email.toLowerCase() === email.toLowerCase() && !p.temp);
-  if(jogador) return 'jogador';
+  if(!email) return 'viewer';
+  const emailLower = email.toLowerCase().trim();
+  console.log('[Auth] Resolvendo papel para:', emailLower, '| SUPER_ADMIN:', SUPER_ADMIN);
+  if(emailLower === SUPER_ADMIN.toLowerCase()) return 'superadmin';
+  if(state.admins.some(a => a.toLowerCase() === emailLower)) return 'admin';
+  // Verifica se é jogador cadastrado (state.players pode estar vazio ainda — tudo bem, entra como viewer)
+  try {
+    const jogador = state.players.find(p => p.email && p.email.toLowerCase() === emailLower && !p.temp);
+    if(jogador) return 'jogador';
+  } catch(e) {}
   return 'viewer';
 }
 
@@ -3166,7 +3176,11 @@ async function carregarAdmins() {
   try {
     const snap = await db.collection('config').doc('admins').get();
     state.admins = snap.exists ? (snap.data().emails || []) : [];
-  } catch(e) { state.admins = []; }
+    console.log('[Auth] Admins carregados:', state.admins.length);
+  } catch(e) {
+    console.warn('[Auth] carregarAdmins falhou (normal na primeira vez):', e.code);
+    state.admins = []; // seguro — sem admins adicionais
+  }
 }
 
 // Grava log de auditoria no Firestore
