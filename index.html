@@ -911,7 +911,7 @@ const FIREBASE_CONFIG = {
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════
 const ADMIN_PW      = '1234'; // mantido como fallback
-const SUPER_ADMIN   = 'josafart.net@gmail.com';
+const SUPER_ADMIN   = 'josafartnet@gmail.com';
 const LS_AUTH_CACHE = 'tl_auth_cache';
 const TEAM_NAMES  = ['Feras','Cavaleiros','Elite','Titãs','Leões','Guerreiros','Cobras','Falcões'];
 const TEAM_COLORS = ['#d97706','#22c55e','#818cf8','#22d3ee','#f87171','#fb923c','#a78bfa','#34d399'];
@@ -1345,34 +1345,46 @@ async function _initApp(){
       unsubscribe(); // Remove listener após primeiro disparo
 
       if(user){
-        // Usuário logado — resolve papel e entra no app
+        console.log('[Auth] Usuário detectado:', user.email);
+        console.log('[Auth] SUPER_ADMIN configurado:', SUPER_ADMIN);
+        document.getElementById('auth-loading').textContent = '⏳ Verificando permissões...';
+        document.getElementById('auth-loading').style.display = 'block';
+        document.getElementById('btn-google-login').style.display = 'none';
         try {
-          document.getElementById('auth-loading').textContent = '⏳ Verificando permissões...';
-          document.getElementById('auth-loading').style.display = 'block';
-          document.getElementById('btn-google-login').style.display = 'none';
           await carregarAdmins();
           const papel = await resolverPapel(user.email);
+          console.log('[Auth] Papel resolvido:', papel);
           state.authUser = {
             uid: user.uid, email: user.email,
             name: user.displayName || user.email,
             photo: user.photoURL, papel
           };
           try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e2){}
-          logAuditoria('login_sessao', { papel });
           document.getElementById('auth-screen').classList.remove('show');
-          startListeners();
-          startMatchListener();
-          setTimeout(drainQueue, 2000);
+          if(!state.listenersStarted){
+            startListeners();
+            startMatchListener();
+            state.listenersStarted = true;
+            setTimeout(drainQueue, 2000);
+          }
           const role = (papel==='superadmin'||papel==='admin') ? 'admin' : 'viewer';
+          console.log('[Auth] Entrando como:', role);
           enterApp(role);
-        } catch(e){
-          console.error('[Auth] Error resolving user:', e);
-          document.getElementById('auth-screen').classList.add('show');
-          document.getElementById('btn-google-login').style.display = 'flex';
-          document.getElementById('auth-loading').style.display = 'none';
+          logAuditoria('login', { papel }).catch(()=>{});
+        } catch(err){
+          console.error('[Auth] Erro ao processar login:', err);
+          // Fallback: entra como viewer para não travar o app
+          state.authUser = {
+            uid: user.uid, email: user.email,
+            name: user.displayName || user.email,
+            photo: user.photoURL, papel: 'viewer'
+          };
+          document.getElementById('auth-screen').classList.remove('show');
+          enterApp('viewer');
+          showToast('⚠️ Entrou como visitante (erro: ' + err.message + ')');
         }
       } else {
-        // Sem sessão — mostra tela de login
+        console.log('[Auth] Sem sessão — exibindo tela de login');
         document.getElementById('auth-screen').classList.add('show');
         document.getElementById('btn-google-login').style.display = 'flex';
         document.getElementById('auth-loading').style.display = 'none';
@@ -3159,7 +3171,7 @@ async function carregarAdmins() {
 
 // Grava log de auditoria no Firestore
 function logAuditoria(acao, dados={}) {
-  if(!db || !state.authUser) return;
+  if(!db || !state.authUser) return Promise.resolve();
   try {
     const entry = {
       ts: Date.now(),
@@ -3171,8 +3183,8 @@ function logAuditoria(acao, dados={}) {
       acao,
       dados
     };
-    db.collection('logs').add(entry).catch(()=>{});
-  } catch(e){}
+    return db.collection('logs').add(entry).catch(()=>{});
+  } catch(e){ return Promise.resolve(); }
 }
 
 // Inicia o login com Google
