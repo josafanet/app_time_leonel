@@ -3229,14 +3229,22 @@ async function loginGoogle() {
     // Usando popup pois resolve o loop de redirecionamento no PWAStandalone
     const result = await auth.signInWithPopup(provider);
     
-    // Se o login for bem-sucedido, o listener onAuthStateChanged que já configuramos fará o resto.
     console.log('[Auth] Login com popup bem sucedido:', result.user.email);
+    
+    // Ativa o ouvinte para disparar a troca de telas do "login" pro "app"
+    setupAuthListener();
 
   } catch(e) {
     document.getElementById('btn-google-login').style.display = 'flex';
     document.getElementById('auth-loading').style.display = 'none';
-    showToast('❌ Erro no login: ' + e.message);
-    console.error('[Auth] loginGoogle error:', e);
+    
+    // Mostra erro caso o usuario cancele o popup ou a rede falhe
+    if (e.code === 'auth/popup-closed-by-user') {
+       showToast('⚠️ Login cancelado (Popup fechado)');
+    } else {
+       showToast('❌ Erro no login: ' + e.message);
+       console.error('[Auth] loginGoogle error:', e);
+    }
   }
 }
 
