@@ -3291,8 +3291,6 @@ async function bootstrapAuthSystem(){
     console.warn('[Auth] setPersistence LOCAL falhou:', e?.code || e);
   }
 
-  setupAuthListener();
-
   const hadRedirectPending = localStorage.getItem(LS_AUTH_REDIRECT_PENDING) === '1';
   let redirectUser = null;
   try{
@@ -3306,9 +3304,12 @@ async function bootstrapAuthSystem(){
 
   if(redirectUser){
     await processUserSession(redirectUser, 'redirect_result');
+    setupAuthListener();
     finishAuthBoot();
     return;
   }
+
+  setupAuthListener();
 
   await Promise.race([
     bootPromise,
@@ -3318,7 +3319,7 @@ async function bootstrapAuthSystem(){
   if(!state.authUser){
     showAuthLogin();
     if(hadRedirectPending){
-      showToast('⚠️ Nao foi possivel concluir o login. Confira dominio autorizado e provedor Google no Firebase.');
+      showToast('⚠️ Nao foi possivel concluir o login no redirecionamento. Tente novamente.');
     }
   }
 }
@@ -3351,10 +3352,8 @@ async function loginGoogle() {
   };
 
   try{
-    if(isMobileOrStandalone()){
-      await startRedirect('mobile_or_standalone');
-      return;
-    }
+    // Tenta popup primeiro em todos os ambientes; alguns mobiles fecham popup
+    // de forma diferente e so funcionam com redirect.
     await auth.signInWithPopup(provider);
   }catch(err){
     const code = err?.code || '';
@@ -3363,7 +3362,11 @@ async function loginGoogle() {
       'auth/operation-not-supported-in-this-environment',
       'auth/web-storage-unsupported'
     ]);
-    if(fallbackCodes.has(code)){
+    const shouldFallbackToRedirect =
+      fallbackCodes.has(code) ||
+      (isMobileOrStandalone() && code === 'auth/popup-closed-by-user');
+    if(shouldFallbackToRedirect){
+      showAuthLoading('Redirecionando para autenticacao...');
       await startRedirect(code);
       return;
     }
