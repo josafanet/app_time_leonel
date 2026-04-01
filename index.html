@@ -911,7 +911,7 @@ const FIREBASE_CONFIG = {
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════
 const ADMIN_PW      = '1234'; // mantido como fallback
-const SUPER_ADMIN   = 'josafart.net@gmail.com';
+const SUPER_ADMIN   = 'josafartnet@gmail.com';
 const LS_AUTH_CACHE = 'tl_auth_cache';
 const LS_AUTH_REDIRECT_PENDING = 'tl_auth_redirect_pending';
 const TEAM_NAMES  = ['Feras','Cavaleiros','Elite','Titãs','Leões','Guerreiros','Cobras','Falcões'];
@@ -1284,27 +1284,26 @@ async function _initApp(){
   const isConfigured = FIREBASE_CONFIG.apiKey !== 'COLE_SUA_API_KEY_AQUI';
 
   if(!isConfigured){
-    // Firebase não configurado — mostra tela de login com aviso
-    console.warn('[App] Firebase não configurado — exibindo aviso na tela de login');
-    document.getElementById('auth-screen').classList.add('show');
-    document.getElementById('btn-google-login').style.display = 'none';
-    document.getElementById('auth-loading').style.display = 'none';
-    // Mostra aviso de configuração pendente
+    console.warn('[App] Firebase nao configurado.');
+    const authScreen = document.getElementById('auth-screen');
+    const loginBtn   = document.getElementById('btn-google-login');
+    const loadingEl  = document.getElementById('auth-loading');
     const configWarn = document.getElementById('auth-config-warn');
+    if(authScreen) authScreen.classList.add('show');
+    if(loginBtn)   loginBtn.style.display = 'none';
+    if(loadingEl)  loadingEl.style.display = 'none';
     if(configWarn) configWarn.style.display = 'block';
     return;
   }
 
-  // Carrega os 3 SDKs do Firebase de forma segura
   const sdkOk = await _loadSDKs();
   if(!sdkOk){
-    showToast('⚠️ Erro ao carregar Firebase. Entrando em modo offline.');
+    showToast('Erro ao carregar Firebase. Entrando em modo offline.');
     state.authUser = { uid:'local', email:null, name:'Visitante', photo:null, papel:'viewer' };
     enterApp('viewer');
     return;
   }
 
-  // Inicializa Firebase
   try {
     if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     db   = firebase.firestore();
@@ -1313,72 +1312,12 @@ async function _initApp(){
     updateSyncBadge();
   } catch(e){
     console.error('[App] Firebase init error:', e);
-    showToast('⚠️ Erro ao inicializar Firebase.');
-    document.getElementById('auth-screen').classList.add('show');
+    showToast('Erro ao inicializar Firebase.');
+    showAuthLogin();
     return;
   }
 
-  try{
-    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-  }catch(e){
-    console.warn('[Auth] setPersistence(LOCAL) falhou:', e?.code || e);
-  }
-
-  showAuthPending('⏳ Verificando sessão...');
-
-  const hadRedirectPending = localStorage.getItem(LS_AUTH_REDIRECT_PENDING) === '1';
-  let redirectUser = null;
-  try{
-    const rr = await auth.getRedirectResult();
-    if(rr && rr.user) redirectUser = rr.user;
-  }catch(e){
-    handleAuthError(e, { context: 'redirect_result' });
-  }finally{
-    try{ localStorage.removeItem(LS_AUTH_REDIRECT_PENDING); }catch(e){}
-  }
-
-  if(redirectUser){
-    await processAuthenticatedUser(redirectUser, { source: 'redirect_result' });
-    setupAuthListener();
-    return;
-  }
-
-  const initialUser = await new Promise(resolve => {
-    let done = false;
-    let unsubscribe = null;
-    const timeout = setTimeout(() => {
-      if(done) return;
-      done = true;
-      if(unsubscribe) unsubscribe();
-      resolve(null);
-    }, 7000);
-
-    unsubscribe = auth.onAuthStateChanged(user => {
-      if(done) return;
-      done = true;
-      clearTimeout(timeout);
-      if(unsubscribe) unsubscribe();
-      resolve(user || null);
-    }, err => {
-      if(done) return;
-      done = true;
-      clearTimeout(timeout);
-      if(unsubscribe) unsubscribe();
-      console.warn('[Auth] onAuthStateChanged (boot) falhou:', err?.code || err);
-      resolve(null);
-    });
-  });
-
-  if(initialUser){
-    await processAuthenticatedUser(initialUser, { source: 'initial_state' });
-  } else {
-    showAuthReady();
-    if(hadRedirectPending){
-      showToast('⚠️ Não foi possível concluir o login. Confira domínio autorizado e provedor Google no Firebase.');
-    }
-  }
-
-  setupAuthListener();
+  await bootstrapAuthSystem();
 }
 
 // Carrega os SDKs do Firebase e retorna true/false
@@ -2179,7 +2118,15 @@ async function doImport(ev){
 // PWA
 // ═══════════════════════════════════════════════════════════════
 function setupPWA(){
-  if('serviceWorker' in navigator){
+  const noSw = new URLSearchParams(location.search).get('nosw') === '1';
+
+  if('serviceWorker' in navigator && noSw){
+    navigator.serviceWorker.getRegistrations()
+      .then(regs => Promise.all(regs.map(r => r.unregister())))
+      .then(() => console.warn('[PWA] Modo diagnóstico ativo (nosw=1): Service Worker desativado.'));
+  }
+
+  if('serviceWorker' in navigator && !noSw){
     navigator.serviceWorker.register('./sw.js')
       .then(reg=>console.log('SW registrado:',reg.scope))
       .catch(err=>console.warn('SW falhou:',err));
@@ -3136,11 +3083,14 @@ function startMatchListener(){
 // AUTH — Firebase Google Login
 // ═══════════════════════════════════════════════════════════════
 let auth = null;
-let unsubAuthState = null;
-let authProcessing = false;
+const AUTH_BOOT_TIMEOUT_MS = 8000;
+let authUnsub = null;
+let authBootResolved = false;
+let authBootResolve = null;
+let authProcessingUser = false;
 let authLoginInFlight = false;
 
-function showAuthPending(msg){
+function showAuthLoading(msg){
   const screen = document.getElementById('auth-screen');
   const btn    = document.getElementById('btn-google-login');
   const load   = document.getElementById('auth-loading');
@@ -3148,11 +3098,11 @@ function showAuthPending(msg){
   if(btn) btn.style.display = 'none';
   if(load){
     load.style.display = 'block';
-    load.textContent = msg || '⏳ Aguarde...';
+    load.textContent = msg || 'Carregando...';
   }
 }
 
-function showAuthReady(){
+function showAuthLogin(){
   const screen = document.getElementById('auth-screen');
   const btn    = document.getElementById('btn-google-login');
   const load   = document.getElementById('auth-loading');
@@ -3161,114 +3111,57 @@ function showAuthReady(){
   if(load) load.style.display = 'none';
 }
 
-function shouldUseRedirectAuth(){
+function isMobileOrStandalone(){
   const isStandalone = !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
   const isIOSStandalone = !!window.navigator.standalone;
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
   return isStandalone || isIOSStandalone || isMobile;
 }
 
+function finishAuthBoot(){
+  if(authBootResolved) return;
+  authBootResolved = true;
+  if(authBootResolve) authBootResolve();
+}
+
 function handleAuthError(err, options={}){
   const code = err?.code || 'auth/unknown';
   const host = location.hostname;
-  let msg = '❌ Erro no login. Tente novamente.';
+  let msg = 'Erro no login. Tente novamente.';
 
   if(code === 'auth/unauthorized-domain'){
-    msg = `❌ Domínio não autorizado no Firebase: ${host}`;
-    console.warn('[Auth] Adicione este domínio em Authentication > Settings > Authorized domains:', host);
+    msg = `Dominio nao autorizado no Firebase: ${host}`;
   } else if(code === 'auth/operation-not-allowed'){
-    msg = '❌ Provedor Google desativado no Firebase Authentication.';
+    msg = 'Provedor Google desativado no Firebase Authentication.';
   } else if(code === 'auth/popup-blocked'){
-    msg = '⚠️ Popup bloqueado pelo navegador.';
+    msg = 'Popup bloqueado pelo navegador.';
   } else if(code === 'auth/popup-closed-by-user'){
-    msg = '⚠️ Janela de login foi fechada.';
+    msg = 'Janela de login foi fechada.';
   } else if(code === 'auth/network-request-failed'){
-    msg = '📴 Falha de rede ao autenticar.';
+    msg = 'Falha de rede ao autenticar.';
   } else if(code === 'auth/web-storage-unsupported'){
-    msg = '❌ Navegador não permite storage para login.';
+    msg = 'Navegador nao permite storage para login.';
   } else if(code === 'auth/invalid-api-key' || code === 'auth/api-key-not-valid'){
-    msg = '❌ API Key inválida no FIREBASE_CONFIG.';
+    msg = 'API Key invalida no FIREBASE_CONFIG.';
   } else if(code === 'auth/app-not-authorized'){
-    msg = '❌ App não autorizado no projeto Firebase.';
+    msg = 'App nao autorizado no projeto Firebase.';
   } else if(code === 'auth/cancelled-popup-request'){
-    msg = '⚠️ Tentativa de login cancelada por outra requisição.';
+    msg = 'Tentativa de login cancelada por outra requisicao.';
   } else if(err?.message){
-    msg = '❌ ' + err.message;
+    msg = err.message;
   }
 
   console.error('[Auth] Erro:', code, err);
-  showToast(msg);
-
-  if(options.restoreUI){
-    showAuthReady();
-  }
-}
-
-async function processAuthenticatedUser(user, meta={}){
-  if(!user) return;
-  if(authProcessing) return;
-  authProcessing = true;
-
-  // Evita reprocesar o mesmo usuário sem necessidade
-  if(state.authUser?.uid === user.uid && state.role){
-    document.getElementById('auth-screen')?.classList.remove('show');
-    authProcessing = false;
-    authLoginInFlight = false;
-    return;
-  }
-
-  showAuthPending('⏳ Verificando permissões...');
-
-  try {
-    await carregarAdmins();
-    const papel = await resolverPapel(user.email);
-    state.authUser = {
-      uid: user.uid,
-      email: user.email,
-      name: user.displayName || user.email,
-      photo: user.photoURL,
-      papel
-    };
-    try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e){}
-
-    if (!state.listenersStarted) {
-      startListeners();
-      startMatchListener();
-      state.listenersStarted = true;
-      setTimeout(drainQueue, 2000);
-    }
-
-    const role = (papel === 'superadmin' || papel === 'admin') ? 'admin' : 'viewer';
-    document.getElementById('auth-screen')?.classList.remove('show');
-    enterApp(role);
-    logAuditoria('login', { papel, source: meta.source || 'auth' }).catch(()=>{});
-  } catch(err){
-    console.error('[Auth] Erro ao processar usuário autenticado:', err);
-    state.authUser = {
-      uid: user.uid,
-      email: user.email,
-      name: user.displayName || user.email,
-      photo: user.photoURL,
-      papel: 'viewer'
-    };
-    try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e){}
-    document.getElementById('auth-screen')?.classList.remove('show');
-    enterApp('viewer');
-    showToast('⚠️ Entrou como visitante por falha ao validar permissões.');
-  } finally {
-    authProcessing = false;
-    authLoginInFlight = false;
-  }
+  showToast('❌ ' + msg);
+  if(options.restoreUI) showAuthLogin();
 }
 
 // Determina papel do usuário baseado no email
 async function resolverPapel(email) {
   if(!email) return 'viewer';
   const emailLower = email.toLowerCase().trim();
-  console.log('[Auth] Resolvendo papel para:', emailLower, '| SUPER_ADMIN:', SUPER_ADMIN);
   if(emailLower === SUPER_ADMIN.toLowerCase()) return 'superadmin';
   if(state.admins.some(a => a.toLowerCase() === emailLower)) return 'admin';
-  // Verifica se é jogador cadastrado (state.players pode estar vazio ainda — tudo bem, entra como viewer)
   try {
     const jogador = state.players.find(p => p.email && p.email.toLowerCase() === emailLower && !p.temp);
     if(jogador) return 'jogador';
@@ -3282,10 +3175,9 @@ async function carregarAdmins() {
   try {
     const snap = await db.collection('config').doc('admins').get();
     state.admins = snap.exists ? (snap.data().emails || []) : [];
-    console.log('[Auth] Admins carregados:', state.admins.length);
   } catch(e) {
-    console.warn('[Auth] carregarAdmins falhou (normal na primeira vez):', e.code);
-    state.admins = []; // seguro — sem admins adicionais
+    console.warn('[Auth] carregarAdmins falhou:', e?.code || e);
+    state.admins = [];
   }
 }
 
@@ -3307,55 +3199,176 @@ function logAuditoria(acao, dados={}) {
   } catch(e){ return Promise.resolve(); }
 }
 
+async function processUserSession(user, source){
+  if(!user) return;
+  if(authProcessingUser) return;
+  authProcessingUser = true;
+  showAuthLoading('Verificando permissoes...');
+
+  try{
+    await carregarAdmins();
+    const papel = await resolverPapel(user.email);
+    state.authUser = {
+      uid: user.uid,
+      email: user.email,
+      name: user.displayName || user.email,
+      photo: user.photoURL,
+      papel
+    };
+    try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e){}
+
+    if(!state.listenersStarted){
+      startListeners();
+      startMatchListener();
+      state.listenersStarted = true;
+      setTimeout(drainQueue, 2000);
+    }
+
+    const role = (papel === 'superadmin' || papel === 'admin') ? 'admin' : 'viewer';
+    document.getElementById('auth-screen')?.classList.remove('show');
+    enterApp(role);
+    logAuditoria('login', { papel, source: source || 'auth' }).catch(()=>{});
+  } catch(err){
+    console.error('[Auth] Falha ao processar usuario autenticado:', err);
+    state.authUser = {
+      uid: user.uid,
+      email: user.email,
+      name: user.displayName || user.email,
+      photo: user.photoURL,
+      papel: 'viewer'
+    };
+    try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e){}
+    document.getElementById('auth-screen')?.classList.remove('show');
+    enterApp('viewer');
+    showToast('⚠️ Entrou como visitante por falha ao validar permissoes.');
+  } finally {
+    authProcessingUser = false;
+    authLoginInFlight = false;
+  }
+}
+
+function clearSignedSessionUI(){
+  state.authUser = null;
+  authLoginInFlight = false;
+  authProcessingUser = false;
+  try { localStorage.removeItem(LS_AUTH_CACHE); } catch(e){}
+  try { localStorage.removeItem(LS_ROLE); } catch(e){}
+  try { localStorage.removeItem(LS_AUTH_REDIRECT_PENDING); } catch(e){}
+  stopListeners();
+  stopViewerPolling();
+  state.listenersStarted = false;
+  state.role = null;
+  state.teams = [];
+  const appEl = document.getElementById('app');
+  if(appEl) appEl.style.display = 'none';
+  showAuthLogin();
+}
+
+function setupAuthListener(){
+  if(!auth || authUnsub) return;
+  authUnsub = auth.onAuthStateChanged(async (user) => {
+    if(user){
+      await processUserSession(user, 'auth_listener');
+    } else {
+      clearSignedSessionUI();
+    }
+    finishAuthBoot();
+  }, (err) => {
+    handleAuthError(err, { restoreUI:true });
+    finishAuthBoot();
+  });
+}
+
+async function bootstrapAuthSystem(){
+  authBootResolved = false;
+  const bootPromise = new Promise(resolve => { authBootResolve = resolve; });
+
+  showAuthLoading('Verificando sessao...');
+
+  try{
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+  }catch(e){
+    console.warn('[Auth] setPersistence LOCAL falhou:', e?.code || e);
+  }
+
+  setupAuthListener();
+
+  const hadRedirectPending = localStorage.getItem(LS_AUTH_REDIRECT_PENDING) === '1';
+  let redirectUser = null;
+  try{
+    const rr = await auth.getRedirectResult();
+    if(rr && rr.user) redirectUser = rr.user;
+  }catch(e){
+    handleAuthError(e);
+  }finally{
+    try { localStorage.removeItem(LS_AUTH_REDIRECT_PENDING); } catch(e){}
+  }
+
+  if(redirectUser){
+    await processUserSession(redirectUser, 'redirect_result');
+    finishAuthBoot();
+    return;
+  }
+
+  await Promise.race([
+    bootPromise,
+    new Promise(resolve => setTimeout(resolve, AUTH_BOOT_TIMEOUT_MS))
+  ]);
+
+  if(!state.authUser){
+    showAuthLogin();
+    if(hadRedirectPending){
+      showToast('⚠️ Nao foi possivel concluir o login. Confira dominio autorizado e provedor Google no Firebase.');
+    }
+  }
+}
+
 // Inicia o login com Google
 async function loginGoogle() {
   if(!firebase || !auth) {
-    showToast('⚠️ Firebase não está pronto. Verifique se as credenciais foram preenchidas no index.html.');
-    showAuthReady();
+    showToast('⚠️ Firebase nao esta pronto.');
+    showAuthLogin();
     return;
   }
 
   if(authLoginInFlight) return;
   authLoginInFlight = true;
-
-  showAuthPending('⏳ Abrindo autenticação...');
+  showAuthLoading('Abrindo autenticacao...');
 
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
 
-  const startRedirectLogin = async (reason) => {
+  const startRedirect = async (reason) => {
     try {
-      if(reason) console.warn('[Auth] Fallback para redirect por:', reason);
+      if(reason) console.warn('[Auth] fallback redirect por:', reason);
       localStorage.setItem(LS_AUTH_REDIRECT_PENDING, '1');
-      showAuthPending('⏳ Redirecionando para Google...');
       await auth.signInWithRedirect(provider);
     } catch(err) {
-      try{ localStorage.removeItem(LS_AUTH_REDIRECT_PENDING); }catch(e){}
       authLoginInFlight = false;
-      handleAuthError(err, { restoreUI: true });
+      try { localStorage.removeItem(LS_AUTH_REDIRECT_PENDING); } catch(e){}
+      handleAuthError(err, { restoreUI:true });
     }
   };
 
-  try {
-    if(shouldUseRedirectAuth()){
-      await startRedirectLogin('mobile_or_standalone');
+  try{
+    if(isMobileOrStandalone()){
+      await startRedirect('mobile_or_standalone');
       return;
     }
-
     await auth.signInWithPopup(provider);
-    // O listener global de auth conclui a navegação para dentro do app.
-  } catch(e) {
+  }catch(err){
+    const code = err?.code || '';
     const fallbackCodes = new Set([
       'auth/popup-blocked',
       'auth/operation-not-supported-in-this-environment',
       'auth/web-storage-unsupported'
     ]);
-    if(fallbackCodes.has(e?.code)){
-      await startRedirectLogin(e.code);
+    if(fallbackCodes.has(code)){
+      await startRedirect(code);
       return;
     }
     authLoginInFlight = false;
-    handleAuthError(e, { restoreUI: true });
+    handleAuthError(err, { restoreUI:true });
   }
 }
 
@@ -3363,7 +3376,7 @@ async function loginGoogle() {
 function entrarComoVisitante() {
   state.authUser = { uid: 'visitor', email: null, name: 'Visitante', photo: null, papel: 'viewer' };
   try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e){}
-  document.getElementById('auth-screen').classList.remove('show');
+  document.getElementById('auth-screen')?.classList.remove('show');
   enterApp('viewer');
 }
 
@@ -3371,51 +3384,13 @@ function entrarComoVisitante() {
 async function logout() {
   logAuditoria('logout');
   authLoginInFlight = false;
-  try { localStorage.removeItem(LS_AUTH_REDIRECT_PENDING); } catch(e){}
-  state.authUser = null;
-  state.listenersStarted = false;
-  try { localStorage.removeItem(LS_AUTH_CACHE); } catch(e){}
-  try { localStorage.removeItem(LS_ROLE); } catch(e){}
-  stopListeners();
-  stopViewerPolling();
-  state.role = null; state.teams = [];
-  document.getElementById('app').style.display = 'none';
-  showAuthPending('⏳ Encerrando sessão...');
-
-  if(auth){
-    await auth.signOut().catch(err => {
-      console.warn('[Auth] signOut falhou:', err?.code || err);
-    });
+  showAuthLoading('Encerrando sessao...');
+  try{
+    if(auth) await auth.signOut();
+  }catch(err){
+    console.warn('[Auth] signOut falhou:', err?.code || err);
   }
-
-  showAuthReady();
-}
-
-// Configura o listener de auth state
-function setupAuthListener() {
-  if(!auth || unsubAuthState) return;
-  unsubAuthState = auth.onAuthStateChanged(async (user) => {
-    if(user){
-      await processAuthenticatedUser(user, { source: 'auth_listener' });
-      return;
-    }
-
-    state.authUser = null;
-    authLoginInFlight = false;
-    try { localStorage.removeItem(LS_AUTH_CACHE); } catch(e){}
-    try { localStorage.removeItem(LS_ROLE); } catch(e){}
-    stopListeners();
-    stopViewerPolling();
-    state.listenersStarted = false;
-    state.role = null;
-    state.teams = [];
-    const appEl = document.getElementById('app');
-    if(appEl) appEl.style.display = 'none';
-
-    showAuthReady();
-  }, (err) => {
-    handleAuthError(err, { context: 'auth_listener', restoreUI: true });
-  });
+  clearSignedSessionUI();
 }
 
 // Mostra barra do usuário logado no header
