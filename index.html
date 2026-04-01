@@ -3212,21 +3212,26 @@ function logAuditoria(acao, dados={}) {
 // Inicia o login com Google
 async function loginGoogle() {
   if(!firebase || !auth) {
-    // Firebase não inicializou — pode ser configuração pendente
     showToast('⚠️ Firebase não está pronto. Verifique se as credenciais foram preenchidas no index.html.');
     document.getElementById('btn-google-login').style.display = 'flex';
     document.getElementById('auth-loading').style.display = 'none';
     return;
   }
+  
   document.getElementById('btn-google-login').style.display = 'none';
   document.getElementById('auth-loading').style.display = 'block';
-  document.getElementById('auth-loading').textContent = '⏳ Redirecionando para o Google...';
+  document.getElementById('auth-loading').textContent = '⏳ Abrindo autenticação...';
+  
   try {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
-    // Redirect funciona em PWA/mobile sem ser bloqueado por popup blockers
-    await auth.signInWithRedirect(provider);
-    // A página vai recarregar — o resultado é tratado no onAuthStateChanged
+    
+    // Usando popup pois resolve o loop de redirecionamento no PWAStandalone
+    const result = await auth.signInWithPopup(provider);
+    
+    // Se o login for bem-sucedido, o listener onAuthStateChanged que já configuramos fará o resto.
+    console.log('[Auth] Login com popup bem sucedido:', result.user.email);
+
   } catch(e) {
     document.getElementById('btn-google-login').style.display = 'flex';
     document.getElementById('auth-loading').style.display = 'none';
