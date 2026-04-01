@@ -1320,25 +1320,33 @@ async function _initApp(){
   // Aguarda o Firebase resolver o estado de autenticação (sessão existente ou não)
   // Usa uma Promise com timeout de segurança de 5s para não travar a loading
   await new Promise(resolveAuth => {
+    let authHandled = false;
+    
+    // Timeout de segurança se o Firebase demorar mais de 6 segundos
     const timeout = setTimeout(() => {
-      // Firebase demorou demais — mostra tela de login
+      if(authHandled) return;
+      authHandled = true;
       console.warn('[Auth] onAuthStateChanged timeout — exibindo tela de login');
       document.getElementById('auth-screen').classList.add('show');
       document.getElementById('btn-google-login').style.display = 'flex';
       document.getElementById('auth-loading').style.display = 'none';
       resolveAuth();
-    }, 5000);
+    }, 6000);
 
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      clearTimeout(timeout);
-      unsubscribe(); // Remove listener após primeiro disparo
+    // Usa let para podermos cancelar no momento certo
+    let unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (authHandled) return;
 
-      if(user){
+      if (user) {
+        authHandled = true;
+        clearTimeout(timeout);
+        if(unsubscribe) unsubscribe(); // Cancelar listener inicial
+
         console.log('[Auth] Usuário detectado:', user.email);
-        console.log('[Auth] SUPER_ADMIN configurado:', SUPER_ADMIN);
         document.getElementById('auth-loading').textContent = '⏳ Verificando permissões...';
         document.getElementById('auth-loading').style.display = 'block';
         document.getElementById('btn-google-login').style.display = 'none';
+        
         try {
           await carregarAdmins();
           const papel = await resolverPapel(user.email);
@@ -1350,45 +1358,45 @@ async function _initApp(){
           };
           try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e2){}
           document.getElementById('auth-screen').classList.remove('show');
-          if(!state.listenersStarted){
+          
+          if (!state.listenersStarted) {
             startListeners();
             startMatchListener();
             state.listenersStarted = true;
             setTimeout(drainQueue, 2000);
           }
-          const role = (papel==='superadmin'||papel==='admin') ? 'admin' : 'viewer';
-          console.log('[Auth] Entrando como:', role);
+          const role = (papel === 'superadmin' || papel === 'admin') ? 'admin' : 'viewer';
           enterApp(role);
           logAuditoria('login', { papel }).catch(()=>{});
-          resolveAuth();
-        } catch(err){
-          console.error('[Auth] Erro ao processar login:', err);
-          // Fallback: entra como viewer para não travar o app
-          state.authUser = {
-            uid: user.uid, email: user.email,
-            name: user.displayName || user.email,
-            photo: user.photoURL, papel: 'viewer'
-          };
+        } catch(err) {
+          console.error('[Auth] Erro ao processar:', err);
+          state.authUser = { uid: user.uid, email: user.email, name: user.displayName, photo: user.photoURL, papel: 'viewer' };
           document.getElementById('auth-screen').classList.remove('show');
           enterApp('viewer');
-          showToast('⚠️ Entrou como visitante (erro: ' + err.message + ')');
-          resolveAuth();
+          showToast('⚠️ Entrou como visitante (erro).');
         }
+        resolveAuth();
       } else {
-        // Verifica se há resultado de redirect pendente antes de mostrar login
+        // Usuário é null. Verificamos se está voltando de um redirecionamento.
         try {
           const rr = await auth.getRedirectResult();
-          if(rr && rr.user) {
+          if (rr && rr.user) {
             console.log('[Auth] Redirect result encontrado:', rr.user.email);
-            // onAuthStateChanged vai disparar novamente com o usuário
-            return; // não chama resolveAuth — deixa o próximo disparo cuidar
+            // NÃO damos unsubscribe aqui. O Firebase vai disparar novamente logo em seguida com o usuário!
+            return; 
           }
         } catch(e) {
-          console.warn('[Auth] getRedirectResult no else:', e.code);
-          if(e.code === 'auth/unauthorized-domain') {
-            showToast('❌ Domínio não autorizado. Acesse Firebase → Authentication → Authorized domains e adicione: ' + window.location.hostname);
+          console.warn('[Auth] getRedirectResult failed:', e.code);
+          if (e.code === 'auth/unauthorized-domain') {
+            showToast('❌ O domínio atual não está autorizado no Firebase Authentication.');
           }
         }
+
+        // Se chegou aqui, não tem usuário e não tem redirect pendente.
+        authHandled = true;
+        clearTimeout(timeout);
+        if(unsubscribe) unsubscribe();
+
         console.log('[Auth] Sem sessão — exibindo tela de login');
         document.getElementById('auth-screen').classList.add('show');
         document.getElementById('btn-google-login').style.display = 'flex';
