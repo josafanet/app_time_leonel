@@ -3186,7 +3186,7 @@ function handleAuthError(err, options={}){
     msg = '📴 Falha de rede ao autenticar.';
   } else if(code === 'auth/web-storage-unsupported'){
     msg = '❌ Navegador não permite storage para login.';
-  } else if(code === 'auth/invalid-api-key'){
+  } else if(code === 'auth/invalid-api-key' || code === 'auth/api-key-not-valid'){
     msg = '❌ API Key inválida no FIREBASE_CONFIG.';
   } else if(code === 'auth/app-not-authorized'){
     msg = '❌ App não autorizado no projeto Firebase.';
