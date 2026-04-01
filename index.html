@@ -913,6 +913,7 @@ const FIREBASE_CONFIG = {
 const ADMIN_PW      = '1234'; // mantido como fallback
 const SUPER_ADMIN   = 'josafartnet@gmail.com';
 const LS_AUTH_CACHE = 'tl_auth_cache';
+const LS_AUTH_REDIRECT_PENDING = 'tl_auth_redirect_pending';
 const TEAM_NAMES  = ['Feras','Cavaleiros','Elite','Titãs','Leões','Guerreiros','Cobras','Falcões'];
 const TEAM_COLORS = ['#d97706','#22c55e','#818cf8','#22d3ee','#f87171','#fb923c','#a78bfa','#34d399'];
 const AV_COLORS   = [
@@ -1317,94 +1318,67 @@ async function _initApp(){
     return;
   }
 
-  // Aguarda o Firebase resolver o estado de autenticação (sessão existente ou não)
-  // Usa uma Promise com timeout de segurança de 5s para não travar a loading
-  await new Promise(resolveAuth => {
-    let authHandled = false;
-    
-    // Timeout de segurança se o Firebase demorar mais de 6 segundos
+  try{
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+  }catch(e){
+    console.warn('[Auth] setPersistence(LOCAL) falhou:', e?.code || e);
+  }
+
+  showAuthPending('⏳ Verificando sessão...');
+
+  const hadRedirectPending = localStorage.getItem(LS_AUTH_REDIRECT_PENDING) === '1';
+  let redirectUser = null;
+  try{
+    const rr = await auth.getRedirectResult();
+    if(rr && rr.user) redirectUser = rr.user;
+  }catch(e){
+    handleAuthError(e, { context: 'redirect_result' });
+  }finally{
+    try{ localStorage.removeItem(LS_AUTH_REDIRECT_PENDING); }catch(e){}
+  }
+
+  if(redirectUser){
+    await processAuthenticatedUser(redirectUser, { source: 'redirect_result' });
+    setupAuthListener();
+    return;
+  }
+
+  const initialUser = await new Promise(resolve => {
+    let done = false;
+    let unsubscribe = null;
     const timeout = setTimeout(() => {
-      if(authHandled) return;
-      authHandled = true;
-      console.warn('[Auth] onAuthStateChanged timeout — exibindo tela de login');
-      document.getElementById('auth-screen').classList.add('show');
-      document.getElementById('btn-google-login').style.display = 'flex';
-      document.getElementById('auth-loading').style.display = 'none';
-      resolveAuth();
-    }, 6000);
+      if(done) return;
+      done = true;
+      if(unsubscribe) unsubscribe();
+      resolve(null);
+    }, 7000);
 
-    // Usa let para podermos cancelar no momento certo
-    let unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (authHandled) return;
-
-      if (user) {
-        authHandled = true;
-        clearTimeout(timeout);
-        if(unsubscribe) unsubscribe(); // Cancelar listener inicial
-
-        console.log('[Auth] Usuário detectado:', user.email);
-        document.getElementById('auth-loading').textContent = '⏳ Verificando permissões...';
-        document.getElementById('auth-loading').style.display = 'block';
-        document.getElementById('btn-google-login').style.display = 'none';
-        
-        try {
-          await carregarAdmins();
-          const papel = await resolverPapel(user.email);
-          console.log('[Auth] Papel resolvido:', papel);
-          state.authUser = {
-            uid: user.uid, email: user.email,
-            name: user.displayName || user.email,
-            photo: user.photoURL, papel
-          };
-          try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e2){}
-          document.getElementById('auth-screen').classList.remove('show');
-          
-          if (!state.listenersStarted) {
-            startListeners();
-            startMatchListener();
-            state.listenersStarted = true;
-            setTimeout(drainQueue, 2000);
-          }
-          const role = (papel === 'superadmin' || papel === 'admin') ? 'admin' : 'viewer';
-          enterApp(role);
-          logAuditoria('login', { papel }).catch(()=>{});
-        } catch(err) {
-          console.error('[Auth] Erro ao processar:', err);
-          state.authUser = { uid: user.uid, email: user.email, name: user.displayName, photo: user.photoURL, papel: 'viewer' };
-          document.getElementById('auth-screen').classList.remove('show');
-          enterApp('viewer');
-          showToast('⚠️ Entrou como visitante (erro).');
-        }
-        resolveAuth();
-      } else {
-        // Usuário é null. Verificamos se está voltando de um redirecionamento.
-        try {
-          const rr = await auth.getRedirectResult();
-          if (rr && rr.user) {
-            console.log('[Auth] Redirect result encontrado:', rr.user.email);
-            // NÃO damos unsubscribe aqui. O Firebase vai disparar novamente logo em seguida com o usuário!
-            return; 
-          }
-        } catch(e) {
-          console.warn('[Auth] getRedirectResult failed:', e.code);
-          if (e.code === 'auth/unauthorized-domain') {
-            showToast('❌ O domínio atual não está autorizado no Firebase Authentication.');
-          }
-        }
-
-        // Se chegou aqui, não tem usuário e não tem redirect pendente.
-        authHandled = true;
-        clearTimeout(timeout);
-        if(unsubscribe) unsubscribe();
-
-        console.log('[Auth] Sem sessão — exibindo tela de login');
-        document.getElementById('auth-screen').classList.add('show');
-        document.getElementById('btn-google-login').style.display = 'flex';
-        document.getElementById('auth-loading').style.display = 'none';
-        resolveAuth();
-      }
+    unsubscribe = auth.onAuthStateChanged(user => {
+      if(done) return;
+      done = true;
+      clearTimeout(timeout);
+      if(unsubscribe) unsubscribe();
+      resolve(user || null);
+    }, err => {
+      if(done) return;
+      done = true;
+      clearTimeout(timeout);
+      if(unsubscribe) unsubscribe();
+      console.warn('[Auth] onAuthStateChanged (boot) falhou:', err?.code || err);
+      resolve(null);
     });
   });
+
+  if(initialUser){
+    await processAuthenticatedUser(initialUser, { source: 'initial_state' });
+  } else {
+    showAuthReady();
+    if(hadRedirectPending){
+      showToast('⚠️ Não foi possível concluir o login. Confira domínio autorizado e provedor Google no Firebase.');
+    }
+  }
+
+  setupAuthListener();
 }
 
 // Carrega os SDKs do Firebase e retorna true/false
@@ -3162,6 +3136,130 @@ function startMatchListener(){
 // AUTH — Firebase Google Login
 // ═══════════════════════════════════════════════════════════════
 let auth = null;
+let unsubAuthState = null;
+let authProcessing = false;
+let authLoginInFlight = false;
+
+function showAuthPending(msg){
+  const screen = document.getElementById('auth-screen');
+  const btn    = document.getElementById('btn-google-login');
+  const load   = document.getElementById('auth-loading');
+  if(screen) screen.classList.add('show');
+  if(btn) btn.style.display = 'none';
+  if(load){
+    load.style.display = 'block';
+    load.textContent = msg || '⏳ Aguarde...';
+  }
+}
+
+function showAuthReady(){
+  const screen = document.getElementById('auth-screen');
+  const btn    = document.getElementById('btn-google-login');
+  const load   = document.getElementById('auth-loading');
+  if(screen) screen.classList.add('show');
+  if(btn) btn.style.display = 'flex';
+  if(load) load.style.display = 'none';
+}
+
+function shouldUseRedirectAuth(){
+  const isStandalone = !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+  const isIOSStandalone = !!window.navigator.standalone;
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+  return isStandalone || isIOSStandalone || isMobile;
+}
+
+function handleAuthError(err, options={}){
+  const code = err?.code || 'auth/unknown';
+  const host = location.hostname;
+  let msg = '❌ Erro no login. Tente novamente.';
+
+  if(code === 'auth/unauthorized-domain'){
+    msg = `❌ Domínio não autorizado no Firebase: ${host}`;
+    console.warn('[Auth] Adicione este domínio em Authentication > Settings > Authorized domains:', host);
+  } else if(code === 'auth/operation-not-allowed'){
+    msg = '❌ Provedor Google desativado no Firebase Authentication.';
+  } else if(code === 'auth/popup-blocked'){
+    msg = '⚠️ Popup bloqueado pelo navegador.';
+  } else if(code === 'auth/popup-closed-by-user'){
+    msg = '⚠️ Janela de login foi fechada.';
+  } else if(code === 'auth/network-request-failed'){
+    msg = '📴 Falha de rede ao autenticar.';
+  } else if(code === 'auth/web-storage-unsupported'){
+    msg = '❌ Navegador não permite storage para login.';
+  } else if(code === 'auth/invalid-api-key'){
+    msg = '❌ API Key inválida no FIREBASE_CONFIG.';
+  } else if(code === 'auth/app-not-authorized'){
+    msg = '❌ App não autorizado no projeto Firebase.';
+  } else if(code === 'auth/cancelled-popup-request'){
+    msg = '⚠️ Tentativa de login cancelada por outra requisição.';
+  } else if(err?.message){
+    msg = '❌ ' + err.message;
+  }
+
+  console.error('[Auth] Erro:', code, err);
+  showToast(msg);
+
+  if(options.restoreUI){
+    showAuthReady();
+  }
+}
+
+async function processAuthenticatedUser(user, meta={}){
+  if(!user) return;
+  if(authProcessing) return;
+  authProcessing = true;
+
+  // Evita reprocesar o mesmo usuário sem necessidade
+  if(state.authUser?.uid === user.uid && state.role){
+    document.getElementById('auth-screen')?.classList.remove('show');
+    authProcessing = false;
+    authLoginInFlight = false;
+    return;
+  }
+
+  showAuthPending('⏳ Verificando permissões...');
+
+  try {
+    await carregarAdmins();
+    const papel = await resolverPapel(user.email);
+    state.authUser = {
+      uid: user.uid,
+      email: user.email,
+      name: user.displayName || user.email,
+      photo: user.photoURL,
+      papel
+    };
+    try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e){}
+
+    if (!state.listenersStarted) {
+      startListeners();
+      startMatchListener();
+      state.listenersStarted = true;
+      setTimeout(drainQueue, 2000);
+    }
+
+    const role = (papel === 'superadmin' || papel === 'admin') ? 'admin' : 'viewer';
+    document.getElementById('auth-screen')?.classList.remove('show');
+    enterApp(role);
+    logAuditoria('login', { papel, source: meta.source || 'auth' }).catch(()=>{});
+  } catch(err){
+    console.error('[Auth] Erro ao processar usuário autenticado:', err);
+    state.authUser = {
+      uid: user.uid,
+      email: user.email,
+      name: user.displayName || user.email,
+      photo: user.photoURL,
+      papel: 'viewer'
+    };
+    try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e){}
+    document.getElementById('auth-screen')?.classList.remove('show');
+    enterApp('viewer');
+    showToast('⚠️ Entrou como visitante por falha ao validar permissões.');
+  } finally {
+    authProcessing = false;
+    authLoginInFlight = false;
+  }
+}
 
 // Determina papel do usuário baseado no email
 async function resolverPapel(email) {
@@ -3213,38 +3311,51 @@ function logAuditoria(acao, dados={}) {
 async function loginGoogle() {
   if(!firebase || !auth) {
     showToast('⚠️ Firebase não está pronto. Verifique se as credenciais foram preenchidas no index.html.');
-    document.getElementById('btn-google-login').style.display = 'flex';
-    document.getElementById('auth-loading').style.display = 'none';
+    showAuthReady();
     return;
   }
-  
-  document.getElementById('btn-google-login').style.display = 'none';
-  document.getElementById('auth-loading').style.display = 'block';
-  document.getElementById('auth-loading').textContent = '⏳ Abrindo autenticação...';
-  
-  try {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: 'select_account' });
-    
-    // Usando popup pois resolve o loop de redirecionamento no PWAStandalone
-    const result = await auth.signInWithPopup(provider);
-    
-    console.log('[Auth] Login com popup bem sucedido:', result.user.email);
-    
-    // Ativa o ouvinte para disparar a troca de telas do "login" pro "app"
-    setupAuthListener();
 
-  } catch(e) {
-    document.getElementById('btn-google-login').style.display = 'flex';
-    document.getElementById('auth-loading').style.display = 'none';
-    
-    // Mostra erro caso o usuario cancele o popup ou a rede falhe
-    if (e.code === 'auth/popup-closed-by-user') {
-       showToast('⚠️ Login cancelado (Popup fechado)');
-    } else {
-       showToast('❌ Erro no login: ' + e.message);
-       console.error('[Auth] loginGoogle error:', e);
+  if(authLoginInFlight) return;
+  authLoginInFlight = true;
+
+  showAuthPending('⏳ Abrindo autenticação...');
+
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+
+  const startRedirectLogin = async (reason) => {
+    try {
+      if(reason) console.warn('[Auth] Fallback para redirect por:', reason);
+      localStorage.setItem(LS_AUTH_REDIRECT_PENDING, '1');
+      showAuthPending('⏳ Redirecionando para Google...');
+      await auth.signInWithRedirect(provider);
+    } catch(err) {
+      try{ localStorage.removeItem(LS_AUTH_REDIRECT_PENDING); }catch(e){}
+      authLoginInFlight = false;
+      handleAuthError(err, { restoreUI: true });
     }
+  };
+
+  try {
+    if(shouldUseRedirectAuth()){
+      await startRedirectLogin('mobile_or_standalone');
+      return;
+    }
+
+    await auth.signInWithPopup(provider);
+    // O listener global de auth conclui a navegação para dentro do app.
+  } catch(e) {
+    const fallbackCodes = new Set([
+      'auth/popup-blocked',
+      'auth/operation-not-supported-in-this-environment',
+      'auth/web-storage-unsupported'
+    ]);
+    if(fallbackCodes.has(e?.code)){
+      await startRedirectLogin(e.code);
+      return;
+    }
+    authLoginInFlight = false;
+    handleAuthError(e, { restoreUI: true });
   }
 }
 
@@ -3259,7 +3370,8 @@ function entrarComoVisitante() {
 // Sai da conta
 async function logout() {
   logAuditoria('logout');
-  if(auth) await auth.signOut().catch(()=>{});
+  authLoginInFlight = false;
+  try { localStorage.removeItem(LS_AUTH_REDIRECT_PENDING); } catch(e){}
   state.authUser = null;
   state.listenersStarted = false;
   try { localStorage.removeItem(LS_AUTH_CACHE); } catch(e){}
@@ -3268,46 +3380,41 @@ async function logout() {
   stopViewerPolling();
   state.role = null; state.teams = [];
   document.getElementById('app').style.display = 'none';
-  // Re-attach auth listener for next login
+  showAuthPending('⏳ Encerrando sessão...');
+
   if(auth){
-    const unsub = auth.onAuthStateChanged(async (user) => {
-      unsub();
-      if(!user){
-        document.getElementById('auth-screen').classList.add('show');
-        document.getElementById('btn-google-login').style.display = 'flex';
-        document.getElementById('auth-loading').style.display = 'none';
-      }
+    await auth.signOut().catch(err => {
+      console.warn('[Auth] signOut falhou:', err?.code || err);
     });
-  } else {
-    document.getElementById('auth-screen').classList.add('show');
-    document.getElementById('btn-google-login').style.display = 'flex';
-    document.getElementById('auth-loading').style.display = 'none';
   }
+
+  showAuthReady();
 }
 
 // Configura o listener de auth state
 function setupAuthListener() {
-  if(!auth) return;
-  auth.onAuthStateChanged(async (user) => {
-    if(user) {
-      document.getElementById('auth-loading').textContent = '⏳ Verificando permissões...';
-      // Carrega admins antes de resolver papel
-      await carregarAdmins();
-      const papel = await resolverPapel(user.email);
-      state.authUser = {
-        uid: user.uid,
-        email: user.email,
-        name: user.displayName || user.email,
-        photo: user.photoURL,
-        papel
-      };
-      try { localStorage.setItem(LS_AUTH_CACHE, JSON.stringify(state.authUser)); } catch(e){}
-      logAuditoria('login', { papel });
-      document.getElementById('auth-screen').classList.remove('show');
-      // Mapeia papel para role do app
-      const role = (papel === 'superadmin' || papel === 'admin') ? 'admin' : 'viewer';
-      enterApp(role);
+  if(!auth || unsubAuthState) return;
+  unsubAuthState = auth.onAuthStateChanged(async (user) => {
+    if(user){
+      await processAuthenticatedUser(user, { source: 'auth_listener' });
+      return;
     }
+
+    state.authUser = null;
+    authLoginInFlight = false;
+    try { localStorage.removeItem(LS_AUTH_CACHE); } catch(e){}
+    try { localStorage.removeItem(LS_ROLE); } catch(e){}
+    stopListeners();
+    stopViewerPolling();
+    state.listenersStarted = false;
+    state.role = null;
+    state.teams = [];
+    const appEl = document.getElementById('app');
+    if(appEl) appEl.style.display = 'none';
+
+    showAuthReady();
+  }, (err) => {
+    handleAuthError(err, { context: 'auth_listener', restoreUI: true });
   });
 }
 
