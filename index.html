@@ -618,7 +618,7 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
         <div class="teams-container" id="teams-container"></div>
         <div id="reserva-display" class="reserva-card" style="display:none"></div>
         <div style="display:flex;flex-direction:column;gap:8px;margin-top:13px">
-          <button class="btn btn-green btn-full" onclick="shareNative()">📤 Compartilhar Times</button>
+          <button class="btn btn-green btn-full" id="btn-share-times" onclick="shareNative()">📤 Compartilhar Times</button>
           <button class="btn btn-outline btn-full" onclick="copyToClipboard()">📋 Copiar para WhatsApp</button>
           <button class="btn btn-outline btn-full" id="btn-refazer" style="display:none" onclick="refazerSorteio()">🔀 Refazer Sorteio</button>
         </div>
@@ -1932,6 +1932,8 @@ function renderTeams(){
   if(noMsg) noMsg.style.display='none';
   result.style.display='block';
   document.getElementById('btn-refazer').style.display=state.role==='admin'?'':'none';
+  const shareBtn=document.getElementById('btn-share-times');
+  if(shareBtn) shareBtn.style.display=state.role==='admin'?'':'none';
 
   // Calcula somas de linha (sem goleiros) para comparar força real
   const lineSums=state.teams.map(t=>t.players.filter(p=>p.pos!=='Goleiro').reduce((s,p)=>s+p.overall,0));
@@ -3067,8 +3069,7 @@ function showMatchDetail(i){
         </div>`).join('')}
       </div>
       ${ti<m.teams.length-1?'<div style="text-align:center;color:var(--text3);font-weight:700;padding:5px 0">— VS —</div>':''}
-    `).join('')}
-    <button class="btn btn-outline btn-full" onclick="closeModal('history-modal')" style="margin-top:10px">Fechar</button>`;
+    `).join('')}`;
   openModal('history-modal');
 }
 
