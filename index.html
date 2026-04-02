@@ -276,21 +276,21 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
-/* PELADA TAB */
-.pelada-hero{background:linear-gradient(135deg,rgba(217,119,6,.12),rgba(22,163,74,.08));border:1px solid rgba(217,119,6,.25);border-radius:20px;padding:24px 20px;text-align:center;margin-bottom:14px}
-.pelada-status-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.5px;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
-.pelada-status-badge.agendada{background:rgba(217,119,6,.15);color:var(--gold);border:1px solid var(--gold-dim)}
-.pelada-status-badge.sem{background:rgba(82,82,91,.15);color:var(--text3);border:1px solid var(--border)}
-.pelada-status-badge.hoje{background:rgba(22,163,74,.2);color:var(--green-light);border:1px solid #166534;animation:pulseGold 1.5s infinite}
+/* PARTIDA TAB */
+.partida-hero{background:linear-gradient(135deg,rgba(217,119,6,.12),rgba(22,163,74,.08));border:1px solid rgba(217,119,6,.25);border-radius:20px;padding:24px 20px;text-align:center;margin-bottom:14px}
+.partida-status-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.5px;padding:4px 12px;border-radius:20px;margin-bottom:14px;text-transform:uppercase}
+.partida-status-badge.agendada{background:rgba(217,119,6,.15);color:var(--gold);border:1px solid var(--gold-dim)}
+.partida-status-badge.sem{background:rgba(82,82,91,.15);color:var(--text3);border:1px solid var(--border)}
+.partida-status-badge.hoje{background:rgba(22,163,74,.2);color:var(--green-light);border:1px solid #166534;animation:pulseGold 1.5s infinite}
 .countdown{display:flex;gap:10px;justify-content:center;margin:18px 0 10px}
 .cd-block{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:10px 14px;min-width:64px;text-align:center}
 .cd-num{font-family:'Bebas Neue',cursive;font-size:36px;color:var(--gold);line-height:1}
 .cd-lbl{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
-.pelada-info-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
-.pelada-info-row:last-child{border-bottom:none}
-.pelada-info-icon{font-size:20px;width:32px;text-align:center;flex-shrink:0}
-.pelada-info-val{font-size:15px;font-weight:600;color:var(--text)}
-.pelada-info-sub{font-size:12px;color:var(--text2);margin-top:1px}
+.partida-info-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.partida-info-row:last-child{border-bottom:none}
+.partida-info-icon{font-size:20px;width:32px;text-align:center;flex-shrink:0}
+.partida-info-val{font-size:15px;font-weight:600;color:var(--text)}
+.partida-info-sub{font-size:12px;color:var(--text2);margin-top:1px}
 .rsvp-strip{display:flex;gap:10px;margin-top:16px}
 .rsvp-btn{flex:1;padding:12px 8px;border-radius:14px;border:2px solid transparent;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;background:var(--bg3)}
 .rsvp-btn.vou{border-color:var(--green-light);color:var(--green-light)}
@@ -305,10 +305,10 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
 .rsvp-pill.vou{border-color:rgba(22,163,74,.4);color:var(--green-light)}
 .rsvp-pill.nao{border-color:rgba(239,68,68,.4);color:var(--red)}
 .rsvp-pill.talvez{border-color:rgba(217,119,6,.4);color:var(--gold)}
-.pelada-form input,.pelada-form textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Barlow',sans-serif;outline:none;margin-bottom:10px}
-.pelada-form input:focus,.pelada-form textarea:focus{border-color:var(--gold)}
-.pelada-form label{display:block;font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:600;letter-spacing:.5px}
-.pelada-form textarea{resize:none;height:70px}
+.partida-form input,.partida-form textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Barlow',sans-serif;outline:none;margin-bottom:10px}
+.partida-form input:focus,.partida-form textarea:focus{border-color:var(--gold)}
+.partida-form label{display:block;font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:600;letter-spacing:.5px}
+.partida-form textarea{resize:none;height:70px}
 
 
 
@@ -690,22 +690,22 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
     </div>
 
 
-    <!-- PELADA -->
-    <div class="section" id="sec-pelada">
+    <!-- PARTIDA -->
+    <div class="section" id="sec-partida">
 
-      <!-- Hero: countdown ou sem pelada -->
-      <div class="pelada-hero" id="pelada-hero">
-        <div id="pelada-status-badge" class="pelada-status-badge sem">SEM PELADA</div>
-        <div id="pelada-hero-content">
+      <!-- Hero: countdown ou sem partida -->
+      <div class="partida-hero" id="partida-hero">
+        <div id="partida-status-badge" class="partida-status-badge sem">SEM PARTIDA</div>
+        <div id="partida-hero-content">
           <div style="font-size:44px;margin-bottom:8px">⚽</div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--text2)">Nenhuma pelada agendada</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--text2)">Nenhuma partida agendada</div>
           <div style="font-size:13px;color:var(--text3);margin-top:6px">Aguardando o Admin agendar</div>
         </div>
       </div>
 
-      <!-- Info da pelada -->
-      <div class="card" id="pelada-info-card" style="display:none">
-        <div id="pelada-info-rows"></div>
+      <!-- Info da partida -->
+      <div class="card" id="partida-info-card" style="display:none">
+        <div id="partida-info-rows"></div>
 
         <!-- RSVP — somente jogador autenticado -->
         <div style="margin-top:16px">
@@ -723,21 +723,21 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
       </div>
 
       <!-- Admin: formulário de agendamento -->
-      <div class="card" id="pelada-admin-card" style="display:none">
-        <div class="card-title" id="pelada-form-title">📅 Agendar Pelada</div>
-        <div class="pelada-form">
+      <div class="card" id="partida-admin-card" style="display:none">
+        <div class="card-title" id="partida-form-title">📅 Agendar Partida</div>
+        <div class="partida-form">
           <label>Data</label>
-          <input type="date" id="pelada-date">
+          <input type="date" id="partida-date">
           <label>Hora</label>
-          <input type="time" id="pelada-time" value="19:00">
+          <input type="time" id="partida-time" value="19:00">
           <label>Local</label>
-          <input type="text" id="pelada-local" placeholder="Ex: Arena Leonel, Campo do Bairro..." maxlength="60">
+          <input type="text" id="partida-local" placeholder="Ex: Arena Leonel, Campo do Bairro..." maxlength="60">
           <label>Observações (opcional)</label>
-          <textarea id="pelada-obs" placeholder="Ex: Levar colete, R$10 por pessoa..."></textarea>
+          <textarea id="partida-obs" placeholder="Ex: Levar colete, R$10 por pessoa..."></textarea>
         </div>
         <div style="display:flex;gap:10px">
-          <button class="btn btn-green" style="flex:2" onclick="savePelada()">📅 Salvar Pelada</button>
-          <button class="btn btn-red" style="flex:1" id="pelada-cancel-btn" onclick="cancelPelada()" style="display:none">🗑️ Cancelar</button>
+          <button class="btn btn-green" style="flex:2" onclick="savePartida()">📅 Salvar Partida</button>
+          <button class="btn btn-red" style="flex:1" id="partida-cancel-btn" onclick="cancelPartida()" style="display:none">🗑️ Cancelar</button>
         </div>
       </div>
 
@@ -922,7 +922,10 @@ const LS_PLAYERS = 'tl_players';
 const LS_TEAMS   = 'tl_teams';
 const LS_HISTORY = 'tl_history';
 const LS_QUEUE   = 'tl_offlineQueue'; // fila de operações pendentes
-const LS_PELADA  = 'tl_pelada';
+const LS_PARTIDA  = 'tl_partida';
+const LS_PARTIDA_LEGACY = 'tl_pelada';
+const STATE_DOC_PARTIDA = 'partida';
+const STATE_DOC_PARTIDA_LEGACY = 'pelada';
 
 // ═══════════════════════════════════════════════════════════════
 // STATE
@@ -935,7 +938,7 @@ let state = {
   lastPresent: null,
   firebaseReady: false, isOnline: navigator.onLine,
   _adminWriting: false,
-  pelada: null,
+  partida: null,
   myRsvpName: null,
   match: null,
   matchHistory: null,
@@ -991,6 +994,19 @@ function updateSyncBadge(){
   if(!state.firebaseReady){ el.textContent='⚙️'; el.title='Configurar Firebase'; el.style.color='var(--text3)'; return; }
   el.textContent  = state.isOnline ? '🟢' : '🔴';
   el.title        = state.isOnline ? 'Online — sincronizado' : 'Offline';
+}
+
+function cachePartidaLocal(partida){
+  try{
+    if(!partida){
+      localStorage.removeItem(LS_PARTIDA);
+      localStorage.removeItem(LS_PARTIDA_LEGACY);
+      return;
+    }
+    const raw = JSON.stringify(partida);
+    localStorage.setItem(LS_PARTIDA, raw);
+    localStorage.setItem(LS_PARTIDA_LEGACY, raw);
+  }catch(e){}
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1100,16 +1116,43 @@ function startListeners(){
     }
   });
 
-  // ── Pelada ───────────────────────────────────────────────────────
-  db.collection('state').doc('pelada').onSnapshot(snap => {
-    state.pelada = snap.exists ? snap.data() : null;
-    try{ localStorage.setItem(LS_PELADA, JSON.stringify(state.pelada)); }catch(e){}
-    if(state.currentTab==='pelada') renderPelada();
-    // Notifica viewers quando pelada for agendada/cancelada
-    if(state.role==='viewer'){
-      if(state.pelada && state.pelada.updatedAt && Date.now()-state.pelada.updatedAt < 10000)
-        showToast('📅 Pelada atualizada pelo Admin!');
+  // ── Partida ───────────────────────────────────────────────────────
+  let partidaLegacyChecked = false;
+  db.collection('state').doc(STATE_DOC_PARTIDA).onSnapshot(async snap => {
+    if(snap.exists){
+      state.partida = snap.data();
+      cachePartidaLocal(state.partida);
+      if(state.currentTab==='partida') renderPartida();
+      // Notifica viewers quando partida for agendada/cancelada
+      if(state.role==='viewer'){
+        if(state.partida && state.partida.updatedAt && Date.now()-state.partida.updatedAt < 10000)
+          showToast('📅 Partida atualizada pelo Admin!');
+      }
+      return;
     }
+
+    // Migração automática: se "state/partida" não existir, tenta usar legado "state/pelada".
+    if(!partidaLegacyChecked){
+      partidaLegacyChecked = true;
+      try{
+        const legacySnap = await db.collection('state').doc(STATE_DOC_PARTIDA_LEGACY).get();
+        if(legacySnap.exists){
+          const legacyData = legacySnap.data();
+          state.partida = legacyData;
+          cachePartidaLocal(state.partida);
+          if(state.currentTab==='partida') renderPartida();
+          await db.collection('state').doc(STATE_DOC_PARTIDA).set(legacyData).catch(()=>{});
+          console.log('[Migração] state/pelada copiado para state/partida');
+          return;
+        }
+      }catch(e){
+        console.warn('[Migração] Falha ao migrar state/pelada -> state/partida', e);
+      }
+    }
+
+    state.partida = null;
+    cachePartidaLocal(null);
+    if(state.currentTab==='partida') renderPartida();
   });
 
   // ── History ───────────────────────────────────────────────────────
@@ -1152,10 +1195,13 @@ async function drainQueue(){
   const done = [];
   for(const op of q){
     try{
+      const targetId = (op.collection==='state' && op.id===STATE_DOC_PARTIDA_LEGACY)
+        ? STATE_DOC_PARTIDA
+        : op.id;
       if(op.type==='set'){
-        await db.collection(op.collection).doc(op.id).set(op.data);
+        await db.collection(op.collection).doc(targetId).set(op.data);
       } else if(op.type==='delete'){
-        await db.collection(op.collection).doc(op.id).delete();
+        await db.collection(op.collection).doc(targetId).delete();
       }
       done.push(op);
     }catch(e){
@@ -1259,7 +1305,17 @@ function loadFromLocal(){
   });
   try{ state.teams   = JSON.parse(localStorage.getItem(LS_TEAMS))||[];   }catch{ state.teams=[];   }
   try{ state.history = JSON.parse(localStorage.getItem(LS_HISTORY))||[]; }catch{ state.history=[]; }
-  try{ state.pelada  = JSON.parse(localStorage.getItem(LS_PELADA))||null;  }catch{ state.pelada=null;  }
+  try{
+    state.partida = JSON.parse(localStorage.getItem(LS_PARTIDA)) || null;
+  }catch{
+    state.partida = null;
+  }
+  if(!state.partida){
+    try{
+      state.partida = JSON.parse(localStorage.getItem(LS_PARTIDA_LEGACY)) || null;
+      if(state.partida) cachePartidaLocal(state.partida);
+    }catch{}
+  }
   try{ state.myRsvpName = localStorage.getItem('tl_rsvp_name')||null; }catch{}
   loadMatch();
   try{ state.matchHistory=JSON.parse(localStorage.getItem('tl_matchHistory'))||[]; }catch{ state.matchHistory=[]; }
@@ -1457,7 +1513,7 @@ const TABS=[
   {id:'sorteio',   label:'⚽ Times',     adminOnly:false},
   {id:'campo',     label:'🏟️ Campo',     adminOnly:false},
   {id:'historico', label:'📋 Histórico', adminOnly:false},
-  {id:'pelada',    label:'📅 Pelada',    adminOnly:false},
+  {id:'partida',    label:'📅 Partida',    adminOnly:false},
   {id:'stats',     label:'📊 Stats',     adminOnly:false},
   {id:'admins',    label:'⚙️ Admins',    adminOnly:true, superOnly:true},
 ];
@@ -1492,8 +1548,8 @@ function switchTab(tab){
   }
   if(tab==='elenco')    renderPlayers();
   if(tab==='historico') renderHistory();
-  if(tab==='pelada')    renderPelada();
-  if(tab!=='pelada' && _countdownTimer){ clearInterval(_countdownTimer); _countdownTimer=null; }
+  if(tab==='partida')    renderPartida();
+  if(tab!=='partida' && _countdownTimer){ clearInterval(_countdownTimer); _countdownTimer=null; }
   if(tab==='stats')     renderStats();
   if(tab==='admins')    renderAdminsTab();
   if(tab==='campo')     renderField();
@@ -2201,50 +2257,50 @@ document.addEventListener('keydown',e=>{
 
 
 // ═══════════════════════════════════════════════════════════════
-// PELADA — agendamento, countdown, RSVP
+// PARTIDA — agendamento, countdown, RSVP
 // ═══════════════════════════════════════════════════════════════
 let _countdownTimer = null;
 
-async function savePelada(){
-  const date  = document.getElementById('pelada-date').value;
-  const time  = document.getElementById('pelada-time').value;
-  const local = document.getElementById('pelada-local').value.trim();
-  const obs   = document.getElementById('pelada-obs').value.trim();
+async function savePartida(){
+  const date  = document.getElementById('partida-date').value;
+  const time  = document.getElementById('partida-time').value;
+  const local = document.getElementById('partida-local').value.trim();
+  const obs   = document.getElementById('partida-obs').value.trim();
   if(!date||!time){ showToast('⚠️ Informe data e hora'); return; }
   const dt = new Date(date + 'T' + time);
   if(dt < new Date()){ showToast('⚠️ Data deve ser no futuro'); return; }
-  const pelada = {
+  const partida = {
     date, time, local, obs,
     timestamp: dt.getTime(),
     updatedAt: Date.now(),
-    rsvp: state.pelada?.rsvp || {}  // mantém confirmações existentes
+    rsvp: state.partida?.rsvp || {}  // mantém confirmações existentes
   };
-  state.pelada = pelada;
-  try{ localStorage.setItem(LS_PELADA, JSON.stringify(pelada)); }catch(e){}
+  state.partida = partida;
+  cachePartidaLocal(partida);
   // Firebase
   if(state.firebaseReady && db){
-    await db.collection('state').doc('pelada').set(pelada)
-      .catch(()=>enqueueOp({type:'set',collection:'state',id:'pelada',data:pelada}));
+    await db.collection('state').doc(STATE_DOC_PARTIDA).set(partida)
+      .catch(()=>enqueueOp({type:'set',collection:'state',id:STATE_DOC_PARTIDA,data:partida}));
   } else {
-    enqueueOp({type:'set',collection:'state',id:'pelada',data:pelada});
+    enqueueOp({type:'set',collection:'state',id:STATE_DOC_PARTIDA,data:partida});
   }
-  logAuditoria('savePelada', {date:pelada.date, time:pelada.time, local:pelada.local});
-  showToast('📅 Pelada agendada!');
-  renderPelada();
+  logAuditoria('savePartida', {date:partida.date, time:partida.time, local:partida.local});
+  showToast('📅 Partida agendada!');
+  renderPartida();
 }
 
-async function cancelPelada(){
-  showConfirm('🗑️ Cancelar Pelada','Remover o agendamento da pelada?', async ()=>{
-    state.pelada = null;
-    try{ localStorage.removeItem(LS_PELADA); }catch(e){}
+async function cancelPartida(){
+  showConfirm('🗑️ Cancelar Partida','Remover o agendamento da partida?', async ()=>{
+    state.partida = null;
+    cachePartidaLocal(null);
     if(state.firebaseReady && db){
-      await db.collection('state').doc('pelada').delete()
-        .catch(()=>enqueueOp({type:'delete',collection:'state',id:'pelada'}));
+      await db.collection('state').doc(STATE_DOC_PARTIDA).delete()
+        .catch(()=>enqueueOp({type:'delete',collection:'state',id:STATE_DOC_PARTIDA}));
     } else {
-      enqueueOp({type:'delete',collection:'state',id:'pelada'});
+      enqueueOp({type:'delete',collection:'state',id:STATE_DOC_PARTIDA});
     }
-    showToast('🗑️ Pelada cancelada');
-    renderPelada();
+    showToast('🗑️ Partida cancelada');
+    renderPartida();
   });
 }
 
@@ -2310,7 +2366,7 @@ function parseRsvpEntry(key, value){
 }
 
 function setRSVP(resp){
-  if(!state.pelada){ showToast('⚠️ Nenhuma pelada agendada'); return; }
+  if(!state.partida){ showToast('⚠️ Nenhuma partida agendada'); return; }
   if(!state.authUser?.email){ showToast('⚠️ Faça login com Google para confirmar presença'); return; }
   const identity = getRsvpIdentity();
   if(!identity){ showToast('⚠️ Apenas jogadores cadastrados podem confirmar presença'); return; }
@@ -2325,26 +2381,26 @@ async function confirmRSVP(){
   if(!_pendingRsvp) return;
   const identity = getRsvpIdentity();
   if(!identity){ showToast('⚠️ Apenas jogadores cadastrados podem confirmar presença'); return; }
-  if(!state.pelada){ showToast('⚠️ Nenhuma pelada agendada'); return; }
+  if(!state.partida){ showToast('⚠️ Nenhuma partida agendada'); return; }
 
   state.myRsvpName = identity.name;
   try{ localStorage.setItem('tl_rsvp_name', identity.name); }catch(e){}
 
-  if(!state.pelada.rsvp) state.pelada.rsvp = {};
-  state.pelada.rsvp[identity.email] = {
+  if(!state.partida.rsvp) state.partida.rsvp = {};
+  state.partida.rsvp[identity.email] = {
     status: _pendingRsvp,
     name: identity.name,
     email: identity.email,
     playerId: identity.playerId,
     updatedAt: Date.now()
   };
-  try{ localStorage.setItem(LS_PELADA, JSON.stringify(state.pelada)); }catch(e){}
+  cachePartidaLocal(state.partida);
 
   if(state.firebaseReady && db){
-    await db.collection('state').doc('pelada').set(state.pelada)
-      .catch(()=>enqueueOp({type:'set',collection:'state',id:'pelada',data:state.pelada}));
+    await db.collection('state').doc(STATE_DOC_PARTIDA).set(state.partida)
+      .catch(()=>enqueueOp({type:'set',collection:'state',id:STATE_DOC_PARTIDA,data:state.partida}));
   } else {
-    enqueueOp({type:'set',collection:'state',id:'pelada',data:state.pelada});
+    enqueueOp({type:'set',collection:'state',id:STATE_DOC_PARTIDA,data:state.partida});
   }
 
   await syncPresenceFromRsvp(identity, _pendingRsvp);
@@ -2352,18 +2408,18 @@ async function confirmRSVP(){
   const emoji = {vou:'✅',talvez:'🤔',nao:'❌'}[_pendingRsvp];
   showToast(emoji + ' Confirmado como ' + identity.name + '!');
   _pendingRsvp = null;
-  renderPelada();
+  renderPartida();
 }
 
 // Admin remove RSVP de alguém
 async function removeRsvp(key){
-  if(!state.pelada?.rsvp) return;
-  delete state.pelada.rsvp[key];
-  try{ localStorage.setItem(LS_PELADA, JSON.stringify(state.pelada)); }catch(e){}
+  if(!state.partida?.rsvp) return;
+  delete state.partida.rsvp[key];
+  cachePartidaLocal(state.partida);
   if(state.firebaseReady && db){
-    await db.collection('state').doc('pelada').set(state.pelada).catch(console.error);
+    await db.collection('state').doc(STATE_DOC_PARTIDA).set(state.partida).catch(console.error);
   }
-  renderPelada();
+  renderPartida();
 }
 
 function removeRsvpByKey(encodedKey){
@@ -2373,53 +2429,53 @@ function removeRsvpByKey(encodedKey){
   }catch(e){}
 }
 
-function renderPelada(){
+function renderPartida(){
   if(_countdownTimer){ clearInterval(_countdownTimer); _countdownTimer=null; }
   const isAdmin = state.role==='admin';
 
   // Mostra form admin
-  const adminCard = document.getElementById('pelada-admin-card');
+  const adminCard = document.getElementById('partida-admin-card');
   if(adminCard) adminCard.style.display = isAdmin ? 'block' : 'none';
 
-  const hero       = document.getElementById('pelada-hero');
-  const infoCard   = document.getElementById('pelada-info-card');
-  const badge      = document.getElementById('pelada-status-badge');
-  const heroContent= document.getElementById('pelada-hero-content');
-  const cancelBtn  = document.getElementById('pelada-cancel-btn');
+  const hero       = document.getElementById('partida-hero');
+  const infoCard   = document.getElementById('partida-info-card');
+  const badge      = document.getElementById('partida-status-badge');
+  const heroContent= document.getElementById('partida-hero-content');
+  const cancelBtn  = document.getElementById('partida-cancel-btn');
 
-  if(!state.pelada){
-    // Sem pelada agendada
-    badge.className='pelada-status-badge sem';
-    badge.textContent='SEM PELADA';
+  if(!state.partida){
+    // Sem partida agendada
+    badge.className='partida-status-badge sem';
+    badge.textContent='SEM PARTIDA';
     heroContent.innerHTML=`<div style="font-size:44px;margin-bottom:8px">⚽</div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--text2)">Nenhuma pelada agendada</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--text2)">Nenhuma partida agendada</div>
       <div style="font-size:13px;color:var(--text3);margin-top:6px">${isAdmin?'Preencha o formulário abaixo':'Aguardando o Admin agendar'}</div>`;
     if(infoCard) infoCard.style.display='none';
     if(cancelBtn) cancelBtn.style.display='none';
     if(isAdmin){
       // Limpa form
-      document.getElementById('pelada-date').value='';
-      document.getElementById('pelada-time').value='19:00';
-      document.getElementById('pelada-local').value='';
-      document.getElementById('pelada-obs').value='';
-      document.getElementById('pelada-form-title').textContent='📅 Agendar Pelada';
+      document.getElementById('partida-date').value='';
+      document.getElementById('partida-time').value='19:00';
+      document.getElementById('partida-local').value='';
+      document.getElementById('partida-obs').value='';
+      document.getElementById('partida-form-title').textContent='📅 Agendar Partida';
     }
     return;
   }
 
-  // Tem pelada agendada
-  const dt = new Date(state.pelada.timestamp);
+  // Tem partida agendada
+  const dt = new Date(state.partida.timestamp);
   const now = new Date();
   const diff = dt - now;
   const isHoje = dt.toDateString()===now.toDateString();
   const isPast = diff < 0;
 
-  badge.className='pelada-status-badge '+(isPast?'sem':isHoje?'hoje':'agendada');
+  badge.className='partida-status-badge '+(isPast?'sem':isHoje?'hoje':'agendada');
   badge.textContent = isPast?'ENCERRADA':isHoje?'🔥 HOJE!':'AGENDADA';
 
   // Countdown
   function updateCountdown(){
-    const d2 = new Date(state.pelada.timestamp) - new Date();
+    const d2 = new Date(state.partida.timestamp) - new Date();
     if(d2<=0){
       heroContent.querySelector('.countdown')?.remove();
       return;
@@ -2437,11 +2493,11 @@ function renderPelada(){
   const timeStr = dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 
   heroContent.innerHTML=`
-    <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold);margin-bottom:4px">${isHoje?'🔥 HOJE':'⚽ PRÓXIMA PELADA'}</div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold);margin-bottom:4px">${isHoje?'🔥 HOJE':'⚽ PRÓXIMA PARTIDA'}</div>
     <div style="font-size:15px;color:var(--text);font-weight:600;margin-bottom:2px">${dateStr}</div>
-    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">🕐 ${timeStr}${state.pelada.local?' · 📍 '+state.pelada.local:''}</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">🕐 ${timeStr}${state.partida.local?' · 📍 '+state.partida.local:''}</div>
     ${!isPast?`<div class="countdown">${cdBlock(0,'dias')+cdBlock(0,'horas')+cdBlock(0,'min')+cdBlock(0,'seg')}</div>`:''}
-    ${state.pelada.obs?`<div style="font-size:12px;color:var(--text2);margin-top:8px;font-style:italic">📝 ${state.pelada.obs}</div>`:''}
+    ${state.partida.obs?`<div style="font-size:12px;color:var(--text2);margin-top:8px;font-style:italic">📝 ${state.partida.obs}</div>`:''}
   `;
   if(!isPast){ updateCountdown(); _countdownTimer=setInterval(updateCountdown,1000); }
 
@@ -2449,11 +2505,11 @@ function renderPelada(){
 
   // Preenche form admin para edição
   if(isAdmin){
-    document.getElementById('pelada-date').value=state.pelada.date||'';
-    document.getElementById('pelada-time').value=state.pelada.time||'19:00';
-    document.getElementById('pelada-local').value=state.pelada.local||'';
-    document.getElementById('pelada-obs').value=state.pelada.obs||'';
-    document.getElementById('pelada-form-title').textContent='✏️ Editar Pelada';
+    document.getElementById('partida-date').value=state.partida.date||'';
+    document.getElementById('partida-time').value=state.partida.time||'19:00';
+    document.getElementById('partida-local').value=state.partida.local||'';
+    document.getElementById('partida-obs').value=state.partida.obs||'';
+    document.getElementById('partida-form-title').textContent='✏️ Editar Partida';
     if(cancelBtn) cancelBtn.style.display='block';
   }
 
@@ -2474,7 +2530,7 @@ function renderPelada(){
     }
   }
 
-  const myEntryRaw = (canRsvp && state.pelada.rsvp) ? state.pelada.rsvp[identity.email] : null;
+  const myEntryRaw = (canRsvp && state.partida.rsvp) ? state.partida.rsvp[identity.email] : null;
   const myResp = myEntryRaw && typeof myEntryRaw === 'object' ? myEntryRaw.status : myEntryRaw;
   ['vou','talvez','nao'].forEach(r=>{
     const btn=document.getElementById('rsvp-'+r);
@@ -2488,7 +2544,7 @@ function renderPelada(){
   });
 
   // Lista de confirmados
-  const rsvp = state.pelada.rsvp || {};
+  const rsvp = state.partida.rsvp || {};
   const grupos = {vou:[], talvez:[], nao:[]};
   Object.entries(rsvp).forEach(([k,v])=>{
     const entry = parseRsvpEntry(k,v);
@@ -2905,7 +2961,7 @@ async function submitEvaluations(){
   const podeAvaliar = papel === 'admin' || papel === 'superadmin' || papel === 'jogador';
   if(!podeAvaliar){ showToast('⚠️ Apenas jogadores cadastrados e admins podem avaliar'); return; }
   const myName = state.authUser?.name || state.myRsvpName || (state.role==='admin' ? 'Admin' : null);
-  if(!myName){ showToast('⚠️ Confirme sua presença na aba Pelada primeiro'); return; }
+  if(!myName){ showToast('⚠️ Confirme sua presença na aba Partida primeiro'); return; }
   const allPlayers = state.match.teams.flatMap(t=>t.players);
   let hasAny = false;
   allPlayers.forEach(p=>{
