@@ -37,42 +37,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 @keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-/* ROLE SCREEN */
-#role-screen{position:fixed;inset:0;background:var(--bg);z-index:9998;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px}
-#role-screen.show{display:flex}
-.role-top{text-align:center;margin-bottom:36px}
-.role-top .ball-icon{font-size:52px;display:block;margin-bottom:10px}
-.role-top h1{font-family:'Bebas Neue',cursive;font-size:54px;color:var(--gold);letter-spacing:3px;line-height:1;text-shadow:0 0 30px rgba(217,119,6,.4)}
-.role-top p{color:var(--text2);font-size:15px;margin-top:10px}
-.role-cards{display:flex;flex-direction:column;gap:14px;width:100%;max-width:380px}
-.role-card{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:20px 22px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;display:flex;align-items:center;gap:16px}
-.role-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;transform:scaleX(0);transition:transform .3s}
-.role-card.admin::after{background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.role-card.viewer::after{background:linear-gradient(90deg,transparent,var(--green-light),transparent)}
-.role-card:hover::after,.role-card:active::after{transform:scaleX(1)}
-.role-card:hover,.role-card:active{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
-.role-card.admin:hover{border-color:var(--gold-dim)}
-.role-card.viewer{border-color:#1a2e1a}
-.role-card.viewer:hover{border-color:#16a34a}
-.rc-icon{font-size:38px;flex-shrink:0;width:52px;text-align:center}
-.rc-info{flex:1}
-.rc-info h3{font-family:'Bebas Neue',cursive;font-size:25px;letter-spacing:1px;line-height:1.1}
-.role-card.admin .rc-info h3{color:var(--gold)}
-.role-card.viewer .rc-info h3{color:var(--green-light)}
-.rc-info p{color:var(--text2);font-size:13px;margin-top:4px;line-height:1.4}
-.rc-arrow{font-size:20px;color:var(--text3);flex-shrink:0}
-
-/* ADMIN PW */
-#admin-pw-screen{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:10000;display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(6px)}
-#admin-pw-screen.show{display:flex}
-.pw-box{background:var(--bg3);border:1px solid var(--gold-dim);border-radius:24px;padding:30px 26px;width:100%;max-width:340px;text-align:center;animation:slideIn .3s ease}
-.pw-box .pw-icon{font-size:38px;margin-bottom:10px}
-.pw-box h3{font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold);margin-bottom:6px}
-.pw-box .pw-sub{color:var(--text2);font-size:13px;margin-bottom:20px}
-.pw-box input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-size:20px;font-family:'Barlow',sans-serif;outline:none;text-align:center;letter-spacing:6px;margin-bottom:8px}
-.pw-box input:focus{border-color:var(--gold)}
-.pw-error{font-size:13px;color:var(--red);min-height:18px;margin-bottom:12px}
-
 /* APP */
 #app{display:none;position:relative;z-index:1;min-height:100vh}
 #app.show{display:block}
@@ -462,22 +426,6 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
         <strong style="color:var(--gold)">Console Firebase → Configurações do projeto → Seus apps → Web → SDK setup</strong>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- ADMIN PW -->
-<div id="admin-pw-screen">
-  <div class="pw-box">
-    <div class="pw-icon">🔐</div>
-    <h3>Área Admin</h3>
-    <p class="pw-sub">Digite a senha para continuar</p>
-    <input type="password" id="admin-pw-input" placeholder="••••" maxlength="20"
-      oninput="document.getElementById('pw-error').textContent=''"
-      onkeydown="if(event.key==='Enter')checkAdminPw()">
-    <div class="pw-error" id="pw-error"></div>
-    <button class="btn btn-gold btn-full" onclick="checkAdminPw()">Entrar como Admin</button>
-    <br><br>
-    <button class="btn btn-outline btn-full" onclick="closeAdminPw()">Cancelar</button>
   </div>
 </div>
 
@@ -905,7 +853,6 @@ const FIREBASE_CONFIG = {
 // ═══════════════════════════════════════════════════════════════
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════
-const ADMIN_PW      = '1234'; // mantido como fallback
 const SUPER_ADMIN   = 'josafartnet@gmail.com';
 const LS_AUTH_CACHE = 'tl_auth_cache';
 const LS_AUTH_REDIRECT_PENDING = 'tl_auth_redirect_pending';
@@ -1401,37 +1348,6 @@ function _loadSDKs(){
 // ═══════════════════════════════════════════════════════════════
 // ROLE SELECTION
 // ═══════════════════════════════════════════════════════════════
-function selectRole(role){
-  if(role==='admin'){
-    document.getElementById('admin-pw-screen').classList.add('show');
-    setTimeout(()=>document.getElementById('admin-pw-input').focus(),150);
-  } else {
-    document.getElementById('role-screen').classList.remove('show');
-    enterApp('viewer');
-  }
-}
-
-function checkAdminPw(){
-  const pw = document.getElementById('admin-pw-input').value;
-  if(pw===ADMIN_PW){
-    document.getElementById('admin-pw-screen').classList.remove('show');
-    document.getElementById('role-screen').classList.remove('show');
-    document.getElementById('admin-pw-input').value='';
-    document.getElementById('pw-error').textContent='';
-    enterApp('admin');
-  } else {
-    document.getElementById('pw-error').textContent='❌ Senha incorreta. Tente novamente.';
-    document.getElementById('admin-pw-input').value='';
-    document.getElementById('admin-pw-input').focus();
-  }
-}
-
-function closeAdminPw(){
-  document.getElementById('admin-pw-screen').classList.remove('show');
-  document.getElementById('admin-pw-input').value='';
-  document.getElementById('pw-error').textContent='';
-}
-
 function switchRole(){
   logout(); // usa logout completo com auth
 }
@@ -2342,12 +2258,21 @@ async function syncPresenceFromRsvp(identity, rsvpStatus){
   updateCTA();
 
   const playerDocId = String(player.id);
+  const papel = state.authUser?.papel || 'viewer';
+  const isPrivileged = papel === 'admin' || papel === 'superadmin';
   if(!state.firebaseReady || !db){
-    enqueueOp({type:'set', collection:'players', id:playerDocId, data:player});
+    if(isPrivileged){
+      enqueueOp({type:'set', collection:'players', id:playerDocId, data:player});
+    }
     return;
   }
-  await db.collection('players').doc(playerDocId).set(player)
-    .catch(()=>enqueueOp({type:'set', collection:'players', id:playerDocId, data:player}));
+  if(isPrivileged){
+    await db.collection('players').doc(playerDocId).set(player)
+      .catch(()=>enqueueOp({type:'set', collection:'players', id:playerDocId, data:player}));
+    return;
+  }
+  await db.collection('players').doc(playerDocId).update({ present: shouldBePresent })
+    .catch(err => console.warn('[RSVP] Falha ao sincronizar presença do jogador:', err?.code || err));
 }
 
 function parseRsvpEntry(key, value){
@@ -3568,6 +3493,7 @@ function renderAuthBadge() {
 // ADMIN MANAGER (Super Admin)
 // ═══════════════════════════════════════════════════════════════
 async function addAdmin() {
+  if(state.authUser?.papel !== 'superadmin') { showToast('⚠️ Apenas Super Admin pode alterar admins'); return; }
   const email = document.getElementById('inp-admin-email').value.trim().toLowerCase();
   if(!email || !email.includes('@')) { showToast('⚠️ Email inválido'); return; }
   if(email === SUPER_ADMIN) { showToast('⚠️ Este é o Super Admin'); return; }
@@ -3581,6 +3507,7 @@ async function addAdmin() {
 }
 
 async function removeAdmin(email) {
+  if(state.authUser?.papel !== 'superadmin') { showToast('⚠️ Apenas Super Admin pode alterar admins'); return; }
   state.admins = state.admins.filter(e => e !== email);
   await db.collection('config').doc('admins').set({ emails: state.admins });
   logAuditoria('removeAdmin', { email });
