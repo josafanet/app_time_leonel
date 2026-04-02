@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Time Leonel">
 <meta name="mobile-web-app-capable" content="yes">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://*.gstatic.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; manifest-src 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'">
 <title>Time Leonel ⚽</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
@@ -904,7 +905,33 @@ let unsubPlayers = null, unsubTeams = null, unsubHistory = null;
 // HELPERS
 // ═══════════════════════════════════════════════════════════════
 function avColor(name){let h=0;for(const c of name)h=(h*31+c.charCodeAt(0))&0xffff;return AV_COLORS[h%AV_COLORS.length];}
-function initials(name){const w=name.trim().split(' ');return(w.length>1?w[0][0]+w[w.length-1][0]:name.slice(0,2)).toUpperCase();}
+function initials(name){
+  const raw = String(name ?? '').trim();
+  if(!raw) return '??';
+  const w = raw.split(/\s+/).filter(Boolean);
+  const letters = (w.length > 1 ? (w[0][0] + w[w.length - 1][0]) : raw.slice(0,2)).toUpperCase();
+  return letters.replace(/[^\p{L}\p{N}]/gu, '') || '??';
+}
+function escapeHtml(value){
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[ch]));
+}
+function safeName(value){
+  const v = String(value ?? '').trim();
+  return escapeHtml(v || 'Sem nome');
+}
+function domSafeId(value){
+  return encodeURIComponent(String(value ?? ''));
+}
+function fmtOverall(value){
+  const n = Number(value);
+  return Number.isFinite(n) ? n.toFixed(1) : '—';
+}
 // ── Novo cálculo de overall: 7 critérios em 3 grupos ponderados ──
 function calcOvr(p){
   if(p.pos==='Goleiro') return parseFloat((p.gk||0).toFixed(1));
@@ -925,7 +952,7 @@ function calcPosTag(p){
 }
 function posTagHtml(tag){
   const map={Ataque:'pos-tag-ataque',Meio:'pos-tag-meio',Defesa:'pos-tag-defesa',Goleiro:'pos-tag-goleiro'};
-  return `<span class="pos-tag ${map[tag]||''}">${tag}</span>`;
+  return `<span class="pos-tag ${map[tag]||''}">${escapeHtml(tag)}</span>`;
 }
 function pIcon(pos){return{Goleiro:'🧤',Linha:'⚽',Ala:'🏃',Fixo:'🏋️'}[pos]||'⚽';}
 function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
@@ -1556,8 +1583,9 @@ async function selectAll(val){
 function deletePlayer(id){
   const p=state.players.find(x=>x.id===id);
   if(!p) return;
+  const safePlayerName = safeName(p.name);
   showConfirm('🗑️ Remover Atleta',
-    'Remover <strong style="color:var(--gold)">'+p.name+'</strong> do elenco?',
+    'Remover <strong style="color:var(--gold)">'+safePlayerName+'</strong> do elenco?',
     async ()=>{
       const name=p.name;
       await deletePlayerDB(id);
@@ -1653,14 +1681,16 @@ function renderPlayers(){
   const sorted=[...state.players].sort((a,b)=>b.overall-a.overall);
   const isAdmin=state.role==='admin';
   list.innerHTML=sorted.map(p=>{
+    const playerId = Number.isFinite(Number(p.id)) ? Number(p.id) : 0;
+    const safePlayerName = safeName(p.name);
     const[bg,fg]=avColor(p.name);
     const stars=p.pos==='Goleiro'?'★'.repeat(p.gk||0):'⭐'.repeat(Math.round(p.overall));
     const adminBtns=isAdmin?
-      `<button class="btn btn-blue btn-icon btn-sm" onclick="openEdit(${p.id})">✏️</button>
-       <button class="btn btn-red btn-icon btn-sm" onclick="deletePlayer(${p.id})">🗑️</button>`:'';
+      `<button class="btn btn-blue btn-icon btn-sm" onclick="openEdit(${playerId})">✏️</button>
+       <button class="btn btn-red btn-icon btn-sm" onclick="deletePlayer(${playerId})">🗑️</button>`:'';
     const presenceEl=isAdmin?
       `<label class="checkbox-wrap">
-        <input type="checkbox"${p.present?' checked':''} onchange="togglePresent(${p.id})">
+        <input type="checkbox"${p.present?' checked':''} onchange="togglePresent(${playerId})">
         <div class="checkbox-custom"></div>
       </label>`:
       `<div style="width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-right:2px;background:${p.present?'var(--green-light)':'var(--border)'}"></div>`;
@@ -1671,11 +1701,11 @@ function renderPlayers(){
       ${presenceEl}
       <div class="player-avatar" style="background:${bg};color:${fg}">${initials(p.name)}</div>
       <div class="player-info">
-        <div class="player-name">${p.name}${p.temp?'<span class="temp-badge">TEMP</span>':''}</div>
+        <div class="player-name">${safePlayerName}${p.temp?'<span class="temp-badge">TEMP</span>':''}</div>
         <div class="player-pos">${posTagHtml(p.posTag||calcPosTag(p))}${presenceLbl}</div>
         <div class="player-stars" style="font-size:11px;color:var(--text3);margin-top:2px">${p.pos==='Goleiro'?'🧤 Goleiro':'★'.repeat(Math.round(p.overall)||0)||'—'}</div>
       </div>
-      <div class="player-overall">${typeof p.overall==='number'?p.overall.toFixed(1):'—'}</div>
+      <div class="player-overall">${fmtOverall(p.overall)}</div>
       <div class="player-actions">${adminBtns}</div>
     </div>`;
   }).join('');
@@ -1924,25 +1954,27 @@ function renderTeams(){
 
   document.getElementById('teams-container').innerHTML=state.teams.map((team,ti)=>{
     const color=TEAM_COLORS[ti%TEAM_COLORS.length];
+    const safeTeamName = safeName(team.name);
     const lineSum=team.players.filter(p=>p.pos!=='Goleiro').reduce((s,p)=>s+p.overall,0);
     const lineCount=team.players.filter(p=>p.pos!=='Goleiro').length;
     const avg=lineCount?( lineSum/lineCount).toFixed(1):'—';
     return `<div class="team-card" style="border-color:${color}33">
       <div class="team-header" style="background:linear-gradient(135deg,${color}12,transparent)">
-        <div class="team-name" style="color:${color}">⚽ ${team.name}</div>
+        <div class="team-name" style="color:${color}">⚽ ${safeTeamName}</div>
         <div class="team-overall">★ ${avg}</div>
       </div>
       <div class="team-players">
         ${team.players.map((p,pi)=>{
+          const safePlayerName = safeName(p.name);
           const[bg,fg]=avColor(p.name);
           const pote=poteMap[p.id];
           const poteHtml=pote?`<span class="pote-badge ${poteClass[pote]}">${poteLabel[pote]}</span>`:'';
           return `<div class="team-player-row" style="animation-delay:${pi*.06}s">
             <div class="team-player-avatar" style="background:${bg};color:${fg}">${initials(p.name)}</div>
-            <div class="team-player-name">${p.name}${p.isCaptain?'<span class="captain-badge">⭐CAP</span>':''}${poteHtml}</div>
+            <div class="team-player-name">${safePlayerName}${p.isCaptain?'<span class="captain-badge">⭐CAP</span>':''}${poteHtml}</div>
             <div class="team-player-meta">
               <div class="team-player-pos">${posTagHtml(p.posTag||calcPosTag(p))}</div>
-              <div class="team-player-stars">★ ${typeof p.overall==='number'?p.overall.toFixed(1):p.overall}</div>
+              <div class="team-player-stars">★ ${fmtOverall(p.overall)}</div>
             </div>
           </div>`;
         }).join('')}
@@ -1954,13 +1986,14 @@ function renderTeams(){
   const resEl = document.getElementById('reserva-display');
   if(resEl){
     if(state.reserva){
+      const safeReservaName = safeName(state.reserva.name);
       const[bg,fg]=avColor(state.reserva.name);
       resEl.style.display='flex';
       resEl.innerHTML=`
         <div class="player-avatar" style="background:${bg};color:${fg};width:36px;height:36px;font-size:12px;flex-shrink:0">${initials(state.reserva.name)}</div>
         <div style="flex:1">
           <div style="font-size:13px;font-weight:700;color:var(--gold)">🔄 Reserva / Curinga</div>
-          <div style="font-size:12px;color:var(--text2)">${state.reserva.name} · ★ ${state.reserva.overall.toFixed(1)}</div>
+          <div style="font-size:12px;color:var(--text2)">${safeReservaName} · ★ ${fmtOverall(state.reserva.overall)}</div>
           <div style="font-size:11px;color:var(--text3);margin-top:2px">Número ímpar de jogadores — entra quando alguém sair</div>
         </div>`;
     } else {
@@ -1983,10 +2016,10 @@ function renderHistory(){
   list.innerHTML=state.history.map((h,i)=>`
     <div class="history-card" onclick="showHistoryDetail(${i})">
       <div class="history-header">
-        <div class="history-date">📅 ${h.date} às ${h.time}</div>
+        <div class="history-date">📅 ${escapeHtml(h.date)} às ${escapeHtml(h.time)}</div>
         <span class="history-fav" onclick="event.stopPropagation();toggleFav(${i})">${h.favorited?'⭐':'☆'}</span>
       </div>
-      <div class="history-teams">${h.teams.map(t=>t.name).join(' vs ')}</div>
+      <div class="history-teams">${h.teams.map(t=>safeName(t.name)).join(' vs ')}</div>
       <div class="history-preview">${h.teams.map(t=>t.players.length+' jog.').join(' · ')} · ${h.teams.reduce((s,t)=>s+t.players.length,0)} total</div>
     </div>
   `).join('');
@@ -2001,16 +2034,16 @@ async function toggleFav(i){
 function showHistoryDetail(i){
   const h=state.history[i];
   document.getElementById('history-modal-content').innerHTML=
-    `<div class="modal-title">📋 ${h.date} às ${h.time}</div>
+    `<div class="modal-title">📋 ${escapeHtml(h.date)} às ${escapeHtml(h.time)}</div>
      <div style="color:var(--text2);font-size:12px;margin-bottom:16px">${h.teams.reduce((s,t)=>s+t.players.length,0)} jogadores sorteados</div>
      ${h.teams.map((t,ti)=>`
        <div style="margin-bottom:14px">
          <div style="font-family:'Bebas Neue',cursive;font-size:19px;color:${TEAM_COLORS[ti%8]};margin-bottom:7px">
-           ⚽ ${t.name} <span style="font-size:13px;color:var(--text2)">★ ${(t.sum/t.players.length).toFixed(1)}</span>
+          ⚽ ${safeName(t.name)} <span style="font-size:13px;color:var(--text2)">★ ${(t.sum/t.players.length).toFixed(1)}</span>
          </div>
          ${t.players.map(p=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
-           <span>${pIcon(p.pos)}</span><span style="flex:1;font-size:13px">${p.name}</span>
-           <span style="color:var(--gold);font-size:12px">★${p.overall}</span>
+           <span>${pIcon(p.pos)}</span><span style="flex:1;font-size:13px">${safeName(p.name)}</span>
+           <span style="color:var(--gold);font-size:12px">★${fmtOverall(p.overall)}</span>
          </div>`).join('')}
        </div>
        ${ti<h.teams.length-1?'<div style="text-align:center;color:var(--text3);font-weight:700;letter-spacing:2px;padding:5px 0">— VS —</div>':''}
@@ -2081,12 +2114,21 @@ async function doImport(ev){
     try{
       const d=JSON.parse(e.target.result);
       if(Array.isArray(d)){
-        state.players=d.map(p=>({
-          ...p,
-          present: typeof p.present === 'boolean' ? p.present : true,
-          overall: calcOvr(p),
-          posTag: calcPosTag(p)
-        }));
+        state.players=d.map((p, idx)=>{
+          const safeId = Number.isFinite(Number(p?.id)) ? Number(p.id) : (Date.now() + idx);
+          const safeNameValue = String(p?.name ?? '').trim().slice(0, 50) || ('Jogador ' + (idx+1));
+          const safeEmailValue = String(p?.email ?? '').trim().toLowerCase().slice(0, 120);
+          const normalized = {
+            ...p,
+            id: safeId,
+            name: safeNameValue,
+            email: safeEmailValue,
+            present: typeof p?.present === 'boolean' ? p.present : true
+          };
+          normalized.overall = calcOvr(normalized);
+          normalized.posTag = calcPosTag(normalized);
+          return normalized;
+        });
         await savePlayersDB();
         renderPlayers(); updateCTA();
         showToast('📥 '+d.length+' jogadores importados!');
@@ -2416,13 +2458,15 @@ function renderPartida(){
 
   const dateStr = dt.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
   const timeStr = dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const safeLocal = escapeHtml(state.partida.local || '');
+  const safeObs = escapeHtml(state.partida.obs || '');
 
   heroContent.innerHTML=`
     <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:var(--gold);margin-bottom:4px">${isHoje?'🔥 HOJE':'⚽ PRÓXIMA PARTIDA'}</div>
     <div style="font-size:15px;color:var(--text);font-weight:600;margin-bottom:2px">${dateStr}</div>
-    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">🕐 ${timeStr}${state.partida.local?' · 📍 '+state.partida.local:''}</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">🕐 ${timeStr}${state.partida.local?' · 📍 '+safeLocal:''}</div>
     ${!isPast?`<div class="countdown">${cdBlock(0,'dias')+cdBlock(0,'horas')+cdBlock(0,'min')+cdBlock(0,'seg')}</div>`:''}
-    ${state.partida.obs?`<div style="font-size:12px;color:var(--text2);margin-top:8px;font-style:italic">📝 ${state.partida.obs}</div>`:''}
+    ${state.partida.obs?`<div style="font-size:12px;color:var(--text2);margin-top:8px;font-style:italic">📝 ${safeObs}</div>`:''}
   `;
   if(!isPast){ updateCountdown(); _countdownTimer=setInterval(updateCountdown,1000); }
 
@@ -2480,12 +2524,26 @@ function renderPartida(){
   if(total===0){
     rsvpList.innerHTML='<div style="font-size:13px;color:var(--text3);margin-top:12px;text-align:center">Ninguém confirmou ainda</div>';
   } else {
-    const pill=(entry,cls)=>`<span class="rsvp-pill ${cls}">${entry.name}${isAdmin?` <span onclick="removeRsvpByKey('${encodeURIComponent(entry.key)}')" style="cursor:pointer;opacity:.6;margin-left:2px">✕</span>`:''}</span>`;
+    const pill=(entry,cls)=>{
+      const removeBtn = isAdmin
+        ? ` <button type="button" class="js-remove-rsvp" data-rsvp-key="${encodeURIComponent(entry.key)}" style="cursor:pointer;opacity:.6;margin-left:2px;background:none;border:none;color:inherit;padding:0;line-height:1">✕</button>`
+        : '';
+      return `<span class="rsvp-pill ${cls}">${safeName(entry.name)}${removeBtn}</span>`;
+    };
     rsvpList.innerHTML=`
       ${grupos.vou.length?`<div class="rsvp-section-title">✅ VOU (${grupos.vou.length})</div><div>${grupos.vou.map(x=>pill(x,'vou')).join('')}</div>`:''}
       ${grupos.talvez.length?`<div class="rsvp-section-title">🤔 TALVEZ (${grupos.talvez.length})</div><div>${grupos.talvez.map(x=>pill(x,'talvez')).join('')}</div>`:''}
       ${grupos.nao.length?`<div class="rsvp-section-title">❌ NÃO VOU (${grupos.nao.length})</div><div>${grupos.nao.map(x=>pill(x,'nao')).join('')}</div>`:''}
     `;
+    if(isAdmin){
+      rsvpList.querySelectorAll('.js-remove-rsvp').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          removeRsvpByKey(btn.getAttribute('data-rsvp-key') || '');
+        });
+      });
+    }
   }
 }
 
@@ -2560,14 +2618,16 @@ function renderField(){
   }
   d.innerHTML=state.teams.map((team,ti)=>{
     const color=TEAM_COLORS[ti%TEAM_COLORS.length];
-    return `<div class="field-team-label" style="color:${color}">${team.name}</div>
+    const safeTeamName = safeName(team.name);
+    return `<div class="field-team-label" style="color:${color}">${safeTeamName}</div>
     <div class="field-team">
       ${team.players.map(p=>{
+        const firstName = safeName(String(p.name||'').split(' ')[0]);
         const[bg,fg]=avColor(p.name);
         return `<div class="field-player-chip">
           <div class="chip-avatar" style="background:${bg};color:${fg}">${initials(p.name)}</div>
           <span style="color:${color}">${pIcon(p.pos)}</span>
-          <span>${p.name.split(' ')[0]}</span>
+          <span>${firstName}</span>
         </div>`;
       }).join('')}
     </div>
@@ -2618,7 +2678,7 @@ function renderMatchSection(){
   const sb = document.getElementById('match-scoreboard');
   sb.innerHTML = state.match.teams.map((t,i)=>`
     <div class="match-team-score">
-      <div class="match-team-name" style="color:${t.color}">${t.name}</div>
+      <div class="match-team-name" style="color:${t.color}">${safeName(t.name)}</div>
       <div class="match-score-num" style="color:${t.color}">${state.match.scores[i]||0}</div>
     </div>
     ${i < state.match.teams.length-1 ? '<div class="match-vs">×</div>' : ''}
@@ -2664,11 +2724,12 @@ function renderMatchTeamsDetail(isAdmin){
   container.innerHTML = state.match.teams.map((team,ti)=>`
     <div style="margin-top:14px">
       <div style="font-family:'Bebas Neue',cursive;font-size:17px;color:${team.color};margin-bottom:6px;display:flex;align-items:center;justify-content:space-between">
-        <span>⚽ ${team.name}</span>
+        <span>⚽ ${safeName(team.name)}</span>
         <span style="font-size:13px;color:var(--text3)">${team.players.length} jog.</span>
       </div>
       <div class="match-team-list">
         ${team.players.map((p,pi)=>{
+          const safePlayerName = safeName(p.name);
           const[bg,fg]=avColor(p.name);
           const statsHtml = isLiveOrFinished && isAdmin ? `
             <div class="match-player-stats">
@@ -2682,7 +2743,7 @@ function renderMatchTeamsDetail(isAdmin){
             `<button class="swap-btn" onclick="openSwap(${ti},${pi})">⇄</button>` : '';
           return `<div class="match-player-row">
             <div class="player-avatar" style="width:28px;height:28px;font-size:10px;background:${bg};color:${fg};border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">${initials(p.name)}</div>
-            <div class="match-player-name">${p.name} <span style="color:var(--text3);font-size:10px">${pIcon(p.pos)}</span></div>
+            <div class="match-player-name">${safePlayerName} <span style="color:var(--text3);font-size:10px">${pIcon(p.pos)}</span></div>
             ${statsHtml}
             ${swapBtn}
           </div>`;
@@ -2836,29 +2897,55 @@ function renderEvalSection(){
   document.getElementById('eval-players-list').innerHTML = allPlayers.map(p=>{
     const ev = (state.match.evaluations||{})[p.id] || {stars:0, drible:0, taken:0};
     const myEv = (state.match.evaluations||{})[p.id+'_my_'+myName] || {stars:0};
-    return `<div class="eval-player-card" id="eval-${p.id}">
+    const safePlayerName = safeName(p.name);
+    const safePos = escapeHtml(p.pos);
+    const playerDomId = domSafeId(p.id);
+    return `<div class="eval-player-card" id="eval-${playerDomId}">
       <div class="eval-player-header">
         <div class="player-avatar" style="width:32px;height:32px;font-size:11px;background:${avColor(p.name)[0]};color:${avColor(p.name)[1]};border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">${initials(p.name)}</div>
         <div>
-          <div style="font-weight:600;font-size:14px">${p.name}</div>
-          <div style="font-size:11px;color:var(--text3)">${pIcon(p.pos)} ${p.pos} · ⚽${p.goals||0} 🎯${p.assists||0}</div>
+          <div style="font-weight:600;font-size:14px">${safePlayerName}</div>
+          <div style="font-size:11px;color:var(--text3)">${pIcon(p.pos)} ${safePos} · ⚽${p.goals||0} 🎯${p.assists||0}</div>
         </div>
       </div>
       ${!alreadyVoted ? `
-      <div class="eval-stars" id="estars-${p.id}">
-        ${[1,2,3,4,5].map(i=>`<span class="eval-star${myEv.stars>=i?' active':''}" onclick="setEvalStar('${p.id}',${i})">⭐</span>`).join('')}
+      <div class="eval-stars" id="estars-${playerDomId}">
+        ${[1,2,3,4,5].map(i=>`<span class="eval-star js-eval-star${myEv.stars>=i?' active':''}" data-player-id="${playerDomId}" data-stars="${i}">⭐</span>`).join('')}
       </div>` : `<div class="eval-submitted">Sua nota: ${'⭐'.repeat(myEv.stars||0)||'—'}</div>`}
       ${isAdmin ? `
       <div class="eval-actions">
-        <button class="eval-action-btn${(ev.drible||0)>0?' active-drible':''}" onclick="toggleAdminEval('${p.id}','drible')">
+        <button class="eval-action-btn js-admin-eval${(ev.drible||0)>0?' active-drible':''}" data-player-id="${playerDomId}" data-eval-type="drible">
           🕹️ Belo Drible (${ev.drible||0})
         </button>
-        <button class="eval-action-btn${(ev.taken||0)>0?' active-taken':''}" onclick="toggleAdminEval('${p.id}','taken')">
+        <button class="eval-action-btn js-admin-eval${(ev.taken||0)>0?' active-taken':''}" data-player-id="${playerDomId}" data-eval-type="taken">
           😵 Tomou Drible (${ev.taken||0})
         </button>
       </div>` : ''}
     </div>`;
   }).join('');
+
+  const evalList = document.getElementById('eval-players-list');
+  evalList.querySelectorAll('.js-eval-star').forEach(starEl=>{
+    starEl.addEventListener('click', ()=>{
+      const encodedId = starEl.getAttribute('data-player-id') || '';
+      const stars = Number(starEl.getAttribute('data-stars') || 0);
+      const playerId = decodeURIComponent(encodedId);
+      if(!playerId || !Number.isFinite(stars) || stars < 1) return;
+      setEvalStar(playerId, stars);
+    });
+  });
+
+  if(isAdmin){
+    evalList.querySelectorAll('.js-admin-eval').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const encodedId = btn.getAttribute('data-player-id') || '';
+        const type = btn.getAttribute('data-eval-type');
+        const playerId = decodeURIComponent(encodedId);
+        if(!playerId || (type!=='drible' && type!=='taken')) return;
+        toggleAdminEval(playerId, type);
+      });
+    });
+  }
 }
 
 function setEvalStar(playerId, stars){
@@ -2867,7 +2954,7 @@ function setEvalStar(playerId, stars){
   if(!state.match.evaluations) state.match.evaluations = {};
   state.match.evaluations[playerId+'_my_'+myName] = {stars};
   // Update stars UI
-  const starsEl = document.getElementById('estars-'+playerId);
+  const starsEl = document.getElementById('estars-'+domSafeId(playerId));
   if(starsEl) starsEl.querySelectorAll('.eval-star').forEach((s,i)=>s.classList.toggle('active',i<stars));
 }
 
@@ -3007,22 +3094,29 @@ function renderMatchHistory(){
     return;
   }
   list.innerHTML = state.matchHistory.map((m,i)=>{
-    const scoreStr = m.teams.map(t=>t.score).join(' × ');
-    const teamNames = m.teams.map(t=>t.name).join(' vs ');
+    const scoreStr = escapeHtml(m.teams.map(t=>t.score).join(' × '));
+    const teamNames = m.teams.map(t=>safeName(t.name)).join(' vs ');
+    const safeDate = escapeHtml(m.date);
+    const safeTime = escapeHtml(m.time);
+    const safeDuration = escapeHtml(m.duration);
+    const safeMvpFirst = m.mvp?.name ? safeName(m.mvp.name.split(' ')[0]) : '';
+    const safeMvpScore = escapeHtml(m.mvp?.score ?? '');
+    const totalPlayers = m.teams.reduce((a,t)=>a+(Array.isArray(t.players)?t.players.length:0),0);
+    const totalGoals = (m.events?.filter(e=>e.type==='goal').length)||0;
     return `<div class="match-history-card" onclick="showMatchDetail(${i})">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div>
-          <div style="font-size:11px;color:var(--text3)">📅 ${m.date} às ${m.time} · ⏱ ${m.duration}</div>
+          <div style="font-size:11px;color:var(--text3)">📅 ${safeDate} às ${safeTime} · ⏱ ${safeDuration}</div>
           <div style="font-size:13px;font-weight:600;margin:4px 0">${teamNames}</div>
           <div class="match-history-score">${scoreStr}</div>
         </div>
         ${m.mvp?`<div style="text-align:center;background:rgba(217,119,6,.1);border:1px solid var(--gold-dim);border-radius:10px;padding:6px 10px">
           <div style="font-size:10px;color:var(--text3)">MVP</div>
-          <div style="font-size:12px;font-weight:700;color:var(--gold)">${m.mvp.name.split(' ')[0]}</div>
-          <div style="font-size:10px;color:var(--text3)">⭐ ${m.mvp.score}</div>
+          <div style="font-size:12px;font-weight:700;color:var(--gold)">${safeMvpFirst}</div>
+          <div style="font-size:10px;color:var(--text3)">⭐ ${safeMvpScore}</div>
         </div>`:''}
       </div>
-      <div class="match-history-meta">${m.teams.reduce((a,t)=>a+t.players.length,0)} jogadores · ${m.events?.filter(e=>e.type==='goal').length||0} gols</div>
+      <div class="match-history-meta">${totalPlayers} jogadores · ${totalGoals} gols</div>
     </div>`;
   }).join('');
 }
@@ -3030,22 +3124,25 @@ function renderMatchHistory(){
 function showMatchDetail(i){
   if(!state.matchHistory?.[i]) return;
   const m = state.matchHistory[i];
+  const safeDate = escapeHtml(m.date);
+  const safeTime = escapeHtml(m.time);
+  const safeDuration = escapeHtml(m.duration);
   document.getElementById('history-modal-content').innerHTML=`
-    <div class="modal-title">⚽ ${m.date} às ${m.time}</div>
-    <div style="color:var(--text2);font-size:12px;margin-bottom:14px">⏱ Duração: ${m.duration}</div>
+    <div class="modal-title">⚽ ${safeDate} às ${safeTime}</div>
+    <div style="color:var(--text2);font-size:12px;margin-bottom:14px">⏱ Duração: ${safeDuration}</div>
     ${m.mvp?`<div style="background:rgba(217,119,6,.1);border:1px solid var(--gold-dim);border-radius:12px;padding:10px 14px;margin-bottom:14px;text-align:center">
       <div style="font-size:11px;color:var(--text3);margin-bottom:3px">🏆 MVP DA PARTIDA</div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--gold)">${m.mvp.name}</div>
-      <div style="font-size:11px;color:var(--text3)">Score: ${m.mvp.score}</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--gold)">${safeName(m.mvp.name)}</div>
+      <div style="font-size:11px;color:var(--text3)">Score: ${escapeHtml(m.mvp.score)}</div>
     </div>`:''}
     ${m.teams.map((t,ti)=>`
       <div style="margin-bottom:14px">
         <div style="font-family:'Bebas Neue',cursive;font-size:19px;color:${t.color||TEAM_COLORS[ti%8]};margin-bottom:7px">
-          ⚽ ${t.name} <span style="font-size:22px">${t.score}</span>
+          ⚽ ${safeName(t.name)} <span style="font-size:22px">${escapeHtml(t.score)}</span>
         </div>
         ${t.players.map(p=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
           <span>${pIcon(p.pos)}</span>
-          <span style="flex:1;font-size:13px">${p.name}</span>
+          <span style="flex:1;font-size:13px">${safeName(p.name)}</span>
           <span style="font-size:11px;color:var(--text3)">⚽${p.goals||0} 🎯${p.assists||0} 🕹️${p.dribles||0} ${p.posTag?posTagHtml(p.posTag):''}</span>
         </div>`).join('')}
       </div>
@@ -3066,10 +3163,12 @@ function renderStats(){
 
   function row(p,i,val,col,icon){
     const[bg,fg]=avColor(p.name);
+    const safePlayerName = safeName(p.name);
+    const safePos = escapeHtml(p.pos);
     return `<div class="stats-player-row">
       <div class="stats-rank">${i+1}</div>
       <div class="stats-avatar" style="background:${bg};color:${fg}">${initials(p.name)}</div>
-      <div class="stats-info"><div class="stats-name">${p.name}</div><div class="stats-sub">${pIcon(p.pos)} ${p.pos}</div></div>
+      <div class="stats-info"><div class="stats-name">${safePlayerName}</div><div class="stats-sub">${pIcon(p.pos)} ${safePos}</div></div>
       <div class="stats-val" style="color:${col}">${icon} ${val}</div>
     </div>`;
   }
@@ -3115,7 +3214,7 @@ function renderStats(){
         return `<div class="stats-player-row">
           <div class="stats-rank">${i+1}</div>
           <div class="stats-avatar" style="background:${bg};color:${fg}">${initials(p.name)}</div>
-          <div class="stats-info"><div class="stats-name">${p.name}</div><div class="stats-sub">${pIcon(p.pos)} ${p.pos}</div></div>
+          <div class="stats-info"><div class="stats-name">${safeName(p.name)}</div><div class="stats-sub">${pIcon(p.pos)} ${escapeHtml(p.pos)}</div></div>
           <div class="stats-val" style="color:var(--red)">★ ${evalWorst8(p)}</div>
         </div>`;
       }).join('') : '<div class="stats-empty">Nenhuma avaliação ainda</div>'}
@@ -3524,10 +3623,17 @@ function renderAdminList() {
   }
   list.innerHTML = state.admins.map(email => `
     <div class="admin-row">
-      <div style="flex:1;font-size:13px;color:var(--text)">${email}</div>
+      <div style="flex:1;font-size:13px;color:var(--text)">${escapeHtml(email)}</div>
       <span style="font-size:10px;background:rgba(217,119,6,.15);color:var(--gold);border:1px solid var(--gold-dim);border-radius:8px;padding:2px 8px;margin-right:8px">ADMIN</span>
-      <button class="btn btn-red btn-sm" onclick="removeAdmin('${email}')">🗑️</button>
+      <button class="btn btn-red btn-sm js-remove-admin" data-admin-email="${encodeURIComponent(email)}">🗑️</button>
     </div>`).join('');
+  list.querySelectorAll('.js-remove-admin').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const raw = btn.getAttribute('data-admin-email') || '';
+      const email = decodeURIComponent(raw);
+      removeAdmin(email);
+    });
+  });
 }
 
 function renderAdminsTab() {
