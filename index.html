@@ -1070,7 +1070,11 @@ function startListeners(){
   unsubPlayers = db.collection('players').onSnapshot(snap => {
     const incoming = snap.docs.map(d => d.data());
     // Garante posTag e overall atualizados ao receber do Firebase
-    incoming.forEach(p=>{ p.overall=calcOvr(p); p.posTag=calcPosTag(p); });
+    incoming.forEach(p=>{
+      if(typeof p.present !== 'boolean') p.present = true;
+      p.overall=calcOvr(p);
+      p.posTag=calcPosTag(p);
+    });
     // Não sobrescreve se Admin está no meio de uma escrita local
     if(!state._adminWriting){
       state.players = incoming;
@@ -1248,7 +1252,11 @@ async function saveFavDB(entry){
 // ═══════════════════════════════════════════════════════════════
 function loadFromLocal(){
   try{ state.players = JSON.parse(localStorage.getItem(LS_PLAYERS))||[]; }catch{ state.players=[]; }
-  state.players.forEach(p=>{ p.overall=calcOvr(p); p.posTag=calcPosTag(p); });
+  state.players.forEach(p=>{
+    if(typeof p.present !== 'boolean') p.present = true;
+    p.overall=calcOvr(p);
+    p.posTag=calcPosTag(p);
+  });
   try{ state.teams   = JSON.parse(localStorage.getItem(LS_TEAMS))||[];   }catch{ state.teams=[];   }
   try{ state.history = JSON.parse(localStorage.getItem(LS_HISTORY))||[]; }catch{ state.history=[]; }
   try{ state.pelada  = JSON.parse(localStorage.getItem(LS_PELADA))||null;  }catch{ state.pelada=null;  }
@@ -2099,7 +2107,12 @@ async function doImport(ev){
     try{
       const d=JSON.parse(e.target.result);
       if(Array.isArray(d)){
-        state.players=d;
+        state.players=d.map(p=>({
+          ...p,
+          present: typeof p.present === 'boolean' ? p.present : true,
+          overall: calcOvr(p),
+          posTag: calcPosTag(p)
+        }));
         await savePlayersDB();
         renderPlayers(); updateCTA();
         showToast('📥 '+d.length+' jogadores importados!');
@@ -2251,6 +2264,34 @@ function getRsvpIdentity(){
   return { email, name, playerId: player.id };
 }
 
+async function syncPresenceFromRsvp(identity, rsvpStatus){
+  if(!identity || !identity.email) return;
+  const player = state.players.find(p =>
+    !p.temp &&
+    p.email &&
+    p.email.toLowerCase().trim() === identity.email
+  );
+  if(!player) return;
+
+  const shouldBePresent = rsvpStatus !== 'nao';
+  if(player.present === shouldBePresent) return;
+
+  player.present = shouldBePresent;
+  try{ localStorage.setItem(LS_PLAYERS, JSON.stringify(state.players)); }catch(e){}
+
+  if(state.currentTab==='elenco') renderPlayers();
+  if(state.currentTab==='stats')  renderStats();
+  updateCTA();
+
+  const playerDocId = String(player.id);
+  if(!state.firebaseReady || !db){
+    enqueueOp({type:'set', collection:'players', id:playerDocId, data:player});
+    return;
+  }
+  await db.collection('players').doc(playerDocId).set(player)
+    .catch(()=>enqueueOp({type:'set', collection:'players', id:playerDocId, data:player}));
+}
+
 function parseRsvpEntry(key, value){
   if(value && typeof value === 'object'){
     const status = value.status || value.resp || value.value || null;
@@ -2303,6 +2344,8 @@ async function confirmRSVP(){
   } else {
     enqueueOp({type:'set',collection:'state',id:'pelada',data:state.pelada});
   }
+
+  await syncPresenceFromRsvp(identity, _pendingRsvp);
 
   const emoji = {vou:'✅',talvez:'🤔',nao:'❌'}[_pendingRsvp];
   showToast(emoji + ' Confirmado como ' + identity.name + '!');

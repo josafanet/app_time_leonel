@@ -1,6 +1,6 @@
 // Time Leonel - Service Worker
 // ⚠️ INCREMENTAR ESTA VERSÃO a cada deploy para forçar atualização no celular
-const CACHE_VERSION = 'time-leonel-v9';
+const CACHE_VERSION = 'time-leonel-v10';
 
 const ASSETS = [
   './',
