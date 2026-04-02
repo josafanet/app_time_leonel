@@ -707,7 +707,7 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
       <div class="card" id="pelada-info-card" style="display:none">
         <div id="pelada-info-rows"></div>
 
-        <!-- RSVP — visível para todos -->
+        <!-- RSVP — somente jogador autenticado -->
         <div style="margin-top:16px">
           <div style="font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.5px;margin-bottom:8px">SUA CONFIRMAÇÃO</div>
           <div class="rsvp-strip">
@@ -715,12 +715,7 @@ input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px
             <button class="rsvp-btn talvez" id="rsvp-talvez" onclick="setRSVP('talvez')">🤔 Talvez</button>
             <button class="rsvp-btn nao" id="rsvp-nao" onclick="setRSVP('nao')">❌ Não vou</button>
           </div>
-          <div id="rsvp-name-wrap" style="display:none;margin-top:10px">
-            <input type="text" id="rsvp-name-input" placeholder="Seu nome (para confirmar)" maxlength="25"
-              style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Barlow',sans-serif;outline:none"
-              onkeydown="if(event.key==='Enter')confirmRSVP()">
-            <button class="btn btn-green btn-full" style="margin-top:8px" onclick="confirmRSVP()">Confirmar</button>
-          </div>
+          <div id="rsvp-auth-hint" style="margin-top:10px;font-size:12px;color:var(--text3)"></div>
         </div>
 
         <!-- Lista de confirmados -->
@@ -2238,64 +2233,99 @@ async function cancelPelada(){
   });
 }
 
-// RSVP — viewer seleciona resposta
+// RSVP — somente jogador autenticado
 let _pendingRsvp = null;
+
+function getLoggedPlayerForRsvp(){
+  const email = (state.authUser?.email || '').toLowerCase().trim();
+  if(!email) return null;
+  return state.players.find(p => !p.temp && p.email && p.email.toLowerCase().trim() === email) || null;
+}
+
+function getRsvpIdentity(){
+  const player = getLoggedPlayerForRsvp();
+  if(!player) return null;
+  const email = (state.authUser?.email || player.email || '').toLowerCase().trim();
+  const name  = player.name || state.authUser?.name || email;
+  if(!email) return null;
+  return { email, name, playerId: player.id };
+}
+
+function parseRsvpEntry(key, value){
+  if(value && typeof value === 'object'){
+    const status = value.status || value.resp || value.value || null;
+    const email  = (value.email || (key.includes('@') ? key : '') || '').toLowerCase().trim();
+    const name   = value.name || key;
+    return { key: email || key, email, name, status };
+  }
+  return {
+    key,
+    email: key.includes('@') ? key.toLowerCase().trim() : '',
+    name: key,
+    status: value
+  };
+}
+
 function setRSVP(resp){
+  if(!state.pelada){ showToast('⚠️ Nenhuma pelada agendada'); return; }
+  if(!state.authUser?.email){ showToast('⚠️ Faça login com Google para confirmar presença'); return; }
+  const identity = getRsvpIdentity();
+  if(!identity){ showToast('⚠️ Apenas jogadores cadastrados podem confirmar presença'); return; }
   _pendingRsvp = resp;
-  // Highlight botão selecionado
   ['vou','talvez','nao'].forEach(r=>{
     document.getElementById('rsvp-'+r).classList.toggle('active', r===resp);
   });
-  // Se já tem nome salvo, confirma direto
-  if(state.myRsvpName){
-    confirmRSVP();
-  } else {
-    // Pede nome apenas na primeira vez
-    document.getElementById('rsvp-name-wrap').style.display='block';
-    setTimeout(()=>document.getElementById('rsvp-name-input').focus(),100);
-  }
+  confirmRSVP();
 }
 
 async function confirmRSVP(){
   if(!_pendingRsvp) return;
-  let name = state.myRsvpName || document.getElementById('rsvp-name-input').value.trim();
-  if(!name){ showToast('⚠️ Digite seu nome'); return; }
-  // Salva nome localmente para próximas vezes
-  state.myRsvpName = name;
-  try{ localStorage.setItem('tl_rsvp_name', name); }catch(e){}
-  document.getElementById('rsvp-name-wrap').style.display='none';
+  const identity = getRsvpIdentity();
+  if(!identity){ showToast('⚠️ Apenas jogadores cadastrados podem confirmar presença'); return; }
   if(!state.pelada){ showToast('⚠️ Nenhuma pelada agendada'); return; }
-  // Atualiza RSVP no objeto pelada
+
+  state.myRsvpName = identity.name;
+  try{ localStorage.setItem('tl_rsvp_name', identity.name); }catch(e){}
+
   if(!state.pelada.rsvp) state.pelada.rsvp = {};
-  state.pelada.rsvp[name] = _pendingRsvp;
+  state.pelada.rsvp[identity.email] = {
+    status: _pendingRsvp,
+    name: identity.name,
+    email: identity.email,
+    playerId: identity.playerId,
+    updatedAt: Date.now()
+  };
   try{ localStorage.setItem(LS_PELADA, JSON.stringify(state.pelada)); }catch(e){}
-  // Firebase — atualiza só o campo rsvp
+
   if(state.firebaseReady && db){
-    await db.collection('state').doc('pelada').update({
-      ['rsvp.' + name]: _pendingRsvp
-    }).catch(async ()=>{
-      // se update falha (doc não existe), usa set
-      await db.collection('state').doc('pelada').set(state.pelada);
-    });
+    await db.collection('state').doc('pelada').set(state.pelada)
+      .catch(()=>enqueueOp({type:'set',collection:'state',id:'pelada',data:state.pelada}));
   } else {
     enqueueOp({type:'set',collection:'state',id:'pelada',data:state.pelada});
   }
+
   const emoji = {vou:'✅',talvez:'🤔',nao:'❌'}[_pendingRsvp];
-  showToast(emoji + ' Confirmado como ' + name + '!');
+  showToast(emoji + ' Confirmado como ' + identity.name + '!');
   _pendingRsvp = null;
   renderPelada();
 }
 
 // Admin remove RSVP de alguém
-async function removeRsvp(name){
+async function removeRsvp(key){
   if(!state.pelada?.rsvp) return;
-  delete state.pelada.rsvp[name];
+  delete state.pelada.rsvp[key];
   try{ localStorage.setItem(LS_PELADA, JSON.stringify(state.pelada)); }catch(e){}
   if(state.firebaseReady && db){
-    // Firestore não tem "delete field" via compat facilmente, faz set completo
     await db.collection('state').doc('pelada').set(state.pelada).catch(console.error);
   }
   renderPelada();
+}
+
+function removeRsvpByKey(encodedKey){
+  try{
+    const key = decodeURIComponent(encodedKey);
+    removeRsvp(key);
+  }catch(e){}
 }
 
 function renderPelada(){
@@ -2382,29 +2412,53 @@ function renderPelada(){
     if(cancelBtn) cancelBtn.style.display='block';
   }
 
-  // RSVP atual do viewer
-  const myName = state.myRsvpName;
-  const myResp = myName && state.pelada.rsvp ? state.pelada.rsvp[myName] : null;
+  // RSVP atual do usuário autenticado (somente jogador cadastrado)
+  const identity = getRsvpIdentity();
+  const hintEl = document.getElementById('rsvp-auth-hint');
+  const canRsvp = !!identity;
+  if(hintEl){
+    if(!state.authUser?.email){
+      hintEl.style.color = 'var(--text3)';
+      hintEl.textContent = 'Faça login com Google para confirmar presença.';
+    } else if(!canRsvp){
+      hintEl.style.color = '#f59e0b';
+      hintEl.textContent = 'Apenas jogadores cadastrados no elenco podem confirmar presença.';
+    } else {
+      hintEl.style.color = 'var(--green-light)';
+      hintEl.textContent = `Confirmação vinculada ao e-mail: ${identity.email}`;
+    }
+  }
+
+  const myEntryRaw = (canRsvp && state.pelada.rsvp) ? state.pelada.rsvp[identity.email] : null;
+  const myResp = myEntryRaw && typeof myEntryRaw === 'object' ? myEntryRaw.status : myEntryRaw;
   ['vou','talvez','nao'].forEach(r=>{
     const btn=document.getElementById('rsvp-'+r);
-    if(btn) btn.classList.toggle('active', r===myResp);
+    if(btn){
+      btn.classList.toggle('active', r===myResp);
+      btn.disabled = !canRsvp || isPast;
+      btn.style.opacity = btn.disabled ? '.45' : '';
+      btn.title = !state.authUser?.email ? 'Faça login para confirmar' :
+                  !canRsvp ? 'Apenas jogador cadastrado pode confirmar' : '';
+    }
   });
-  if(myName) document.getElementById('rsvp-name-wrap').style.display='none';
 
   // Lista de confirmados
   const rsvp = state.pelada.rsvp || {};
   const grupos = {vou:[], talvez:[], nao:[]};
-  Object.entries(rsvp).forEach(([n,r])=>{ if(grupos[r]) grupos[r].push(n); });
+  Object.entries(rsvp).forEach(([k,v])=>{
+    const entry = parseRsvpEntry(k,v);
+    if(grupos[entry.status]) grupos[entry.status].push(entry);
+  });
   const total = grupos.vou.length + grupos.talvez.length + grupos.nao.length;
   const rsvpList = document.getElementById('rsvp-list');
   if(total===0){
     rsvpList.innerHTML='<div style="font-size:13px;color:var(--text3);margin-top:12px;text-align:center">Ninguém confirmou ainda</div>';
   } else {
-    const pill=(n,cls)=>`<span class="rsvp-pill ${cls}">${n}${isAdmin?` <span onclick="removeRsvp('${n}')" style="cursor:pointer;opacity:.6;margin-left:2px">✕</span>`:''}</span>`;
+    const pill=(entry,cls)=>`<span class="rsvp-pill ${cls}">${entry.name}${isAdmin?` <span onclick="removeRsvpByKey('${encodeURIComponent(entry.key)}')" style="cursor:pointer;opacity:.6;margin-left:2px">✕</span>`:''}</span>`;
     rsvpList.innerHTML=`
-      ${grupos.vou.length?`<div class="rsvp-section-title">✅ VOU (${grupos.vou.length})</div><div>${grupos.vou.map(n=>pill(n,'vou')).join('')}</div>`:''}
-      ${grupos.talvez.length?`<div class="rsvp-section-title">🤔 TALVEZ (${grupos.talvez.length})</div><div>${grupos.talvez.map(n=>pill(n,'talvez')).join('')}</div>`:''}
-      ${grupos.nao.length?`<div class="rsvp-section-title">❌ NÃO VOU (${grupos.nao.length})</div><div>${grupos.nao.map(n=>pill(n,'nao')).join('')}</div>`:''}
+      ${grupos.vou.length?`<div class="rsvp-section-title">✅ VOU (${grupos.vou.length})</div><div>${grupos.vou.map(x=>pill(x,'vou')).join('')}</div>`:''}
+      ${grupos.talvez.length?`<div class="rsvp-section-title">🤔 TALVEZ (${grupos.talvez.length})</div><div>${grupos.talvez.map(x=>pill(x,'talvez')).join('')}</div>`:''}
+      ${grupos.nao.length?`<div class="rsvp-section-title">❌ NÃO VOU (${grupos.nao.length})</div><div>${grupos.nao.map(x=>pill(x,'nao')).join('')}</div>`:''}
     `;
   }
 }
